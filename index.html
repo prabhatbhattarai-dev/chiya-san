@@ -11,12 +11,11 @@
     }
   </script>
 
-  <!-- ================= TEXTURE STYLES ================= -->
+  <!-- ================= TEXTURE & CUSTOM STYLES ================= -->
   <style>
     :root{
       /* Fine film-grain / paper noise (SVG, no external file needed) */
       --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-
       /* Tiny dot grid used as an accent */
       --dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1' fill='%230e7490' opacity='0.20'/%3E%3C/svg%3E");
     }
@@ -53,9 +52,7 @@
     /* --- Thin styled scrollbar for the cart --- */
     .scroll-thin::-webkit-scrollbar{ width:6px; }
     .scroll-thin::-webkit-scrollbar-track{ background:transparent; }
-    .scroll-thin::-webkit-scrollbar-thumb{
-      background:#cbd5e1; border-radius:9999px;
-    }
+    .scroll-thin::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:9999px; }
     .scroll-thin::-webkit-scrollbar-thumb:hover{ background:#94a3b8; }
 
     /* --- Cards: lift a touch on hover --- */
@@ -65,6 +62,15 @@
       box-shadow: 0 12px 24px -12px rgba(15,23,42,.25);
       border-color: #a5d8e0;
     }
+
+    /* --- Image placeholder styling --- */
+    .menu-img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      background-color: #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+    }
   </style>
 </head>
 
@@ -72,31 +78,34 @@
 
   <!-- Header -->
   <header class="tex-header border-b border-slate-200/80 sticky top-0 z-40 shadow-sm">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
       <h1 class="text-2xl font-bold text-brand flex items-center gap-2">☕ Chiya San</h1>
       <button onclick="toggleCart()" class="relative bg-brand text-white px-4 py-2 rounded-lg font-semibold hover:bg-brandDark transition-all shadow-sm">
         🛒 Cart (<span id="cart-count">0</span>)
       </button>
     </div>
-    <!-- subtle dotted accent line -->
     <div class="h-1 tex-dots opacity-60"></div>
   </header>
 
   <!-- Main Content Layout -->
-  <main class="max-w-6xl mx-auto px-4 py-8 w-full grid md:grid-cols-3 gap-8">
+  <main class="max-w-7xl mx-auto px-4 py-8 w-full grid lg:grid-cols-4 gap-8">
 
     <!-- Menu Section -->
-    <section class="md:col-span-2 space-y-6">
-      <h2 class="text-2xl font-bold text-slate-900 border-b border-slate-300/70 pb-2">Select Your Items</h2>
-      <div id="menu-container" class="grid sm:grid-cols-2 gap-4">
+    <section class="lg:col-span-3 space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-300/70 pb-2">
+        <h2 class="text-2xl font-bold text-slate-900">Select Your Items</h2>
+        <span class="text-sm text-slate-500 font-medium">Freshly prepared just for you</span>
+      </div>
+      <!-- Menu Grid -->
+      <div id="menu-container" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
         <!-- Injected dynamically via JS -->
       </div>
     </section>
 
     <!-- Side Cart View (Desktop) -->
-    <aside class="tex-paper bg-white border border-slate-200 p-6 rounded-2xl shadow-sm h-fit sticky top-24">
+    <aside class="tex-paper bg-white border border-slate-200 p-6 rounded-2xl shadow-sm h-fit sticky top-24 lg:col-span-1">
       <h3 class="text-xl font-bold text-slate-900 mb-4 border-b border-slate-200 pb-2">Your Order Summary</h3>
-      <div id="cart-items" class="scroll-thin space-y-3 mb-4 max-h-60 overflow-y-auto">
+      <div id="cart-items" class="scroll-thin space-y-3 mb-4 max-h-96 overflow-y-auto pr-1">
         <p class="text-slate-400 text-sm text-center py-4">Your cart is empty</p>
       </div>
       <div class="border-t border-slate-200 pt-4 space-y-2">
@@ -140,33 +149,129 @@
   </div>
 
   <script>
+    // =========================================================================
+    // MENU DATA
+    // To use your own AI-generated images, simply replace the URL inside `img`
+    // with the path to your image file (e.g., "images/momo.jpg").
+    // =========================================================================
     const menuData = [
-      { id: 1, name: "Masala Milk Tea", price: 65, cat: "Beverages" },
-      { id: 2, name: "Hot Lemon with Ginger Honey", price: 120, cat: "Beverages" },
-      { id: 3, name: "Chicken Steam Momo", price: 200, cat: "Food" },
-      { id: 4, name: "Chicken Kothey Momo", price: 250, cat: "Food" },
-      { id: 5, name: "French Fries", price: 180, cat: "Snacks" },
-      { id: 6, name: "Chicken Chilly", price: 300, cat: "Snacks" }
+      // --- MO:MO ---
+      { id: 1, name: "Chicken Steam Mo:Mo", price: 200, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Steam+MoMo" },
+      { id: 2, name: "Chicken Jhol Mo:Mo", price: 230, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Jhol+MoMo" },
+      { id: 3, name: "Chicken Kothey Mo:Mo", price: 250, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Kothey+MoMo" },
+      { id: 4, name: "Veg & Paneer Steam Mo:Mo", price: 180, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Veg+Steam+MoMo" },
+      { id: 5, name: "Veg & Paneer Jhol Mo:Mo", price: 210, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Veg+Jhol+MoMo" },
+      { id: 6, name: "Veg & Paneer Kothey Mo:Mo", price: 230, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Veg+Kothey+MoMo" },
+
+      // --- KHAJA SET ---
+      { id: 7, name: "Panga Set", price: 250, cat: "Khaja Set", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Panga+Set" },
+
+      // --- NUGGETS ---
+      { id: 8, name: "Chicken Nuggets", price: 300, cat: "Nuggets", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Nuggets" },
+
+      // --- WAI-WAI SPECIALS ---
+      { id: 9, name: "Wai-Wai Sadeko", price: 100, cat: "Wai-Wai", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Wai-Wai+Sadeko" },
+      { id: 10, name: "Sausage Wai-Wai Sadeko", price: 180, cat: "Wai-Wai", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Sausage+Wai-Wai" },
+
+      // --- SANDWICHES ---
+      { id: 11, name: "Veg Sandwich", price: 180, cat: "Sandwiches", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Veg+Sandwich" },
+      { id: 12, name: "Chicken Sandwich", price: 250, cat: "Sandwiches", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Sandwich" },
+
+      // --- QUICKS SNACKS ---
+      { id: 13, name: "French Fries", price: 180, cat: "Quick Snacks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=French+Fries" },
+      { id: 14, name: "Spicy Fries", price: 200, cat: "Quick Snacks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Spicy+Fries" },
+      { id: 15, name: "Chicken Chilly", price: 300, cat: "Quick Snacks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Chilly" },
+      { id: 16, name: "Chicken Drumsticks", price: 300, cat: "Quick Snacks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Drumsticks" },
+
+      // --- SAUSAGE ---
+      { id: 17, name: "Boiled Sausage", price: 60, cat: "Sausage", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Boiled+Sausage" },
+      { id: 18, name: "Fry Sausage", price: 60, cat: "Sausage", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Fry+Sausage" },
+      { id: 19, name: "Sausage Sadeko", price: 340, cat: "Sausage", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Sausage+Sadeko" },
+
+      // --- HOOKAH ---
+      { id: 20, name: "Normal Hookah", price: 300, cat: "Hookah", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Normal+Hookah" },
+      { id: 21, name: "Special Hookah", price: 500, cat: "Hookah", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Special+Hookah" },
+
+      // --- CIGARETTES ---
+      { id: 22, name: "Shikhar Ice", price: 20, cat: "Cigarettes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Shikhar+Ice" },
+      { id: 23, name: "Surya Red", price: 25, cat: "Cigarettes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Surya+Red" },
+      { id: 24, name: "Surya Light", price: 25, cat: "Cigarettes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Surya+Light" },
+      { id: 25, name: "Surya Arctic", price: 30, cat: "Cigarettes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Surya+Arctic" },
+
+      // --- HOT TEAS (DUDH CHIYA) ---
+      { id: 26, name: "Normal Milk Tea", price: 40, cat: "Dudh Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Normal+Milk+Tea" },
+      { id: 27, name: "Honey Milk Tea", price: 55, cat: "Dudh Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Honey+Milk+Tea" },
+      { id: 28, name: "Masala Milk Tea", price: 65, cat: "Dudh Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Masala+Milk+Tea" },
+
+      // --- HOT TEAS (KALO CHIYA) ---
+      { id: 29, name: "Normal Black Tea", price: 30, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Normal+Black+Tea" },
+      { id: 30, name: "Lemon Tea", price: 35, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Lemon+Tea" },
+      { id: 31, name: "Masala Black Tea", price: 35, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Masala+Black+Tea" },
+      { id: 32, name: "Hot Lemon", price: 80, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Hot+Lemon" },
+      { id: 33, name: "Hot Lemon with Ginger Honey", price: 120, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Hot+Lemon+Ginger" },
+
+      // --- BAKERY ITEMS ---
+      { id: 34, name: "Peanut Macarons", price: 25, cat: "Bakery", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Peanut+Macarons" },
+      { id: 35, name: "Choco Chips Cookies (4 Pcs.)", price: 50, cat: "Bakery", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Choco+Cookies" },
+
+      // --- BREAKFAST ---
+      { id: 36, name: "Bread Omelette", price: 130, cat: "Breakfast", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Bread+Omelette" },
+
+      // --- SHAKES ---
+      { id: 37, name: "Chocolate Milkshake", price: 250, cat: "Shakes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chocolate+Shake" },
+      { id: 38, name: "Oreo Milkshake", price: 280, cat: "Shakes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Oreo+Shake" },
+
+      // --- LASSI ---
+      { id: 39, name: "Plain Lassi", price: 100, cat: "Lassi", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Plain+Lassi" },
+      { id: 40, name: "Banana Lassi", price: 200, cat: "Lassi", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Banana+Lassi" },
+
+      // --- COFFEE & ICE CREAM ---
+      { id: 41, name: "Iced Americano", price: 180, cat: "Coffee", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Iced+Americano" },
+      { id: 42, name: "Iced Milk Coffee", price: 200, cat: "Coffee", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Iced+Milk+Coffee" },
+      { id: 43, name: "Vanilla Ice Cream", price: 150, cat: "Ice Cream", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Vanilla+Ice+Cream" },
+      { id: 44, name: "Strawberry Ice Cream", price: 150, cat: "Ice Cream", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Strawberry+Ice+Cream" },
+      { id: 45, name: "Chocolate Ice Cream", price: 150, cat: "Ice Cream", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chocolate+Ice+Cream" },
+
+      // --- COLD DRINKS & REFRESHERS ---
+      { id: 46, name: "Cold Lemon Tea", price: 80, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Cold+Lemon+Tea" },
+      { id: 47, name: "Lemon Soda", price: 110, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Lemon+Soda" },
+      { id: 48, name: "Masala Coke", price: 130, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Masala+Coke" },
+      { id: 49, name: "Lemon Sprite", price: 130, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Lemon+Sprite" },
+      { id: 50, name: "Virgin Mojito", price: 150, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Virgin+Mojito" },
+      { id: 51, name: "Lemonade", price: 150, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Lemonade" },
+      { id: 52, name: "Mint Lemonade", price: 160, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Mint+Lemonade" },
+      { id: 53, name: "Mocktail Mojito", price: 180, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Mocktail+Mojito" }
     ];
 
     let cart = [];
 
+    // =========================================================================
+    // RENDER MENU
+    // =========================================================================
     function initMenu() {
       const container = document.getElementById('menu-container');
       container.innerHTML = menuData.map(item => `
-        <div class="menu-card tex-paper bg-white border border-slate-200 p-4 rounded-xl shadow-sm flex flex-col justify-between">
-          <div>
-            <span class="text-xs text-brand font-semibold uppercase tracking-wider">${item.cat}</span>
-            <h4 class="font-bold text-slate-800 text-lg">${item.name}</h4>
-            <p class="text-slate-600 font-bold mt-1">Rs. ${item.price}</p>
+        <div class="menu-card tex-paper bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col overflow-hidden">
+          <!-- Item Image -->
+          <img src="${item.img}" alt="${item.name}" class="menu-img" loading="lazy" onerror="this.src='https://placehold.co/600x400/e2e8f0/475569?text=No+Image'">
+          
+          <div class="p-4 flex flex-col flex-1 justify-between">
+            <div>
+              <span class="text-[10px] text-brand font-bold uppercase tracking-widest bg-teal-50 px-2 py-0.5 rounded-full inline-block mb-2">${item.cat}</span>
+              <h4 class="font-bold text-slate-800 text-base leading-tight">${item.name}</h4>
+              <p class="text-slate-600 font-extrabold mt-2 text-lg">Rs. ${item.price}</p>
+            </div>
+            <button onclick="addToCart(${item.id})" class="mt-4 w-full bg-slate-100 hover:bg-brand hover:text-white text-slate-800 text-sm font-semibold py-2.5 rounded-lg transition-all flex items-center justify-center gap-1">
+              <span>+</span> Add to Order
+            </button>
           </div>
-          <button onclick="addToCart(${item.id})" class="mt-4 bg-slate-100 hover:bg-brand hover:text-white text-slate-800 text-sm font-semibold py-2 rounded-lg transition-all">
-            + Add to Order
-          </button>
         </div>
       `).join('');
     }
 
+    // =========================================================================
+    // CART LOGIC
+    // =========================================================================
     function addToCart(id) {
       const item = menuData.find(m => m.id === id);
       const existing = cart.find(c => c.id === id);
@@ -198,14 +303,14 @@
 
       cartItemsEl.innerHTML = cart.map(item => `
         <div class="flex justify-between items-center text-sm border-b border-slate-200 pb-2">
-          <div>
-            <p class="font-semibold text-slate-800">${item.name}</p>
-            <p class="text-slate-500">Rs. ${item.price} × ${item.qty}</p>
+          <div class="pr-2">
+            <p class="font-semibold text-slate-800 leading-tight">${item.name}</p>
+            <p class="text-slate-500 text-xs">Rs. ${item.price} × ${item.qty}</p>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="changeQty(${item.id}, -1)" class="px-2 py-0.5 bg-slate-200 rounded font-bold hover:bg-slate-300">-</button>
-            <span>${item.qty}</span>
-            <button onclick="changeQty(${item.id}, 1)" class="px-2 py-0.5 bg-slate-200 rounded font-bold hover:bg-slate-300">+</button>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="changeQty(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-slate-200 rounded font-bold hover:bg-slate-300 transition-colors">-</button>
+            <span class="w-4 text-center">${item.qty}</span>
+            <button onclick="changeQty(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-slate-200 rounded font-bold hover:bg-slate-300 transition-colors">+</button>
           </div>
         </div>
       `).join('');
@@ -220,15 +325,29 @@
       updateCartUI();
     }
 
+    // =========================================================================
+    // CHECKOUT MODAL
+    // =========================================================================
     function openCheckout() {
       const modal = document.getElementById('checkout-modal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
     }
+
     function closeCheckout() {
       const modal = document.getElementById('checkout-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
+    }
+
+    function toggleCart() {
+      // For mobile, scroll to cart or show a summary alert
+      if (window.innerWidth < 1024) {
+        const cartEl = document.querySelector('aside');
+        cartEl.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        openCheckout();
+      }
     }
 
     function handlePlaceOrder(e) {
@@ -242,11 +361,15 @@
       };
 
       alert(`Order Placed Successfully! Total: Rs. ${orderPayload.total}. Thank you, ${orderPayload.name}.`);
+      
+      // Reset cart
       cart = [];
       updateCartUI();
       closeCheckout();
+      document.getElementById('order-form').reset();
     }
 
+    // Initialize
     initMenu();
   </script>
 </body>
