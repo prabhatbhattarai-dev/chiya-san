@@ -1,186 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chiya San | Online Ordering</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chiya San | Online Order</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: { extend: { colors: { brand: '#0e7490', brandDark: '#155e75', lightBg: '#f8fafc' } } }
-    }
-  </script>
 </head>
-<body class="bg-lightBg text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
 
   <!-- Header -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-brand flex items-center gap-2">☕ Chiya San</h1>
-      <button onclick="toggleCart()" class="relative bg-brand text-white px-4 py-2 rounded-lg font-semibold hover:bg-brandDark transition-all">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-cyan-800">☕ Chiya San</h1>
+      <button onclick="toggleCartModal()" class="bg-cyan-700 text-white px-4 py-2 rounded-lg font-semibold hover:bg-cyan-800 transition-all">
         🛒 Cart (<span id="cart-count">0</span>)
       </button>
     </div>
   </header>
 
-  <!-- Main Content Layout -->
-  <main class="max-w-6xl mx-auto px-4 py-8 w-full grid md:grid-cols-3 gap-8">
-    
-    <!-- Menu Section -->
-    <section class="md:col-span-2 space-y-6">
-      <h2 class="text-2xl font-bold text-slate-900 border-b pb-2">Select Your Items</h2>
-      <div id="menu-container" class="grid sm:grid-cols-2 gap-4">
-        <!-- Injected dynamically via JS -->
-      </div>
-    </section>
-
-    <!-- Side Cart View (Desktop) -->
-    <aside class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm h-fit sticky top-24">
-      <h3 class="text-xl font-bold text-slate-900 mb-4 border-b pb-2">Your Order Summary</h3>
-      <div id="cart-items" class="space-y-3 mb-4 max-h-60 overflow-y-auto">
-        <p class="text-slate-400 text-sm text-center py-4">Your cart is empty</p>
-      </div>
-      <div class="border-t pt-4 space-y-2">
-        <div class="flex justify-between font-semibold text-slate-700">
-          <span>Subtotal</span>
-          <span>Rs. <span id="cart-subtotal">0</span></span>
-        </div>
-        <button onclick="openCheckout()" id="checkout-btn" disabled class="w-full mt-4 bg-emerald-600 disabled:bg-slate-300 text-white font-bold py-3 rounded-xl transition-all">
-          Proceed to Checkout
-        </button>
-      </div>
-    </aside>
+  <!-- Main Menu Grid -->
+  <main class="max-w-5xl mx-auto px-4 py-8 w-full">
+    <h2 class="text-2xl font-bold text-slate-900 mb-6 border-b pb-2">Order Online</h2>
+    <div id="menu-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Items load dynamically -->
+    </div>
   </main>
 
   <!-- Checkout Modal -->
-  <div id="checkout-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+  <div id="cart-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl">
-      <h3 class="text-xl font-bold text-slate-900 mb-4">Complete Your Order</h3>
-      <form id="order-form" onsubmit="handlePlaceOrder(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Your Name</label>
-          <input type="text" id="cust-name" required class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Phone Number</label>
-          <input type="tel" id="cust-phone" required class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Order Type</label>
-          <select id="order-type" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-brand outline-none">
-            <option value="Takeaway">Takeaway / Pick-up</option>
-            <option value="Dine-in">Dine-in (At Table)</option>
-          </select>
-        </div>
-        <div class="flex justify-end gap-3 pt-4">
-          <button type="button" onclick="closeCheckout()" class="px-4 py-2 border rounded-lg font-semibold text-slate-600">Cancel</button>
-          <button type="submit" class="px-6 py-2 bg-brand text-white font-bold rounded-lg hover:bg-brandDark">Confirm Order</button>
+      <h3 class="text-xl font-bold text-slate-900 mb-4">Your Order</h3>
+      <div id="cart-items" class="space-y-3 mb-4 max-h-48 overflow-y-auto border-b pb-4">
+        <p class="text-slate-400 text-sm">Your cart is empty.</p>
+      </div>
+      <div class="flex justify-between font-bold text-lg mb-4">
+        <span>Total:</span>
+        <span>Rs. <span id="cart-total">0</span></span>
+      </div>
+      <form id="order-form" onsubmit="submitOrderToFirebase(event)" class="space-y-3">
+        <input type="text" id="cust-name" placeholder="Your Name" required class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-cyan-700">
+        <input type="tel" id="cust-phone" placeholder="Phone Number" required class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-cyan-700">
+        <select id="cust-type" class="w-full border p-2.5 rounded-lg outline-none">
+          <option value="Takeaway">Takeaway</option>
+          <option value="Dine-in">Dine-in (Table)</option>
+        </select>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="toggleCartModal()" class="w-1/2 border py-2.5 rounded-lg font-semibold">Close</button>
+          <button type="submit" id="submit-btn" class="w-1/2 bg-cyan-700 text-white py-2.5 rounded-lg font-bold hover:bg-cyan-800">Place Order</button>
         </div>
       </form>
     </div>
   </div>
 
-  <script>
-    const menuData = [
-      { id: 1, name: "Masala Milk Tea", price: 65, cat: "Beverages" },
-      { id: 2, name: "Hot Lemon with Ginger Honey", price: 120, cat: "Beverages" },
-      { id: 3, name: "Chicken Steam Momo", price: 200, cat: "Food" },
-      { id: 4, name: "Chicken Kothey Momo", price: 250, cat: "Food" },
-      { id: 5, name: "French Fries", price: 180, cat: "Snacks" },
-      { id: 6, name: "Chicken Chilly", price: 300, cat: "Snacks" }
+  <!-- Firebase Integration Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Your actual Firebase keys from your console
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8XHVv0U4GtdnI3U26C10fpGDpnELSdg",
+      authDomain: "chiya-san-orders.firebaseapp.com",
+      projectId: "chiya-san-orders",
+      storageBucket: "chiya-san-orders.firebasestorage.app",
+      messagingSenderId: "171390546624",
+      appId: "1:171390546624:web:58120d6d4cb7c2e667f325",
+      measurementId: "G-9JLY2XD0MG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const menu = [
+      { id: 1, name: "Masala Milk Tea", price: 65 },
+      { id: 2, name: "Chicken Steam Momo", price: 200 },
+      { id: 3, name: "Chicken Kothey Momo", price: 250 },
+      { id: 4, name: "French Fries", price: 180 },
+      { id: 5, name: "Chicken Chilly", price: 300 }
     ];
 
     let cart = [];
 
-    function initMenu() {
-      const container = document.getElementById('menu-container');
-      container.innerHTML = menuData.map(item => `
-        <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm flex flex-col justify-between">
+    window.renderMenu = function() {
+      const grid = document.getElementById('menu-grid');
+      grid.innerHTML = menu.map(item => `
+        <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex flex-col justify-between">
           <div>
-            <span class="text-xs text-brand font-semibold uppercase tracking-wider">${item.cat}</span>
             <h4 class="font-bold text-slate-800 text-lg">${item.name}</h4>
-            <p class="text-slate-600 font-bold mt-1">Rs. ${item.price}</p>
+            <p class="text-cyan-800 font-bold mt-1">Rs. ${item.price}</p>
           </div>
-          <button onclick="addToCart(${item.id})" class="mt-4 bg-slate-100 hover:bg-brand hover:text-white text-slate-800 text-sm font-semibold py-2 rounded-lg transition-all">
+          <button onclick="addToCart(${item.id})" class="mt-4 bg-slate-100 hover:bg-cyan-700 hover:text-white font-semibold py-2 rounded-lg transition-all">
             + Add to Order
           </button>
         </div>
       `).join('');
-    }
+    };
 
-    function addToCart(id) {
-      const item = menuData.find(m => m.id === id);
+    window.addToCart = function(id) {
+      const item = menu.find(m => m.id === id);
       const existing = cart.find(c => c.id === id);
-      if (existing) {
-        existing.qty++;
-      } else {
-        cart.push({ ...item, qty: 1 });
-      }
-      updateCartUI();
-    }
+      if (existing) existing.qty++;
+      else cart.push({ ...item, qty: 1 });
+      updateUI();
+    };
 
-    function updateCartUI() {
-      const cartItemsEl = document.getElementById('cart-items');
-      const countEl = document.getElementById('cart-count');
-      const subtotalEl = document.getElementById('cart-subtotal');
-      const checkoutBtn = document.getElementById('checkout-btn');
-
-      const totalQty = cart.reduce((acc, curr) => acc + curr.qty, 0);
-      const totalAmount = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
-
-      countEl.innerText = totalQty;
-      subtotalEl.innerText = totalAmount;
-      checkoutBtn.disabled = cart.length === 0;
-
+    function updateUI() {
+      document.getElementById('cart-count').innerText = cart.reduce((a, b) => a + b.qty, 0);
+      document.getElementById('cart-total').innerText = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+      const cartItems = document.getElementById('cart-items');
       if (cart.length === 0) {
-        cartItemsEl.innerHTML = `<p class="text-slate-400 text-sm text-center py-4">Your cart is empty</p>`;
+        cartItems.innerHTML = `<p class="text-slate-400 text-sm">Your cart is empty.</p>`;
         return;
       }
-
-      cartItemsEl.innerHTML = cart.map(item => `
-        <div class="flex justify-between items-center text-sm border-b pb-2">
-          <div>
-            <p class="font-semibold text-slate-800">${item.name}</p>
-            <p class="text-slate-500">Rs. ${item.price} × ${item.qty}</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="changeQty(${item.id}, -1)" class="px-2 py-0.5 bg-slate-200 rounded font-bold">-</button>
-            <span>${item.qty}</span>
-            <button onclick="changeQty(${item.id}, 1)" class="px-2 py-0.5 bg-slate-200 rounded font-bold">+</button>
-          </div>
+      cartItems.innerHTML = cart.map(item => `
+        <div class="flex justify-between items-center text-sm">
+          <span>${item.name} (x${item.qty})</span>
+          <span class="font-bold">Rs. ${item.price * item.qty}</span>
         </div>
       `).join('');
     }
 
-    function changeQty(id, delta) {
-      const item = cart.find(c => c.id === id);
-      if (item) {
-        item.qty += delta;
-        if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
-      }
-      updateCartUI();
-    }
+    window.toggleCartModal = function() {
+      document.getElementById('cart-modal').classList.toggle('hidden');
+      document.getElementById('cart-modal').classList.toggle('flex');
+    };
 
-    function openCheckout() { document.getElementById('checkout-modal').classList.remove('hidden'); document.getElementById('checkout-modal').classList.add('flex'); }
-    function closeCheckout() { document.getElementById('checkout-modal').classList.add('hidden'); document.getElementById('checkout-modal').classList.remove('flex'); }
-
-    function handlePlaceOrder(e) {
+    window.submitOrderToFirebase = async function(e) {
       e.preventDefault();
-      const orderPayload = {
-        name: document.getElementById('cust-name').value,
-        phone: document.getElementById('cust-phone').value,
-        type: document.getElementById('order-type').value,
-        items: cart,
-        total: cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0)
-      };
-      
-      alert(`Order Placed Successfully! Total: Rs. ${orderPayload.total}. Thank you, ${orderPayload.name}.`);
-      cart = [];
-      updateCartUI();
-      closeCheckout();
-    }
+      if (cart.length === 0) return alert("Your cart is empty!");
 
-    initMenu();
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.innerText = "Sending...";
+
+      try {
+        await addDoc(collection(db, "orders"), {
+          customerName: document.getElementById('cust-name').value,
+          customerPhone: document.getElementById('cust-phone').value,
+          orderType: document.getElementById('cust-type').value,
+          items: cart,
+          totalAmount: cart.reduce((a, b) => a + (b.price * b.qty), 0),
+          status: "Pending",
+          createdAt: serverTimestamp()
+        });
+
+        alert("Order sent to kitchen!");
+        cart = [];
+        updateUI();
+        toggleCartModal();
+      } catch (err) {
+        alert("Error sending order: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Place Order";
+      }
+    };
+
+    renderMenu();
   </script>
 </body>
 </html>
