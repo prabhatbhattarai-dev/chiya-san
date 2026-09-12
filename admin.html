@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <!-- Firebase Scripts -->
+  <!-- Firebase Integration Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -43,9 +43,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Fetch and display incoming orders in real time
     const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
 
+    // Listen to database changes in real time
     onSnapshot(ordersQuery, (snapshot) => {
       const container = document.getElementById('orders-container');
       
@@ -59,13 +59,14 @@
         const id = docSnap.id;
         const status = order.status || "Pending";
 
-        // Status badge colors
         let statusBg = "bg-yellow-100 text-yellow-800";
         if (status === "Preparing") statusBg = "bg-blue-100 text-blue-800";
         if (status === "Ready") statusBg = "bg-emerald-100 text-emerald-800";
 
-        // Items HTML list
         const itemsList = order.items ? order.items.map(i => `<li>${i.name} x${i.qty}</li>`).join('') : '';
+
+        // Generate clean WhatsApp link
+        const waLink = formatWhatsAppLink(order.customerPhone, order.customerName, id);
 
         return `
           <div class="bg-white border rounded-2xl p-5 shadow-sm flex flex-col justify-between">
@@ -84,7 +85,6 @@
               <p class="font-bold text-slate-900 text-right mb-4">Total: Rs. ${order.totalAmount}</p>
             </div>
 
-            <!-- Action Controls -->
             <div class="space-y-2 pt-2 border-t">
               ${status !== 'Ready' ? `
                 <button onclick="updateStatus('${id}', 'Preparing')" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 rounded-lg transition-all">
@@ -92,36 +92,35 @@
                 </button>
               ` : ''}
 
-              <button onclick="notifyReadyWhatsApp('${id}', '${order.customerPhone}', '${order.customerName}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all">
-                💬 Mark Ready & Send WhatsApp
-              </button>
+              <!-- Direct HTML Link to bypass pop-up blockers -->
+              <a href="${waLink}" target="_blank" onclick="updateStatus('${id}', 'Ready')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all block text-center">
+                💬 Mark Ready & Open WhatsApp
+              </a>
             </div>
           </div>
         `;
       }).join('');
     });
 
-    // Update status in database
-    window.updateStatus = async function(orderId, newStatus) {
-      await updateDoc(doc(db, "orders", orderId), { status: newStatus });
-    };
+    // Clean phone number and generate wa.me link
+    function formatWhatsAppLink(phone, name, orderId) {
+      if (!phone) return "#";
+      
+      // Remove spaces, dashes, + signs
+      let cleanNumber = phone.replace(/[^0-9]/g, '');
 
-    // Mark ready in database AND launch WhatsApp automatically
-    window.notifyReadyWhatsApp = async function(orderId, phone, name) {
-      // 1. Update order status in Firebase
-      await updateDoc(doc(db, "orders", orderId), { status: "Ready" });
-
-      // 2. Format phone number for Nepal WhatsApp (+977)
-      let cleanPhone = phone.replace(/[^0-9]/g, '');
-      if (cleanPhone.length === 10) {
-        cleanPhone = "977" + cleanPhone; // Convert 98XXXXXXXX to 97798XXXXXXXX
+      // Format for Nepal numbers (+977)
+      if (cleanNumber.length === 10) {
+        cleanNumber = "977" + cleanNumber;
       }
 
-      // 3. Pre-filled WhatsApp message text
-      const message = encodeURIComponent(`Namaste ${name}! ☕\nYour order from Chiya San is READY! Please come pick it up. Thank you!`);
+      const message = encodeURIComponent(`Namaste ${name}! ☕\nYour order #${orderId.slice(-4)} from Chiya San is READY! Please come pick it up. Thank you!`);
+      return `https://wa.me/${cleanNumber}?text=${message}`;
+    }
 
-      // 4. Open WhatsApp Web / App
-      window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+    // Expose updateStatus function globally for button clicks
+    window.updateStatus = async function(orderId, newStatus) {
+      await updateDoc(doc(db, "orders", orderId), { status: newStatus });
     };
   </script>
 </body>
