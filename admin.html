@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chiya San | Kitchen Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 sm:p-8">
+
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-300">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900">☕ Chiya San Kitchen Dashboard</h1>
+        <p class="text-slate-500 text-sm">Live Incoming Orders</p>
+      </div>
+      <span class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-sm">Live Realtime</span>
+    </div>
+
+    <!-- Orders Grid -->
+    <div id="orders-container" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <p class="text-slate-500">Loading incoming orders...</p>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Your exact Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8XHVv0U4GtdnI3U26C10fpGDpnELSdg",
+      authDomain: "chiya-san-orders.firebaseapp.com",
+      projectId: "chiya-san-orders",
+      storageBucket: "chiya-san-orders.firebasestorage.app",
+      messagingSenderId: "171390546624",
+      appId: "1:171390546624:web:58120d6d4cb7c2e667f325",
+      measurementId: "G-9JLY2XD0MG"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Fetch and display incoming orders in real time
+    const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+
+    onSnapshot(ordersQuery, (snapshot) => {
+      const container = document.getElementById('orders-container');
+      
+      if (snapshot.empty) {
+        container.innerHTML = `<p class="text-slate-400 col-span-3 text-center py-8">No active orders right now.</p>`;
+        return;
+      }
+
+      container.innerHTML = snapshot.docs.map(docSnap => {
+        const order = docSnap.data();
+        const id = docSnap.id;
+        const status = order.status || "Pending";
+
+        // Status badge colors
+        let statusBg = "bg-yellow-100 text-yellow-800";
+        if (status === "Preparing") statusBg = "bg-blue-100 text-blue-800";
+        if (status === "Ready") statusBg = "bg-emerald-100 text-emerald-800";
+
+        // Items HTML list
+        const itemsList = order.items ? order.items.map(i => `<li>${i.name} x${i.qty}</li>`).join('') : '';
+
+        return `
+          <div class="bg-white border rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${statusBg}">${status}</span>
+                <span class="text-xs text-slate-400 font-mono">#${id.slice(-4)}</span>
+              </div>
+              <h3 class="font-bold text-lg text-slate-900">${order.customerName || 'Customer'}</h3>
+              <p class="text-sm text-slate-500 font-medium">${order.customerPhone} • <span class="text-cyan-700">${order.orderType}</span></p>
+
+              <ul class="my-4 text-sm space-y-1 text-slate-700 border-t border-b py-3 list-disc list-inside">
+                ${itemsList}
+              </ul>
+
+              <p class="font-bold text-slate-900 text-right mb-4">Total: Rs. ${order.totalAmount}</p>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="space-y-2 pt-2 border-t">
+              ${status !== 'Ready' ? `
+                <button onclick="updateStatus('${id}', 'Preparing')" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 rounded-lg transition-all">
+                  Set to Preparing
+                </button>
+              ` : ''}
+
+              <button onclick="notifyReadyWhatsApp('${id}', '${order.customerPhone}', '${order.customerName}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all">
+                💬 Mark Ready & Send WhatsApp
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    });
+
+    // Update status in database
+    window.updateStatus = async function(orderId, newStatus) {
+      await updateDoc(doc(db, "orders", orderId), { status: newStatus });
+    };
+
+    // Mark ready in database AND launch WhatsApp automatically
+    window.notifyReadyWhatsApp = async function(orderId, phone, name) {
+      // 1. Update order status in Firebase
+      await updateDoc(doc(db, "orders", orderId), { status: "Ready" });
+
+      // 2. Format phone number for Nepal WhatsApp (+977)
+      let cleanPhone = phone.replace(/[^0-9]/g, '');
+      if (cleanPhone.length === 10) {
+        cleanPhone = "977" + cleanPhone; // Convert 98XXXXXXXX to 97798XXXXXXXX
+      }
+
+      // 3. Pre-filled WhatsApp message text
+      const message = encodeURIComponent(`Namaste ${name}! ☕\nYour order from Chiya San is READY! Please come pick it up. Thank you!`);
+
+      // 4. Open WhatsApp Web / App
+      window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+    };
+  </script>
+</body>
+</html>
