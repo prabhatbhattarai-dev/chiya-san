@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chiya San | Spiced Tea & Authentic Flavors</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Custom Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FDFBF7',
+            charcoal: '#2D2D2D',
+            tea: '#D97706',
+            'tea-dark': '#B45309',
+            card: '#F5F0E6',
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'serif'],
+            sans: ['Work Sans', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-cream text-charcoal font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-tea selection:text-white">
+
+  <!-- Header / Navigation -->
+  <header class="sticky top-0 z-50 bg-cream/90 backdrop-blur-md border-b border-charcoal/10">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="#" class="font-serif text-2xl font-bold tracking-tight text-tea flex items-center gap-2">
+        <span>☕</span> Chiya San
+      </a>
+      
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+        <a href="#about" class="hover:text-tea transition-colors">About Us</a>
+        <a href="#menu" class="hover:text-tea transition-colors">Menu</a>
+        <a href="#contact" class="hover:text-tea transition-colors">Contact</a>
+        <a href="#menu" class="bg-tea text-white px-4 py-2 rounded-lg hover:bg-tea-dark transition-all">Order Now</a>
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <button id="menu-btn" class="md:hidden text-charcoal focus:outline-none" aria-label="Toggle Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden border-b border-charcoal/10 bg-cream px-6 py-4 space-y-3">
+      <a href="#about" class="block font-medium hover:text-tea">About Us</a>
+      <a href="#menu" class="block font-medium hover:text-tea">Menu</a>
+      <a href="#contact" class="block font-medium hover:text-tea">Contact</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="max-w-5xl mx-auto text-center px-6 py-20 md:py-28 flex flex-col items-center">
+    <span class="text-tea font-semibold text-xs sm:text-sm tracking-widest uppercase mb-4 px-3 py-1 bg-tea/10 rounded-full">
+      Authentic Spiced Blends
+    </span>
+    <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight text-charcoal">
+      Warmth in Every Single Cup.
+    </h1>
+    <p class="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl leading-relaxed">
+      Welcome to Chiya San. Experience traditional, aromatic spiced tea crafted with care, premium whole spices, and time-honored recipes.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+      <a href="#menu" class="bg-tea text-white font-medium px-8 py-3.5 rounded-xl shadow-lg shadow-tea/20 hover:bg-tea-dark transition-all text-center">
+        Explore Menu
+      </a>
+      <a href="#about" class="border border-charcoal/20 font-medium px-8 py-3.5 rounded-xl hover:bg-charcoal/5 transition-all text-center">
+        Our Story
+      </a>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="bg-card py-20 border-y border-charcoal/10">
+    <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4">Brewed with Tradition & Passion</h2>
+        <p class="text-gray-600 leading-relaxed mb-4">
+          At Chiya San, tea isn't just a drink—it's a daily ritual. We slow-brew our tea with freshly crushed cardamom, ginger, cinnamon, and cloves to deliver an authentic taste that restores your spirit.
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          Whether you need an invigorating morning start or a cozy afternoon break, our doors are open to serve you comfort in a cup.
+        </p>
+      </div>
+      <div class="bg-cream p-8 rounded-2xl border border-charcoal/10 shadow-sm space-y-4">
+        <div class="flex items-start gap-4">
+          <span class="text-2xl">🌱</span>
+          <div>
+            <h3 class="font-semibold text-lg">100% Organic Spices</h3>
+            <p class="text-sm text-gray-600">Sourced directly from local farmers dedicated to quality.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4">
+          <span class="text-2xl">🔥</span>
+          <div>
+            <h3 class="font-semibold text-lg">Slow-Brewed Process</h3>
+            <p class="text-sm text-gray-600">Steeped carefully to extract maximum flavor and aroma.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menu Section -->
+  <section id="menu" class="max-w-5xl mx-auto px-6 py-20">
+    <div class="text-center mb-12">
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-3">Popular Brews</h2>
+      <p class="text-gray-600">Handcrafted beverages made fresh upon order.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Item 1 -->
+      <div class="bg-card border border-charcoal/10 rounded-2xl p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div>
+          <div class="flex justify-between items-start mb-2">
+            <h3 class="font-serif text-xl font-bold">Masala Chiya</h3>
+            <span class="font-semibold text-tea">$4.50</span>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            Our signature milk tea infused with cardamom, ginger, cloves, and cinnamon.
+          </p>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="bg-card border border-charcoal/10 rounded-2xl p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div>
+          <div class="flex justify-between items-start mb-2">
+            <h3 class="font-serif text-xl font-bold">Lemongrass Herbal</h3>
+            <span class="font-semibold text-tea">$4.00</span>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            A refreshing caffeine-free infusion of fresh lemongrass and natural honey.
+          </p>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="bg-card border border-charcoal/10 rounded-2xl p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
+        <div>
+          <div class="flex justify-between items-start mb-2">
+            <h3 class="font-serif text-xl font-bold">Special Black Tea</h3>
+            <span class="font-semibold text-tea">$3.50</span>
+          </div>
+          <p class="text-sm text-gray-600 leading-relaxed">
+            Robust loose-leaf CTC tea steeped with fresh ginger root and lemon.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact & Footer -->
+  <footer id="contact" class="bg-charcoal text-cream mt-auto border-t border-charcoal/20">
+    <div class="max-w-5xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <h3 class="font-serif text-2xl font-bold text-tea mb-2">Chiya San</h3>
+        <p class="text-sm text-gray-400 max-w-sm">
+          Bringing authentic tea culture and warm conversations to your neighborhood.
+        </p>
+      </div>
+      <div class="md:text-right space-y-1 text-sm text-gray-300">
+        <p>📍 Main Street, City Center</p>
+        <p>📧 hello@chiyasan.com</p>
+        <p>⏰ Mon - Sat: 7:00 AM - 8:00 PM</p>
+      </div>
+    </div>
+    <div class="border-t border-white/10 py-6 text-center text-xs text-gray-500">
+      <p>&copy; 2026 Chiya San. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Script for Mobile Menu Toggle -->
+  <script>
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('mobile-menu');
+
+    btn.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>
