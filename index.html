@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chiya San | Spiced Tea & Authentic Flavors</title>
+  <title>Chiya San | Authentic Flavors & Spiced Tea</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,191 +11,349 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
   
-  <!-- Custom Tailwind Config -->
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            cream: '#FDFBF7',
-            charcoal: '#2D2D2D',
-            tea: '#D97706',
-            'tea-dark': '#B45309',
-            card: '#F5F0E6',
+            brand: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              500: '#14b8a6',
+              800: '#075985',
+              900: '#064e3b',
+              dark: '#0a1913',
+            },
+            accent: '#f59e0b',
           },
           fontFamily: {
-            serif: ['Fraunces', 'serif'],
-            sans: ['Work Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
           },
         },
       },
     }
   </script>
 </head>
-<body class="bg-cream text-charcoal font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-tea selection:text-white">
+<body class="bg-[#080f0c] text-emerald-50/90 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-teal-500 selection:text-black">
 
-  <!-- Header / Navigation -->
-  <header class="sticky top-0 z-50 bg-cream/90 backdrop-blur-md border-b border-charcoal/10">
+  <!-- Glow Accents -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-teal-500/10 blur-[120px] pointer-events-none rounded-full"></div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-[#080f0c]/80 backdrop-blur-md border-b border-white/5">
     <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-      <a href="#" class="font-serif text-2xl font-bold tracking-tight text-tea flex items-center gap-2">
-        <span>☕</span> Chiya San
+      <a href="#" class="font-serif text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+        <span class="text-teal-400">☕</span> Chiya <span class="text-teal-400">San</span>
       </a>
       
-      <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
-        <a href="#about" class="hover:text-tea transition-colors">About Us</a>
-        <a href="#menu" class="hover:text-tea transition-colors">Menu</a>
-        <a href="#contact" class="hover:text-tea transition-colors">Contact</a>
-        <a href="#menu" class="bg-tea text-white px-4 py-2 rounded-lg hover:bg-tea-dark transition-all">Order Now</a>
+        <a href="#menu" class="hover:text-teal-400 transition-colors">Menu</a>
+        <a href="#about" class="hover:text-teal-400 transition-colors">About</a>
+        <a href="#contact" class="hover:text-teal-400 transition-colors">Contact</a>
+        <a href="#menu" class="bg-gradient-to-r from-teal-500 to-emerald-600 text-black font-semibold px-5 py-2.5 rounded-full hover:shadow-lg hover:shadow-teal-500/20 transition-all">
+          Explore Menu
+        </a>
       </nav>
 
-      <!-- Mobile Menu Button -->
-      <button id="menu-btn" class="md:hidden text-charcoal focus:outline-none" aria-label="Toggle Menu">
+      <button id="menu-btn" class="md:hidden text-white focus:outline-none">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
       </button>
     </div>
 
-    <!-- Mobile Dropdown -->
-    <div id="mobile-menu" class="hidden md:hidden border-b border-charcoal/10 bg-cream px-6 py-4 space-y-3">
-      <a href="#about" class="block font-medium hover:text-tea">About Us</a>
-      <a href="#menu" class="block font-medium hover:text-tea">Menu</a>
-      <a href="#contact" class="block font-medium hover:text-tea">Contact</a>
+    <div id="mobile-menu" class="hidden md:hidden border-b border-white/5 bg-[#0a1511] px-6 py-4 space-y-3">
+      <a href="#menu" class="block font-medium hover:text-teal-400">Menu</a>
+      <a href="#about" class="block font-medium hover:text-teal-400">About</a>
+      <a href="#contact" class="block font-medium hover:text-teal-400">Contact</a>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="max-w-5xl mx-auto text-center px-6 py-20 md:py-28 flex flex-col items-center">
-    <span class="text-tea font-semibold text-xs sm:text-sm tracking-widest uppercase mb-4 px-3 py-1 bg-tea/10 rounded-full">
-      Authentic Spiced Blends
+  <!-- Hero -->
+  <section class="max-w-5xl mx-auto text-center px-6 py-20 md:py-32 flex flex-col items-center relative">
+    <span class="text-teal-400 font-medium text-xs sm:text-sm tracking-widest uppercase mb-4 px-4 py-1.5 bg-teal-500/10 border border-teal-500/20 rounded-full backdrop-blur-sm">
+      Good Food • Good Vibes • Great Times
     </span>
-    <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight text-charcoal">
-      Warmth in Every Single Cup.
+    <h1 class="font-serif text-5xl sm:text-7xl font-bold mb-6 text-white leading-[1.1] tracking-tight">
+      Warmth in Every <br><span class="italic text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-emerald-400 to-amber-200">Single Cup.</span>
     </h1>
-    <p class="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl leading-relaxed">
-      Welcome to Chiya San. Experience traditional, aromatic spiced tea crafted with care, premium whole spices, and time-honored recipes.
+    <p class="text-lg sm:text-xl text-emerald-100/60 mb-10 max-w-2xl font-normal leading-relaxed">
+      Welcome to Chiya San. Savor authentic spiced teas, freshly steamed momos, quick snacks, and refreshing cold beverages in a cozy atmosphere.
     </p>
     <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-      <a href="#menu" class="bg-tea text-white font-medium px-8 py-3.5 rounded-xl shadow-lg shadow-tea/20 hover:bg-tea-dark transition-all text-center">
-        Explore Menu
+      <a href="#menu" class="bg-teal-400 text-slate-950 font-semibold px-8 py-4 rounded-xl shadow-lg shadow-teal-500/25 hover:bg-teal-300 transition-all text-center">
+        View Full Menu
       </a>
-      <a href="#about" class="border border-charcoal/20 font-medium px-8 py-3.5 rounded-xl hover:bg-charcoal/5 transition-all text-center">
+      <a href="#about" class="border border-white/10 bg-white/5 font-medium px-8 py-4 rounded-xl hover:bg-white/10 transition-all text-center backdrop-blur-sm">
         Our Story
       </a>
     </div>
   </section>
 
+  <!-- Menu Section -->
+  <section id="menu" class="max-w-6xl mx-auto px-6 py-16 scroll-mt-20">
+    <div class="text-center mb-12">
+      <h2 class="font-serif text-4xl sm:text-5xl font-bold text-white mb-3">Our Crafted Menu</h2>
+      <p class="text-emerald-100/60">Prices listed in NPR (Rs.). Select a category below to browse items.</p>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="flex flex-wrap justify-center gap-2 mb-12 border-b border-white/10 pb-6">
+      <button onclick="openCategory('teas')" id="tab-teas" class="menu-tab px-6 py-3 rounded-xl font-semibold text-sm transition-all bg-teal-500 text-black shadow-lg shadow-teal-500/20">
+        🍵 Hot Teas & Bakery
+      </button>
+      <button onclick="openCategory('cold')" id="tab-cold" class="menu-tab px-6 py-3 rounded-xl font-semibold text-sm transition-all text-emerald-100/70 hover:bg-white/5 border border-transparent">
+        🥤 Cold Refreshers
+      </button>
+      <button onclick="openCategory('food')" id="tab-food" class="menu-tab px-6 py-3 rounded-xl font-semibold text-sm transition-all text-emerald-100/70 hover:bg-white/5 border border-transparent">
+        🥟 Food Items
+      </button>
+      <button onclick="openCategory('snacks')" id="tab-snacks" class="menu-tab px-6 py-3 rounded-xl font-semibold text-sm transition-all text-emerald-100/70 hover:bg-white/5 border border-transparent">
+        🍟 Snacks & Hookah
+      </button>
+    </div>
+
+    <!-- CATEGORY 1: HOT TEAS & BAKERY -->
+    <div id="cat-teas" class="menu-content space-y-8">
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Dudh Chiya (Milk Tea)</h3>
+          <ul class="space-y-4">
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Normal Milk Tea</span> <span class="text-teal-400 font-semibold">Rs. 40</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Honey Milk Tea</span> <span class="text-teal-400 font-semibold">Rs. 55</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Masala Milk Tea</span> <span class="text-teal-400 font-semibold">Rs. 65</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Kalo Chiya (Black Tea)</h3>
+          <ul class="space-y-4">
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Normal Black Tea</span> <span class="text-teal-400 font-semibold">Rs. 30</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Lemon Tea</span> <span class="text-teal-400 font-semibold">Rs. 35</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Masala Black Tea</span> <span class="text-teal-400 font-semibold">Rs. 35</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Hot Lemon</span> <span class="text-teal-400 font-semibold">Rs. 80</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Hot Lemon with Ginger Honey</span> <span class="text-teal-400 font-semibold">Rs. 120</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Bakery Items</h3>
+          <ul class="space-y-4">
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Peanut Macarons</span> <span class="text-teal-400 font-semibold">Rs. 25</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Choco Chips Cookies (4 Pcs.)</span> <span class="text-teal-400 font-semibold">Rs. 50</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Breakfast</h3>
+          <ul class="space-y-4">
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Bread Omelette</span> <span class="text-teal-400 font-semibold">Rs. 130</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY 2: COLD REFRESHERS -->
+    <div id="cat-cold" class="menu-content hidden space-y-8">
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Shakes & Lassi</h3>
+          <ul class="space-y-4">
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Chocolate Milkshake</span> <span class="text-teal-400 font-semibold">Rs. 250</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Oreo Milkshake</span> <span class="text-teal-400 font-semibold">Rs. 280</span></li>
+            <li class="flex justify-between items-center border-t border-white/5 pt-3"><span class="font-medium text-white">Plain Lassi</span> <span class="text-teal-400 font-semibold">Rs. 100</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Banana Lassi</span> <span class="text-teal-400 font-semibold">Rs. 200</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Cold Refreshers</h3>
+          <ul class="space-y-4">
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Cold Lemon Tea</span> <span class="text-teal-400 font-semibold">Rs. 80</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Lemon Soda</span> <span class="text-teal-400 font-semibold">Rs. 130</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Masala Coke</span> <span class="text-teal-400 font-semibold">Rs. 110</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Lemon Sprite</span> <span class="text-teal-400 font-semibold">Rs. 130</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Virgin Mojito</span> <span class="text-teal-400 font-semibold">Rs. 150</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Lemonade / Mint Lemonade</span> <span class="text-teal-400 font-semibold">Rs. 150 / 160</span></li>
+            <li class="flex justify-between items-center"><span class="font-medium text-white">Mocktail Mojito</span> <span class="text-teal-400 font-semibold">Rs. 180</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm md:col-span-2">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Coffee & Ice Cream</h3>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <ul class="space-y-3">
+              <li class="flex justify-between"><span class="text-white">Iced Americano</span> <span class="text-teal-400 font-semibold">Rs. 180</span></li>
+              <li class="flex justify-between"><span class="text-white">Iced Milk Coffee</span> <span class="text-teal-400 font-semibold">Rs. 200</span></li>
+            </ul>
+            <ul class="space-y-3">
+              <li class="flex justify-between"><span class="text-white">Vanilla / Strawberry / Choco Ice Cream</span> <span class="text-teal-400 font-semibold">Rs. 150</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY 3: FOOD ITEMS -->
+    <div id="cat-food" class="menu-content hidden space-y-8">
+      <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm overflow-x-auto">
+        <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">MO:MO Specials</h3>
+        <table class="w-full text-left">
+          <thead>
+            <tr class="border-b border-white/10 text-sm text-emerald-100/50">
+              <th class="py-3">Type</th>
+              <th class="py-3 text-center">Steam</th>
+              <th class="py-3 text-center">Jhol</th>
+              <th class="py-3 text-center">Kothey</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5 font-medium">
+            <tr>
+              <td class="py-4 text-white">Chicken</td>
+              <td class="py-4 text-center text-teal-400">Rs. 200</td>
+              <td class="py-4 text-center text-teal-400">Rs. 230</td>
+              <td class="py-4 text-center text-teal-400">Rs. 250</td>
+            </tr>
+            <tr>
+              <td class="py-4 text-white">Veg & Paneer</td>
+              <td class="py-4 text-center text-teal-400">Rs. 180</td>
+              <td class="py-4 text-center text-teal-400">Rs. 210</td>
+              <td class="py-4 text-center text-teal-400">Rs. 230</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm space-y-6">
+          <div>
+            <h3 class="font-serif text-2xl font-bold text-teal-400 mb-3 pb-2 border-b border-white/10">Khaja Set & Nuggets</h3>
+            <ul class="space-y-3">
+              <li class="flex justify-between"><span class="text-white">Panga Set</span> <span class="text-teal-400 font-semibold">Rs. 250</span></li>
+              <li class="flex justify-between"><span class="text-white">Chicken Nuggets</span> <span class="text-teal-400 font-semibold">Rs. 300</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm space-y-6">
+          <div>
+            <h3 class="font-serif text-2xl font-bold text-teal-400 mb-3 pb-2 border-b border-white/10">Wai-Wai & Sandwiches</h3>
+            <ul class="space-y-3">
+              <li class="flex justify-between"><span class="text-white">Wai-Wai Sadeko</span> <span class="text-teal-400 font-semibold">Rs. 100</span></li>
+              <li class="flex justify-between"><span class="text-white">Sausage Wai-Wai Sadeko</span> <span class="text-teal-400 font-semibold">Rs. 180</span></li>
+              <li class="flex justify-between"><span class="text-white">Veg Sandwich</span> <span class="text-teal-400 font-semibold">Rs. 180</span></li>
+              <li class="flex justify-between"><span class="text-white">Chicken Sandwich</span> <span class="text-teal-400 font-semibold">Rs. 250</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY 4: SNACKS & HOOKAH -->
+    <div id="cat-snacks" class="menu-content hidden space-y-8">
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Quick Snacks</h3>
+          <ul class="space-y-4">
+            <li class="flex justify-between"><span class="text-white">French Fries</span> <span class="text-teal-400 font-semibold">Rs. 180</span></li>
+            <li class="flex justify-between"><span class="text-white">Spicy Fries</span> <span class="text-teal-400 font-semibold">Rs. 200</span></li>
+            <li class="flex justify-between"><span class="text-white">Chicken Chilly</span> <span class="text-teal-400 font-semibold">Rs. 300</span></li>
+            <li class="flex justify-between"><span class="text-white">Chicken Drumsticks</span> <span class="text-teal-400 font-semibold">Rs. 300</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Sausage</h3>
+          <ul class="space-y-4">
+            <li class="flex justify-between"><span class="text-white">Boiled / Fry Sausage</span> <span class="text-teal-400 font-semibold">Rs. 60</span></li>
+            <li class="flex justify-between"><span class="text-white">Sausage Sadeko</span> <span class="text-teal-400 font-semibold">Rs. 340</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-2">Hookah</h3>
+          <p class="text-xs text-emerald-100/50 mb-4">Flavors: Mint, Blueberry, Peach, Kiwi</p>
+          <ul class="space-y-3">
+            <li class="flex justify-between"><span class="text-white">Normal Hookah</span> <span class="text-teal-400 font-semibold">Rs. 300</span></li>
+            <li class="flex justify-between"><span class="text-white">Special Hookah</span> <span class="text-teal-400 font-semibold">Rs. 500</span></li>
+          </ul>
+        </div>
+
+        <div class="bg-white/[0.02] border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 class="font-serif text-2xl font-bold text-teal-400 mb-4 pb-2 border-b border-white/10">Cigarettes</h3>
+          <ul class="space-y-3">
+            <li class="flex justify-between"><span class="text-white">Shikhar Ice</span> <span class="text-teal-400 font-semibold">Rs. 20</span></li>
+            <li class="flex justify-between"><span class="text-white">Surya Red / Light</span> <span class="text-teal-400 font-semibold">Rs. 25</span></li>
+            <li class="flex justify-between"><span class="text-white">Surya Arctic</span> <span class="text-teal-400 font-semibold">Rs. 30</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- About Section -->
-  <section id="about" class="bg-card py-20 border-y border-charcoal/10">
+  <section id="about" class="border-y border-white/10 bg-white/[0.01] py-20">
     <div class="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
       <div>
-        <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-4">Brewed with Tradition & Passion</h2>
-        <p class="text-gray-600 leading-relaxed mb-4">
-          At Chiya San, tea isn't just a drink—it's a daily ritual. We slow-brew our tea with freshly crushed cardamom, ginger, cinnamon, and cloves to deliver an authentic taste that restores your spirit.
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">Crafted with Tradition</h2>
+        <p class="text-emerald-100/70 leading-relaxed mb-4">
+          At Chiya San, tea is more than a quick break—it’s an experience. We slow-brew our tea with freshly ground cardamom, ginger, cinnamon, and spices to deliver authentic comfort in every sip.
         </p>
-        <p class="text-gray-600 leading-relaxed">
-          Whether you need an invigorating morning start or a cozy afternoon break, our doors are open to serve you comfort in a cup.
+        <p class="text-emerald-100/70 leading-relaxed">
+          From fresh momos to refreshing iced drinks, every item on our menu is prepared with care.
         </p>
       </div>
-      <div class="bg-cream p-8 rounded-2xl border border-charcoal/10 shadow-sm space-y-4">
-        <div class="flex items-start gap-4">
-          <span class="text-2xl">🌱</span>
-          <div>
-            <h3 class="font-semibold text-lg">100% Organic Spices</h3>
-            <p class="text-sm text-gray-600">Sourced directly from local farmers dedicated to quality.</p>
-          </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white/[0.03] border border-white/10 p-6 rounded-2xl">
+          <span class="text-3xl mb-2 block">🌿</span>
+          <h3 class="font-semibold text-white mb-1">Fresh Spices</h3>
+          <p class="text-xs text-emerald-100/60">Quality ingredients for maximum flavor.</p>
         </div>
-        <div class="flex items-start gap-4">
-          <span class="text-2xl">🔥</span>
-          <div>
-            <h3 class="font-semibold text-lg">Slow-Brewed Process</h3>
-            <p class="text-sm text-gray-600">Steeped carefully to extract maximum flavor and aroma.</p>
-          </div>
+        <div class="bg-white/[0.03] border border-white/10 p-6 rounded-2xl">
+          <span class="text-3xl mb-2 block">✨</span>
+          <h3 class="font-semibold text-white mb-1">Great Vibes</h3>
+          <p class="text-xs text-emerald-100/60">The perfect spot to relax and enjoy.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Menu Section -->
-  <section id="menu" class="max-w-5xl mx-auto px-6 py-20">
-    <div class="text-center mb-12">
-      <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-3">Popular Brews</h2>
-      <p class="text-gray-600">Handcrafted beverages made fresh upon order.</p>
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-6">
-      <!-- Item 1 -->
-      <div class="bg-card border border-charcoal/10 rounded-2xl p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
-        <div>
-          <div class="flex justify-between items-start mb-2">
-            <h3 class="font-serif text-xl font-bold">Masala Chiya</h3>
-            <span class="font-semibold text-tea">$4.50</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">
-            Our signature milk tea infused with cardamom, ginger, cloves, and cinnamon.
-          </p>
-        </div>
-      </div>
-
-      <!-- Item 2 -->
-      <div class="bg-card border border-charcoal/10 rounded-2xl p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
-        <div>
-          <div class="flex justify-between items-start mb-2">
-            <h3 class="font-serif text-xl font-bold">Lemongrass Herbal</h3>
-            <span class="font-semibold text-tea">$4.00</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">
-            A refreshing caffeine-free infusion of fresh lemongrass and natural honey.
-          </p>
-        </div>
-      </div>
-
-      <!-- Item 3 -->
-      <div class="bg-card border border-charcoal/10 rounded-2xl p-6 flex flex-col justify-between hover:shadow-md transition-shadow">
-        <div>
-          <div class="flex justify-between items-start mb-2">
-            <h3 class="font-serif text-xl font-bold">Special Black Tea</h3>
-            <span class="font-semibold text-tea">$3.50</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed">
-            Robust loose-leaf CTC tea steeped with fresh ginger root and lemon.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact & Footer -->
-  <footer id="contact" class="bg-charcoal text-cream mt-auto border-t border-charcoal/20">
-    <div class="max-w-5xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-8 items-center">
+  <!-- Footer -->
+  <footer id="contact" class="bg-[#050a08] border-t border-white/5 text-emerald-100/60 py-12">
+    <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
       <div>
-        <h3 class="font-serif text-2xl font-bold text-tea mb-2">Chiya San</h3>
-        <p class="text-sm text-gray-400 max-w-sm">
-          Bringing authentic tea culture and warm conversations to your neighborhood.
-        </p>
+        <h3 class="font-serif text-2xl font-bold text-white mb-1">Chiya San</h3>
+        <p class="text-sm">Good Food • Good Vibes • Great Times</p>
       </div>
-      <div class="md:text-right space-y-1 text-sm text-gray-300">
-        <p>📍 Main Street, City Center</p>
-        <p>📧 hello@chiyasan.com</p>
-        <p>⏰ Mon - Sat: 7:00 AM - 8:00 PM</p>
+      <div class="text-sm space-y-1">
+        <p>📍 Open Daily | City Center</p>
+        <p>© 2026 Chiya San. All rights reserved.</p>
       </div>
-    </div>
-    <div class="border-t border-white/10 py-6 text-center text-xs text-gray-500">
-      <p>&copy; 2026 Chiya San. All rights reserved.</p>
     </div>
   </footer>
 
-  <!-- Script for Mobile Menu Toggle -->
+  <!-- Tab Logic -->
   <script>
+    function openCategory(catName) {
+      document.querySelectorAll('.menu-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.menu-tab').forEach(el => {
+        el.classList.remove('bg-teal-500', 'text-black', 'shadow-lg', 'shadow-teal-500/20');
+        el.classList.add('text-emerald-100/70', 'hover:bg-white/5');
+      });
+
+      document.getElementById('cat-' + catName).classList.remove('hidden');
+
+      const activeTab = document.getElementById('tab-' + catName);
+      activeTab.classList.add('bg-teal-500', 'text-black', 'shadow-lg', 'shadow-teal-500/20');
+      activeTab.classList.remove('text-emerald-100/70', 'hover:bg-white/5');
+    }
+
     const btn = document.getElementById('menu-btn');
     const menu = document.getElementById('mobile-menu');
-
-    btn.addEventListener('click', () => {
-      menu.classList.toggle('hidden');
-    });
+    btn.addEventListener('click', () => menu.classList.toggle('hidden'));
   </script>
 </body>
 </html>
