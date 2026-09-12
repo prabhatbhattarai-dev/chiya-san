@@ -1,376 +1,809 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chiya San | Online Ordering</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: { extend: { colors: { brand: '#0e7490', brandDark: '#155e75', lightBg: '#f8fafc' } } }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chiya SAN चिया शान | Tea • Culture • Community</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          cream: '#fdf8f0',
+          tea: { DEFAULT: '#0d5c63', dark: '#083f44', light: '#128a93' },
+          amber: { DEFAULT: '#d97706', light: '#f59e0b' },
+          stone: { 900: '#1c1917', 700: '#44403c' }
+        },
+        fontFamily: {
+          display: ['"Playfair Display"', 'serif'],
+          sans: ['Inter', 'sans-serif']
+        }
+      }
     }
-  </script>
+  }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: #fdf8f0; color: #1c1917; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  .font-display { font-family: 'Playfair Display', serif; }
 
-  <!-- ================= TEXTURE & CUSTOM STYLES ================= -->
-  <style>
-    :root{
-      /* Fine film-grain / paper noise (SVG, no external file needed) */
-      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-      /* Tiny dot grid used as an accent */
-      --dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='1' fill='%230e7490' opacity='0.20'/%3E%3C/svg%3E");
-    }
+  /* ===== LOADER ===== */
+  #loader {
+    position: fixed; inset: 0; z-index: 9999;
+    background: radial-gradient(circle at 50% 40%, #0d5c63 0%, #083f44 60%, #041f22 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity .8s ease, visibility .8s ease;
+  }
+  #loader.hide { opacity: 0; visibility: hidden; }
+  .cup-loader { position: relative; width: 90px; height: 90px; margin-bottom: 28px; }
+  .cup-body {
+    position: absolute; bottom: 0; left: 0;
+    width: 90px; height: 70px;
+    border: 4px solid #fbbf24;
+    border-top: none;
+    border-radius: 0 0 45px 45px;
+    overflow: hidden;
+  }
+  .cup-fill {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(180deg, #d97706, #b45309);
+    height: 0%;
+    animation: fillUp 1.6s ease-out forwards;
+  }
+  @keyframes fillUp { 0% { height: 0%; } 100% { height: 78%; } }
+  .cup-handle {
+    position: absolute; right: -20px; top: 22px;
+    width: 26px; height: 34px;
+    border: 4px solid #fbbf24;
+    border-left: none;
+    border-radius: 0 30px 30px 0;
+  }
+  .steam { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+  .steam span {
+    display: block; width: 4px; height: 22px;
+    background: rgba(255,255,255,.5);
+    border-radius: 4px;
+    animation: rise 2s infinite ease-out;
+  }
+  .steam span:nth-child(2) { animation-delay: .4s; }
+  .steam span:nth-child(3) { animation-delay: .8s; }
+  @keyframes rise {
+    0% { transform: translateY(0) scaleY(1); opacity: 0; }
+    30% { opacity: .8; }
+    100% { transform: translateY(-22px) scaleY(1.4); opacity: 0; }
+  }
+  .loader-title { font-family: 'Playfair Display', serif; color: #fdf8f0; font-size: 2.1rem; letter-spacing: .04em; opacity: 0; animation: fadeUp .9s ease .8s forwards; }
+  .loader-sub { color: #fbbf24; font-size: .8rem; letter-spacing: .5em; text-transform: uppercase; margin-top: 8px; opacity: 0; animation: fadeUp .9s ease 1.3s forwards; }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  .loader-title, .loader-sub { transform: translateY(12px); }
 
-    /* --- Page base: warm paper + soft colour washes + grain --- */
-    body{
-      background-color: #f7f5f0;
-      background-image:
-        radial-gradient(60rem 40rem at 8% -12%, rgba(14,116,144,.10), transparent 60%),
-        radial-gradient(48rem 34rem at 98% -4%, rgba(202,138,4,.12), transparent 55%),
-        var(--grain);
-      background-repeat: no-repeat, no-repeat, repeat;
-      background-attachment: fixed, fixed, fixed;
-      -webkit-font-smoothing: antialiased;
-    }
+  /* ===== NAV ===== */
+  #nav { transition: background .35s, box-shadow .35s, padding .35s; }
+  #nav.scrolled { background: rgba(253,248,240,.92); backdrop-filter: blur(12px); box-shadow: 0 4px 24px -8px rgba(0,0,0,.12); }
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: ''; position: absolute; left: 0; bottom: -4px;
+    width: 0; height: 2px; background: #d97706; transition: width .3s;
+  }
+  .nav-link:hover::after { width: 100%; }
 
-    /* --- Reusable paper texture for cards / panels --- */
-    .tex-paper{
-      background-image: var(--grain);
-      background-blend-mode: multiply;
-    }
+  /* ===== BUTTONS ===== */
+  .btn { transition: all .28s cubic-bezier(.4,0,.2,1); }
+  .btn-primary { background: #0d5c63; color: #fff; }
+  .btn-primary:hover { background: #083f44; transform: translateY(-2px); box-shadow: 0 12px 24px -10px rgba(13,92,99,.6); }
+  .btn-outline { border: 1.5px solid #0d5c63; color: #0d5c63; }
+  .btn-outline:hover { background: #0d5c63; color: #fff; }
 
-    /* --- Frosted, textured header --- */
-    .tex-header{
-      background-color: rgba(255,255,255,.80);
-      background-image: var(--grain);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
+  /* ===== GALLERY ===== */
+  .gal-item { overflow: hidden; border-radius: 16px; position: relative; cursor: pointer; }
+  .gal-item img { transition: transform .7s cubic-bezier(.2,.8,.2,1); width: 100%; height: 100%; object-fit: cover; display: block; }
+  .gal-item:hover img { transform: scale(1.08); }
+  .gal-item::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(8,63,68,.85));
+    opacity: 0; transition: opacity .35s;
+  }
+  .gal-item:hover::after { opacity: 1; }
+  .gal-caption {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 16px;
+    color: #fff; font-weight: 500; font-size: .9rem; z-index: 2;
+    transform: translateY(8px); opacity: 0; transition: all .35s;
+  }
+  .gal-item:hover .gal-caption { transform: translateY(0); opacity: 1; }
 
-    /* --- Dotted accent strip --- */
-    .tex-dots{ background-image: var(--dots); }
+  /* ===== MENU TABS ===== */
+  .tab-btn {
+    padding: 8px 18px; border-radius: 999px; font-size: .82rem; font-weight: 500;
+    background: #fff; border: 1px solid #e7e5e4; color: #57534e;
+    transition: all .25s; white-space: nowrap; cursor: pointer;
+  }
+  .tab-btn:hover { border-color: #0d5c63; color: #0d5c63; }
+  .tab-btn.active { background: #0d5c63; color: #fff; border-color: #0d5c63; box-shadow: 0 8px 18px -8px rgba(13,92,99,.6); }
 
-    /* --- Thin styled scrollbar for the cart --- */
-    .scroll-thin::-webkit-scrollbar{ width:6px; }
-    .scroll-thin::-webkit-scrollbar-track{ background:transparent; }
-    .scroll-thin::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:9999px; }
-    .scroll-thin::-webkit-scrollbar-thumb:hover{ background:#94a3b8; }
+  /* ===== MENU CARDS ===== */
+  .dish-card { background: #fff; border-radius: 18px; overflow: hidden; border: 1px solid #f0ece5; transition: all .35s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; }
+  .dish-card:hover { transform: translateY(-6px); box-shadow: 0 22px 40px -18px rgba(28,25,23,.28); border-color: #d97706; }
+  .dish-img-wrap { position: relative; height: 180px; overflow: hidden; background: #f0ece5; }
+  .dish-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
+  .dish-card:hover .dish-img-wrap img { transform: scale(1.08); }
+  .dish-badge { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,.94); padding: 4px 10px; border-radius: 999px; font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #0d5c63; }
 
-    /* --- Cards: lift a touch on hover --- */
-    .menu-card{ transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
-    .menu-card:hover{
-      transform: translateY(-3px);
-      box-shadow: 0 12px 24px -12px rgba(15,23,42,.25);
-      border-color: #a5d8e0;
-    }
+  /* ===== REVIEW CARDS ===== */
+  .review-card { background: #fff; border: 1px solid #f0ece5; border-radius: 18px; padding: 22px; transition: all .3s; }
+  .review-card:hover { border-color: #d97706; box-shadow: 0 16px 32px -18px rgba(28,25,23,.2); transform: translateY(-3px); }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: .95rem; flex-shrink: 0; }
 
-    /* --- Image placeholder styling --- */
-    .menu-img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      background-color: #e2e8f0;
-      border-bottom: 1px solid #e2e8f0;
-    }
-  </style>
+  /* ===== CART DRAWER ===== */
+  #cart-drawer { transition: transform .4s cubic-bezier(.4,0,.2,1); }
+  #cart-drawer.open { transform: translateX(0); }
+  #cart-overlay { transition: opacity .35s, visibility .35s; }
+  #cart-overlay.open { opacity: 1; visibility: visible; }
+
+  /* ===== FADE IN ON SCROLL ===== */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.show { opacity: 1; transform: translateY(0); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 9px; }
+  ::-webkit-scrollbar-track { background: #fdf8f0; }
+  ::-webkit-scrollbar-thumb { background: #c7bfb2; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #0d5c63; }
+  .scroll-thin::-webkit-scrollbar { width: 6px; }
+</style>
 </head>
+<body>
 
-<body class="text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+<!-- ============================================================ -->
+<!-- LOADER                                                        -->
+<!-- ============================================================ -->
+<div id="loader">
+  <div class="cup-loader">
+    <div class="steam"><span></span><span></span><span></span></div>
+    <div class="cup-handle"></div>
+    <div class="cup-body"><div class="cup-fill"></div></div>
+  </div>
+  <div class="loader-title">Welcome to Chiya SAN</div>
+  <div class="loader-sub">चिया शान</div>
+</div>
 
-  <!-- Header -->
-  <header class="tex-header border-b border-slate-200/80 sticky top-0 z-40 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-brand flex items-center gap-2">☕ Chiya San</h1>
-      <button onclick="toggleCart()" class="relative bg-brand text-white px-4 py-2 rounded-lg font-semibold hover:bg-brandDark transition-all shadow-sm">
-        🛒 Cart (<span id="cart-count">0</span>)
-      </button>
+<!-- ============================================================ -->
+<!-- NAVIGATION                                                    -->
+<!-- ============================================================ -->
+<nav id="nav" class="fixed top-0 left-0 right-0 z-40 px-4 py-4">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <a href="#home" class="flex items-center gap-2">
+      <span class="text-2xl">☕</span>
+      <span class="font-display text-xl font-bold text-tea">Chiya SAN</span>
+    </a>
+    <div class="hidden md:flex items-center gap-8 text-sm font-medium text-stone-700">
+      <a href="#home" class="nav-link hover:text-tea">Home</a>
+      <a href="#about" class="nav-link hover:text-tea">About</a>
+      <a href="#gallery" class="nav-link hover:text-tea">Gallery</a>
+      <a href="#menu" class="nav-link hover:text-tea">Menu</a>
+      <a href="#reviews" class="nav-link hover:text-tea">Reviews</a>
+      <a href="#contact" class="nav-link hover:text-tea">Visit</a>
     </div>
-    <div class="h-1 tex-dots opacity-60"></div>
-  </header>
+    <button onclick="openCart()" class="btn btn-primary relative px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.3 4.6a1 1 0 00.9 1.4H19M16 21a1 1 0 100-2 1 1 0 000 2zm-8 0a1 1 0 100-2 1 1 0 000 2z"/></svg>
+      <span id="cart-count">0</span>
+    </button>
+  </div>
+</nav>
 
-  <!-- Main Content Layout -->
-  <main class="max-w-7xl mx-auto px-4 py-8 w-full grid lg:grid-cols-4 gap-8">
+<!-- ============================================================ -->
+<!-- HERO                                                          -->
+<!-- ============================================================ -->
+<section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+  <div class="absolute inset-0">
+    <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1920&q=80" alt="Chiya San café" class="w-full h-full object-cover" onerror="this.style.display='none'">
+    <div class="absolute inset-0 bg-gradient-to-b from-stone-900/80 via-stone-900/55 to-stone-900/90"></div>
+  </div>
+  <div class="relative z-10 text-center px-6 max-w-3xl">
+    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 mb-6 text-amber-light text-xs tracking-[.25em] uppercase font-medium">
+      <span class="w-1.5 h-1.5 bg-amber rounded-full animate-pulse"></span>
+      Chakupat · Lalitpur
+    </div>
+    <h1 class="font-display text-5xl md:text-7xl font-bold text-cream leading-tight">
+      Chiya SAN
+      <span class="block text-3xl md:text-4xl font-medium text-amber mt-2 italic">चिया शान</span>
+    </h1>
+    <p class="mt-6 text-cream/85 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
+      Where every cup tells a story. A vibrant cultural hub celebrating Nepal's beloved tea tradition.
+    </p>
 
-    <!-- Menu Section -->
-    <section class="lg:col-span-3 space-y-6">
-      <div class="flex items-center justify-between border-b border-slate-300/70 pb-2">
-        <h2 class="text-2xl font-bold text-slate-900">Select Your Items</h2>
-        <span class="text-sm text-slate-500 font-medium">Freshly prepared just for you</span>
+    <div class="flex items-center justify-center gap-3 mt-8">
+      <div class="flex items-center gap-1 text-amber">
+        <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
       </div>
-      <!-- Menu Grid -->
-      <div id="menu-container" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
-        <!-- Injected dynamically via JS -->
-      </div>
-    </section>
+      <span class="text-cream font-semibold">4.8</span>
+      <span class="text-cream/60 text-sm">· 40 Google reviews</span>
+    </div>
 
-    <!-- Side Cart View (Desktop) -->
-    <aside class="tex-paper bg-white border border-slate-200 p-6 rounded-2xl shadow-sm h-fit sticky top-24 lg:col-span-1">
-      <h3 class="text-xl font-bold text-slate-900 mb-4 border-b border-slate-200 pb-2">Your Order Summary</h3>
-      <div id="cart-items" class="scroll-thin space-y-3 mb-4 max-h-96 overflow-y-auto pr-1">
-        <p class="text-slate-400 text-sm text-center py-4">Your cart is empty</p>
-      </div>
-      <div class="border-t border-slate-200 pt-4 space-y-2">
-        <div class="flex justify-between font-semibold text-slate-700">
-          <span>Subtotal</span>
-          <span>Rs. <span id="cart-subtotal">0</span></span>
-        </div>
-        <button onclick="openCheckout()" id="checkout-btn" disabled class="w-full mt-4 bg-emerald-600 disabled:bg-slate-300 text-white font-bold py-3 rounded-xl transition-all shadow-sm">
-          Proceed to Checkout
-        </button>
-      </div>
-    </aside>
-  </main>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+      <a href="#menu" class="btn btn-primary px-8 py-3.5 rounded-full font-semibold shadow-lg">
+        Order Now
+      </a>
+      <a href="https://maps.google.com/?q=Chiya+San+Lalitpur" target="_blank" class="btn px-8 py-3.5 rounded-full font-semibold border border-cream/40 text-cream hover:bg-cream hover:text-tea">
+        Get Directions
+      </a>
+    </div>
 
-  <!-- Checkout Modal -->
-  <div id="checkout-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="tex-paper bg-white max-w-md w-full rounded-2xl p-6 shadow-2xl border border-white/60">
-      <h3 class="text-xl font-bold text-slate-900 mb-4">Complete Your Order</h3>
-      <form id="order-form" onsubmit="handlePlaceOrder(event)" class="space-y-4">
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-cream/60 text-xs tracking-widest">
+      <span>SCROLL</span>
+      <div class="w-px h-8 bg-cream/40 animate-pulse"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- ABOUT / STORY                                                 -->
+<!-- ============================================================ -->
+<section id="about" class="py-24 px-6 bg-cream">
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+    <div class="reveal">
+      <span class="text-amber font-semibold text-xs tracking-[.3em] uppercase">Our Story</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold mt-3 text-stone-900 leading-tight">
+        More than a café — <span class="italic text-tea">a celebration</span> of tea.
+      </h2>
+      <div class="mt-6 space-y-4 text-stone-700 leading-relaxed">
+        <p>Chiya SAN is a vibrant cultural hub in Lalitpur, dedicated to Nepal's beloved tea tradition. Located in the historic Chakupat area, we celebrate "Chiya" not just as a beverage, but as a social ritual that binds communities together.</p>
+        <p>The atmosphere is lively and inviting — often featuring live music, poetry readings, and cultural performances that reflect the rich heritage of the Kathmandu Valley. Whether you're a tea enthusiast or simply seeking an authentic local experience, Chiya SAN offers a memorable glimpse into the social fabric of Nepal.</p>
+      </div>
+      <div class="grid grid-cols-3 gap-6 mt-10 pt-8 border-t border-stone-200">
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Your Name</label>
-          <input type="text" id="cust-name" required class="w-full border border-slate-300 rounded-lg p-2.5 bg-white/70 focus:ring-2 focus:ring-brand outline-none">
+          <div class="font-display text-3xl font-bold text-tea">4.8★</div>
+          <div class="text-xs text-stone-500 mt-1">Google Rating</div>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Phone Number</label>
-          <input type="tel" id="cust-phone" required class="w-full border border-slate-300 rounded-lg p-2.5 bg-white/70 focus:ring-2 focus:ring-brand outline-none">
+          <div class="font-display text-3xl font-bold text-tea">50+</div>
+          <div class="text-xs text-stone-500 mt-1">Menu Items</div>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Order Type</label>
-          <select id="order-type" class="w-full border border-slate-300 rounded-lg p-2.5 bg-white/70 focus:ring-2 focus:ring-brand outline-none">
-            <option value="Takeaway">Takeaway / Pick-up</option>
-            <option value="Dine-in">Dine-in (At Table)</option>
-          </select>
+          <div class="font-display text-3xl font-bold text-tea">100%</div>
+          <div class="text-xs text-stone-500 mt-1">Nepali Warmth</div>
         </div>
-        <div class="flex justify-end gap-3 pt-4">
-          <button type="button" onclick="closeCheckout()" class="px-4 py-2 border border-slate-300 rounded-lg font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button type="submit" class="px-6 py-2 bg-brand text-white font-bold rounded-lg hover:bg-brandDark shadow-sm">Confirm Order</button>
+      </div>
+    </div>
+
+    <div class="reveal grid grid-cols-2 gap-4">
+      <img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=600&q=80" class="rounded-2xl h-64 w-full object-cover shadow-lg" alt="Café interior" onerror="this.src='https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=600&q=80'">
+      <img src="https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=600&q=80" class="rounded-2xl h-64 w-full object-cover mt-8 shadow-lg" alt="Tea cup" onerror="this.src='https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&q=80'">
+      <img src="https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=600&q=80" class="rounded-2xl h-64 w-full object-cover -mt-4 shadow-lg" alt="Momo" onerror="this.src='https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&q=80'">
+      <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80" class="rounded-2xl h-64 w-full object-cover mt-4 shadow-lg" alt="Coffee" onerror="this.src='https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80'">
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- GALLERY                                                       -->
+<!-- ============================================================ -->
+<section id="gallery" class="py-24 px-6 bg-white">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-14 reveal">
+      <span class="text-amber font-semibold text-xs tracking-[.3em] uppercase">Gallery</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold mt-3 text-stone-900">A glimpse of the vibe</h2>
+      <p class="text-stone-500 mt-4 max-w-xl mx-auto">Bamboo seating, lush greenery, rooftop hangs — and of course, tea.</p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[180px] md:auto-rows-[210px]">
+      <div class="gal-item col-span-2 row-span-2 reveal">
+        <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=900&q=80" alt="Café ambience" onerror="this.src='https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=900&q=80'">
+        <div class="gal-caption">Rooftop ambience</div>
+      </div>
+      <div class="gal-item reveal">
+        <img src="https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=600&q=80" alt="Tea" onerror="this.src='https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&q=80'">
+        <div class="gal-caption">Signature chiya</div>
+      </div>
+      <div class="gal-item reveal">
+        <img src="https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=600&q=80" alt="Momo" onerror="this.src='https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&q=80'">
+        <div class="gal-caption">Steamy mo:mo</div>
+      </div>
+      <div class="gal-item reveal">
+        <img src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=600&q=80" alt="Seating" onerror="this.src='https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=600&q=80'">
+        <div class="gal-caption">Bamboo seating</div>
+      </div>
+      <div class="gal-item reveal">
+        <img src="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&q=80" alt="Snacks" onerror="this.src='https://images.unsplash.com/photo-1518013431117-eb1465fa5752?w=600&q=80'">
+        <div class="gal-caption">Snacks & sides</div>
+      </div>
+      <div class="gal-item col-span-2 reveal">
+        <img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=900&q=80" alt="Evening vibe" onerror="this.src='https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=900&q=80'">
+        <div class="gal-caption">Evening gatherings</div>
+      </div>
+      <div class="gal-item reveal">
+        <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80" alt="Tea leaves" onerror="this.src='https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&q=80'">
+        <div class="gal-caption">Fresh brews</div>
+      </div>
+      <div class="gal-item reveal">
+        <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=600&q=80" alt="Dessert" onerror="this.src='https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&q=80'">
+        <div class="gal-caption">Sweet treats</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- MENU                                                          -->
+<!-- ============================================================ -->
+<section id="menu" class="py-24 px-6 bg-cream">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <span class="text-amber font-semibold text-xs tracking-[.3em] uppercase">Our Menu</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold mt-3 text-stone-900">Crafted with care</h2>
+      <p class="text-stone-500 mt-4 max-w-xl mx-auto">From classic masala chai to hearty momo — pick your favourites and we'll bring them to your table.</p>
+    </div>
+
+    <!-- Category tabs -->
+    <div id="tabs" class="flex flex-wrap justify-center gap-2 mb-10 reveal"></div>
+
+    <!-- Menu grid -->
+    <div id="menu-container" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"></div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- REVIEWS                                                       -->
+<!-- ============================================================ -->
+<section id="reviews" class="py-24 px-6 bg-white">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-14 reveal">
+      <span class="text-amber font-semibold text-xs tracking-[.3em] uppercase">Loved by guests</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold mt-3 text-stone-900">What people are saying</h2>
+      <div class="flex items-center justify-center gap-3 mt-5">
+        <span class="text-amber text-xl">★★★★★</span>
+        <span class="font-semibold">4.8</span>
+        <span class="text-stone-400 text-sm">· 40 reviews</span>
+      </div>
+    </div>
+
+    <div id="reviews-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- CONTACT / VISIT                                               -->
+<!-- ============================================================ -->
+<section id="contact" class="py-24 px-6 bg-tea text-cream">
+  <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-14 items-start">
+    <div class="reveal">
+      <span class="text-amber font-semibold text-xs tracking-[.3em] uppercase">Visit Us</span>
+      <h2 class="font-display text-4xl md:text-5xl font-bold mt-3 leading-tight">Come for the tea.<br>Stay for the vibes.</h2>
+      <p class="text-cream/75 mt-5 leading-relaxed max-w-md">Drop by for a cup, a chat, or a game of chess. We're in the heart of Chakupat, a short walk from Patan Durbar Square.</p>
+
+      <div class="flex flex-col sm:flex-row gap-4 mt-8">
+        <a href="tel:+9779709085103" class="btn bg-amber hover:bg-amber-light text-stone-900 px-6 py-3.5 rounded-full font-semibold flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+          Call Now
+        </a>
+        <a href="https://maps.google.com/?q=Chiya+San+Chakupat+Lalitpur" target="_blank" class="btn border border-cream/40 text-cream hover:bg-cream hover:text-tea px-6 py-3.5 rounded-full font-semibold flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+          Directions
+        </a>
+      </div>
+    </div>
+
+    <div class="reveal space-y-5">
+      <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+        <div class="text-amber text-xs font-bold tracking-widest uppercase mb-2">Address</div>
+        <div class="text-cream/90">Chakupat Saraswoti Marg<br>Lalitpur, Bagmati Province 44600</div>
+      </div>
+      <div class="grid grid-cols-2 gap-5">
+        <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+          <div class="text-amber text-xs font-bold tracking-widest uppercase mb-2">Phone</div>
+          <div class="text-cream/90 text-sm">+977 970-9085103</div>
         </div>
-      </form>
+        <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+          <div class="text-amber text-xs font-bold tracking-widest uppercase mb-2">Hours</div>
+          <div class="text-cream/90 text-sm">Open · Closes 8 PM</div>
+        </div>
+      </div>
+      <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-amber/20 flex items-center justify-center text-2xl">🎲</div>
+        <div>
+          <div class="text-cream font-semibold">Board games available</div>
+          <div class="text-cream/60 text-sm">Jenga · Uno · Chess & more</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FOOTER                                                        -->
+<!-- ============================================================ -->
+<footer class="bg-tea-dark text-cream/70 py-10 px-6">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
+    <div class="font-display text-cream text-lg">☕ Chiya SAN चिया शान</div>
+    <div class="italic text-cream/60">Good Food · Good Vibes · Great Times</div>
+    <div>© 2025 Chiya San · Chakupat, Lalitpur</div>
+  </div>
+</footer>
+
+<!-- ============================================================ -->
+<!-- CART DRAWER                                                   -->
+<!-- ============================================================ -->
+<div id="cart-overlay" onclick="closeCart()" class="fixed inset-0 bg-stone-900/50 backdrop-blur-sm opacity-0 invisible z-50"></div>
+<aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl transform translate-x-full flex flex-col">
+  <div class="p-6 border-b border-stone-200 flex items-center justify-between">
+    <div>
+      <h3 class="font-display text-2xl font-bold">Your Order</h3>
+      <p class="text-stone-500 text-sm mt-0.5">Freshly prepared for you</p>
+    </div>
+    <button onclick="closeCart()" class="w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center transition">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <div id="cart-items" class="flex-1 overflow-y-auto scroll-thin p-6 space-y-4">
+    <div class="text-center py-20 text-stone-400">
+      <div class="text-5xl mb-3">🛒</div>
+      <p class="font-medium">Your cart is empty</p>
+      <p class="text-sm mt-1">Add something delicious from the menu</p>
     </div>
   </div>
 
-  <script>
-    // =========================================================================
-    // MENU DATA
-    // To use your own AI-generated images, simply replace the URL inside `img`
-    // with the path to your image file (e.g., "images/momo.jpg").
-    // =========================================================================
-    const menuData = [
-      // --- MO:MO ---
-      { id: 1, name: "Chicken Steam Mo:Mo", price: 200, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Steam+MoMo" },
-      { id: 2, name: "Chicken Jhol Mo:Mo", price: 230, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Jhol+MoMo" },
-      { id: 3, name: "Chicken Kothey Mo:Mo", price: 250, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Kothey+MoMo" },
-      { id: 4, name: "Veg & Paneer Steam Mo:Mo", price: 180, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Veg+Steam+MoMo" },
-      { id: 5, name: "Veg & Paneer Jhol Mo:Mo", price: 210, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Veg+Jhol+MoMo" },
-      { id: 6, name: "Veg & Paneer Kothey Mo:Mo", price: 230, cat: "Mo:Mo", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Veg+Kothey+MoMo" },
+  <div class="border-t border-stone-200 p-6 space-y-4 bg-cream">
+    <div class="flex justify-between text-sm text-stone-500">
+      <span>Subtotal</span>
+      <span>Rs. <span id="cart-subtotal">0</span></span>
+    </div>
+    <div class="flex justify-between font-bold text-lg">
+      <span>Total</span>
+      <span class="text-tea">Rs. <span id="cart-total">0</span></span>
+    </div>
+    <button onclick="openCheckout()" id="checkout-btn" disabled class="w-full bg-tea disabled:bg-stone-300 text-white font-semibold py-3.5 rounded-full transition-all hover:bg-tea-dark">
+      Proceed to Checkout
+    </button>
+  </div>
+</aside>
 
-      // --- KHAJA SET ---
-      { id: 7, name: "Panga Set", price: 250, cat: "Khaja Set", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Panga+Set" },
+<!-- ============================================================ -->
+<!-- CHECKOUT MODAL                                                -->
+<!-- ============================================================ -->
+<div id="checkout-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-[60]">
+  <div class="bg-white max-w-md w-full rounded-3xl p-8 shadow-2xl">
+    <h3 class="font-display text-2xl font-bold mb-1">Complete Your Order</h3>
+    <p class="text-stone-500 text-sm mb-6">We'll have it ready for you.</p>
+    <form id="order-form" onsubmit="handlePlaceOrder(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1.5">Your Name</label>
+        <input type="text" id="cust-name" required class="w-full border border-stone-300 rounded-xl p-3 focus:ring-2 focus:ring-tea focus:border-tea outline-none transition">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1.5">Phone Number</label>
+        <input type="tel" id="cust-phone" required class="w-full border border-stone-300 rounded-xl p-3 focus:ring-2 focus:ring-tea focus:border-tea outline-none transition">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1.5">Order Type</label>
+        <select id="order-type" class="w-full border border-stone-300 rounded-xl p-3 focus:ring-2 focus:ring-tea focus:border-tea outline-none transition bg-white">
+          <option>Takeaway / Pick-up</option>
+          <option>Dine-in (At Table)</option>
+        </select>
+      </div>
+      <div class="flex justify-end gap-3 pt-4">
+        <button type="button" onclick="closeCheckout()" class="px-5 py-2.5 rounded-full font-semibold text-stone-600 hover:bg-stone-100 transition">Cancel</button>
+        <button type="submit" class="px-6 py-2.5 bg-tea text-white font-bold rounded-full hover:bg-tea-dark transition shadow-lg">Confirm Order</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-      // --- NUGGETS ---
-      { id: 8, name: "Chicken Nuggets", price: 300, cat: "Nuggets", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Nuggets" },
+<script>
+/* ============================================================
+   DATA
+============================================================ */
+const IMG = {
+  momo: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=600&q=80',
+  momoAlt: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&q=80',
+  tea: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=600&q=80',
+  teaAlt: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&q=80',
+  blackTea: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80',
+  lemonTea: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&q=80',
+  fries: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&q=80',
+  nuggets: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=600&q=80',
+  waiwai: 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=600&q=80',
+  sandwich: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&q=80',
+  sausage: 'https://images.unsplash.com/photo-1587736909303-9c4c6f6a8a2e?w=600&q=80',
+  hookah: 'https://images.unsplash.com/photo-1497636577773-f1231844b336?w=600&q=80',
+  cigarette: 'https://images.unsplash.com/photo-1527176930608-09cb256ab504?w=600&q=80',
+  macaron: 'https://images.unsplash.com/photo-1558326567-98ae2405596b?w=600&q=80',
+  cookie: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=600&q=80',
+  omelette: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=600&q=80',
+  shake: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&q=80',
+  lassi: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=600&q=80',
+  coffee: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80',
+  icecream: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&q=80',
+  mojito: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80',
+  lemonade: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=600&q=80',
+  khaaja: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&q=80'
+};
 
-      // --- WAI-WAI SPECIALS ---
-      { id: 9, name: "Wai-Wai Sadeko", price: 100, cat: "Wai-Wai", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Wai-Wai+Sadeko" },
-      { id: 10, name: "Sausage Wai-Wai Sadeko", price: 180, cat: "Wai-Wai", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Sausage+Wai-Wai" },
+const menuData = [
+  // Mo:Mo
+  { id: 1,  name: 'Chicken Steam Mo:Mo',           price: 200, group: 'Mo:Mo', cat: 'Mo:Mo', img: IMG.momo },
+  { id: 2,  name: 'Chicken Jhol Mo:Mo',            price: 230, group: 'Mo:Mo', cat: 'Mo:Mo', img: IMG.momo },
+  { id: 3,  name: 'Chicken Kothey Mo:Mo',          price: 250, group: 'Mo:Mo', cat: 'Mo:Mo', img: IMG.momo },
+  { id: 4,  name: 'Veg & Paneer Steam Mo:Mo',      price: 180, group: 'Mo:Mo', cat: 'Mo:Mo', img: IMG.momoAlt },
+  { id: 5,  name: 'Veg & Paneer Jhol Mo:Mo',       price: 210, group: 'Mo:Mo', cat: 'Mo:Mo', img: IMG.momoAlt },
+  { id: 6,  name: 'Veg & Paneer Kothey Mo:Mo',     price: 230, group: 'Mo:Mo', cat: 'Mo:Mo', img: IMG.momoAlt },
 
-      // --- SANDWICHES ---
-      { id: 11, name: "Veg Sandwich", price: 180, cat: "Sandwiches", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Veg+Sandwich" },
-      { id: 12, name: "Chicken Sandwich", price: 250, cat: "Sandwiches", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Sandwich" },
+  // Khaja & Snacks
+  { id: 7,  name: 'Panga Set',                     price: 250, group: 'Snacks', cat: 'Khaja Set', img: IMG.khaaja },
+  { id: 8,  name: 'Chicken Nuggets',               price: 300, group: 'Snacks', cat: 'Nuggets', img: IMG.nuggets },
+  { id: 9,  name: 'Wai-Wai Sadeko',                price: 100, group: 'Snacks', cat: 'Wai-Wai', img: IMG.waiwai },
+  { id: 10, name: 'Sausage Wai-Wai Sadeko',        price: 180, group: 'Snacks', cat: 'Wai-Wai', img: IMG.waiwai },
+  { id: 11, name: 'Veg Sandwich',                  price: 180, group: 'Snacks', cat: 'Sandwiches', img: IMG.sandwich },
+  { id: 12, name: 'Chicken Sandwich',              price: 250, group: 'Snacks', cat: 'Sandwiches', img: IMG.sandwich },
+  { id: 13, name: 'French Fries',                  price: 180, group: 'Snacks', cat: 'Quick Snacks', img: IMG.fries },
+  { id: 14, name: 'Spicy Fries',                   price: 200, group: 'Snacks', cat: 'Quick Snacks', img: IMG.fries },
+  { id: 15, name: 'Chicken Chilly',                price: 300, group: 'Snacks', cat: 'Quick Snacks', img: IMG.nuggets },
+  { id: 16, name: 'Chicken Drumsticks',            price: 300, group: 'Snacks', cat: 'Quick Snacks', img: IMG.nuggets },
+  { id: 17, name: 'Boiled Sausage',                price: 60,  group: 'Snacks', cat: 'Sausage', img: IMG.sausage },
+  { id: 18, name: 'Fry Sausage',                   price: 60,  group: 'Snacks', cat: 'Sausage', img: IMG.sausage },
+  { id: 19, name: 'Sausage Sadeko',                price: 340, group: 'Snacks', cat: 'Sausage', img: IMG.sausage },
 
-      // --- QUICKS SNACKS ---
-      { id: 13, name: "French Fries", price: 180, cat: "Quick Snacks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=French+Fries" },
-      { id: 14, name: "Spicy Fries", price: 200, cat: "Quick Snacks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Spicy+Fries" },
-      { id: 15, name: "Chicken Chilly", price: 300, cat: "Quick Snacks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Chilly" },
-      { id: 16, name: "Chicken Drumsticks", price: 300, cat: "Quick Snacks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chicken+Drumsticks" },
+  // Tea
+  { id: 26, name: 'Normal Milk Tea',               price: 40,  group: 'Tea', cat: 'Dudh Chiya', img: IMG.tea },
+  { id: 27, name: 'Honey Milk Tea',                price: 55,  group: 'Tea', cat: 'Dudh Chiya', img: IMG.tea },
+  { id: 28, name: 'Masala Milk Tea',               price: 65,  group: 'Tea', cat: 'Dudh Chiya', img: IMG.tea },
+  { id: 29, name: 'Normal Black Tea',              price: 30,  group: 'Tea', cat: 'Kalo Chiya', img: IMG.blackTea },
+  { id: 30, name: 'Lemon Tea',                     price: 35,  group: 'Tea', cat: 'Kalo Chiya', img: IMG.lemonTea },
+  { id: 31, name: 'Masala Black Tea',              price: 35,  group: 'Tea', cat: 'Kalo Chiya', img: IMG.blackTea },
+  { id: 32, name: 'Hot Lemon',                     price: 80,  group: 'Tea', cat: 'Kalo Chiya', img: IMG.lemonTea },
+  { id: 33, name: 'Hot Lemon with Ginger Honey',   price: 120, group: 'Tea', cat: 'Kalo Chiya', img: IMG.lemonTea },
 
-      // --- SAUSAGE ---
-      { id: 17, name: "Boiled Sausage", price: 60, cat: "Sausage", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Boiled+Sausage" },
-      { id: 18, name: "Fry Sausage", price: 60, cat: "Sausage", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Fry+Sausage" },
-      { id: 19, name: "Sausage Sadeko", price: 340, cat: "Sausage", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Sausage+Sadeko" },
+  // Bakery
+  { id: 34, name: 'Peanut Macarons',               price: 25,  group: 'Bakery', cat: 'Bakery', img: IMG.macaron },
+  { id: 35, name: 'Choco Chips Cookies (4 Pcs.)',  price: 50,  group: 'Bakery', cat: 'Bakery', img: IMG.cookie },
+  { id: 36, name: 'Bread Omelette',                price: 130, group: 'Bakery', cat: 'Breakfast', img: IMG.omelette },
 
-      // --- HOOKAH ---
-      { id: 20, name: "Normal Hookah", price: 300, cat: "Hookah", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Normal+Hookah" },
-      { id: 21, name: "Special Hookah", price: 500, cat: "Hookah", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Special+Hookah" },
+  // Cold Drinks
+  { id: 37, name: 'Chocolate Milkshake',           price: 250, group: 'Cold Drinks', cat: 'Shakes', img: IMG.shake },
+  { id: 38, name: 'Oreo Milkshake',                price: 280, group: 'Cold Drinks', cat: 'Shakes', img: IMG.shake },
+  { id: 39, name: 'Plain Lassi',                   price: 100, group: 'Cold Drinks', cat: 'Lassi', img: IMG.lassi },
+  { id: 40, name: 'Banana Lassi',                  price: 200, group: 'Cold Drinks', cat: 'Lassi', img: IMG.lassi },
+  { id: 41, name: 'Iced Americano',                price: 180, group: 'Cold Drinks', cat: 'Coffee', img: IMG.coffee },
+  { id: 42, name: 'Iced Milk Coffee',              price: 200, group: 'Cold Drinks', cat: 'Coffee', img: IMG.coffee },
+  { id: 43, name: 'Vanilla Ice Cream',             price: 150, group: 'Cold Drinks', cat: 'Ice Cream', img: IMG.icecream },
+  { id: 44, name: 'Strawberry Ice Cream',          price: 150, group: 'Cold Drinks', cat: 'Ice Cream', img: IMG.icecream },
+  { id: 45, name: 'Chocolate Ice Cream',           price: 150, group: 'Cold Drinks', cat: 'Ice Cream', img: IMG.icecream },
+  { id: 46, name: 'Cold Lemon Tea',                price: 80,  group: 'Cold Drinks', cat: 'Cold Drinks', img: IMG.lemonTea },
+  { id: 47, name: 'Lemon Soda',                    price: 110, group: 'Cold Drinks', cat: 'Cold Drinks', img: IMG.lemonade },
+  { id: 48, name: 'Masala Coke',                   price: 130, group: 'Cold Drinks', cat: 'Cold Drinks', img: IMG.lemonade },
+  { id: 49, name: 'Lemon Sprite',                  price: 130, group: 'Cold Drinks', cat: 'Cold Drinks', img: IMG.lemonade },
+  { id: 50, name: 'Virgin Mojito',                 price: 150, group: 'Cold Drinks', cat: 'Cold Drinks', img: IMG.mojito },
+  { id: 51, name: 'Lemonade',                      price: 150, group: 'Cold Drinks', cat: 'Cold Drinks', img: IMG.lemonade },
+  { id: 52, name: 'Mint Lemonade',                 price: 160, group: 'Cold Drinks', cat: 'Cold Drinks', img: IMG.lemonade },
+  { id: 53, name: 'Mocktail Mojito',               price: 180, group: 'Cold Drinks', cat: 'Cold Drinks', img: IMG.mojito },
 
-      // --- CIGARETTES ---
-      { id: 22, name: "Shikhar Ice", price: 20, cat: "Cigarettes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Shikhar+Ice" },
-      { id: 23, name: "Surya Red", price: 25, cat: "Cigarettes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Surya+Red" },
-      { id: 24, name: "Surya Light", price: 25, cat: "Cigarettes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Surya+Light" },
-      { id: 25, name: "Surya Arctic", price: 30, cat: "Cigarettes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Surya+Arctic" },
+  // Smoke
+  { id: 20, name: 'Normal Hookah',                 price: 300, group: 'Smoke', cat: 'Hookah', img: IMG.hookah },
+  { id: 21, name: 'Special Hookah',                price: 500, group: 'Smoke', cat: 'Hookah', img: IMG.hookah },
+  { id: 22, name: 'Shikhar Ice',                   price: 20,  group: 'Smoke', cat: 'Cigarettes', img: IMG.cigarette },
+  { id: 23, name: 'Surya Red',                     price: 25,  group: 'Smoke', cat: 'Cigarettes', img: IMG.cigarette },
+  { id: 24, name: 'Surya Light',                   price: 25,  group: 'Smoke', cat: 'Cigarettes', img: IMG.cigarette },
+  { id: 25, name: 'Surya Arctic',                  price: 30,  group: 'Smoke', cat: 'Cigarettes', img: IMG.cigarette }
+];
 
-      // --- HOT TEAS (DUDH CHIYA) ---
-      { id: 26, name: "Normal Milk Tea", price: 40, cat: "Dudh Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Normal+Milk+Tea" },
-      { id: 27, name: "Honey Milk Tea", price: 55, cat: "Dudh Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Honey+Milk+Tea" },
-      { id: 28, name: "Masala Milk Tea", price: 65, cat: "Dudh Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Masala+Milk+Tea" },
+const reviews = [
+  { name: 'Avishek Kadel', initials: 'AK', color: '#0d5c63', text: 'This cozy tea place is a hidden gem! The mix of open and semi-open spaces with bamboo seating and lush greenery creates such a relaxing vibe. The rooftop area is perfect for hanging out, and they even have games like Jenga, Uno, and chess.', tag: 'Local Guide' },
+  { name: 'Ashutosh Jha', initials: 'AJ', color: '#d97706', text: 'This new chiya spot was a pleasant surprise. As soon as the first sip of honey milk tea hit my tongue, I was taken — the flavours are so authentic and comforting.', tag: 'Local Guide' },
+  { name: 'Madhusudhan Baral', initials: 'MB', color: '#128a93', text: 'Chiya San is a newly opened tea-focused spot in a quiet area, ideal for youngsters to hang out. With an extensive variety of teas, from classic masala chai to unique blends, it caters to all tastes.', tag: 'Local Guide' },
+  { name: 'Gaurav Nepal', initials: 'GN', color: '#b45309', text: 'Chiya San is a very homely and vibey place, the owners are so friendly, the ambience is great. Wide range of options for tea and snacks. Must visit if you love tea.', tag: 'Local Guide' },
+  { name: 'Abhishek Poudel', initials: 'AP', color: '#0d5c63', text: 'Tea is delicious. Peaceful environment. Can play board games.', tag: 'Local Guide' },
+  { name: 'Prajjwal Adhikari', initials: 'PA', color: '#d97706', text: 'Tea is great. Good for guff gaff with friends.', tag: 'Reviewer' }
+];
 
-      // --- HOT TEAS (KALO CHIYA) ---
-      { id: 29, name: "Normal Black Tea", price: 30, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Normal+Black+Tea" },
-      { id: 30, name: "Lemon Tea", price: 35, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Lemon+Tea" },
-      { id: 31, name: "Masala Black Tea", price: 35, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Masala+Black+Tea" },
-      { id: 32, name: "Hot Lemon", price: 80, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Hot+Lemon" },
-      { id: 33, name: "Hot Lemon with Ginger Honey", price: 120, cat: "Kalo Chiya", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Hot+Lemon+Ginger" },
+/* ============================================================
+   RENDER MENU + TABS
+============================================================ */
+let currentGroup = 'All';
+const groups = ['All', 'Mo:Mo', 'Snacks', 'Tea', 'Bakery', 'Cold Drinks', 'Smoke'];
 
-      // --- BAKERY ITEMS ---
-      { id: 34, name: "Peanut Macarons", price: 25, cat: "Bakery", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Peanut+Macarons" },
-      { id: 35, name: "Choco Chips Cookies (4 Pcs.)", price: 50, cat: "Bakery", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Choco+Cookies" },
+function renderTabs() {
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = groups.map(g => 
+    `<button class="tab-btn ${g === currentGroup ? 'active' : ''}" onclick="filterMenu('${g}')">${g}</button>`
+  ).join('');
+}
 
-      // --- BREAKFAST ---
-      { id: 36, name: "Bread Omelette", price: 130, cat: "Breakfast", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Bread+Omelette" },
+function filterMenu(group) {
+  currentGroup = group;
+  renderTabs();
+  renderMenu();
+}
 
-      // --- SHAKES ---
-      { id: 37, name: "Chocolate Milkshake", price: 250, cat: "Shakes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chocolate+Shake" },
-      { id: 38, name: "Oreo Milkshake", price: 280, cat: "Shakes", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Oreo+Shake" },
-
-      // --- LASSI ---
-      { id: 39, name: "Plain Lassi", price: 100, cat: "Lassi", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Plain+Lassi" },
-      { id: 40, name: "Banana Lassi", price: 200, cat: "Lassi", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Banana+Lassi" },
-
-      // --- COFFEE & ICE CREAM ---
-      { id: 41, name: "Iced Americano", price: 180, cat: "Coffee", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Iced+Americano" },
-      { id: 42, name: "Iced Milk Coffee", price: 200, cat: "Coffee", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Iced+Milk+Coffee" },
-      { id: 43, name: "Vanilla Ice Cream", price: 150, cat: "Ice Cream", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Vanilla+Ice+Cream" },
-      { id: 44, name: "Strawberry Ice Cream", price: 150, cat: "Ice Cream", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Strawberry+Ice+Cream" },
-      { id: 45, name: "Chocolate Ice Cream", price: 150, cat: "Ice Cream", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Chocolate+Ice+Cream" },
-
-      // --- COLD DRINKS & REFRESHERS ---
-      { id: 46, name: "Cold Lemon Tea", price: 80, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Cold+Lemon+Tea" },
-      { id: 47, name: "Lemon Soda", price: 110, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Lemon+Soda" },
-      { id: 48, name: "Masala Coke", price: 130, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Masala+Coke" },
-      { id: 49, name: "Lemon Sprite", price: 130, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Lemon+Sprite" },
-      { id: 50, name: "Virgin Mojito", price: 150, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Virgin+Mojito" },
-      { id: 51, name: "Lemonade", price: 150, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Lemonade" },
-      { id: 52, name: "Mint Lemonade", price: 160, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Mint+Lemonade" },
-      { id: 53, name: "Mocktail Mojito", price: 180, cat: "Cold Drinks", img: "https://placehold.co/600x400/f0fdfa/0e7490?text=Mocktail+Mojito" }
-    ];
-
-    let cart = [];
-
-    // =========================================================================
-    // RENDER MENU
-    // =========================================================================
-    function initMenu() {
-      const container = document.getElementById('menu-container');
-      container.innerHTML = menuData.map(item => `
-        <div class="menu-card tex-paper bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col overflow-hidden">
-          <!-- Item Image -->
-          <img src="${item.img}" alt="${item.name}" class="menu-img" loading="lazy" onerror="this.src='https://placehold.co/600x400/e2e8f0/475569?text=No+Image'">
-          
-          <div class="p-4 flex flex-col flex-1 justify-between">
-            <div>
-              <span class="text-[10px] text-brand font-bold uppercase tracking-widest bg-teal-50 px-2 py-0.5 rounded-full inline-block mb-2">${item.cat}</span>
-              <h4 class="font-bold text-slate-800 text-base leading-tight">${item.name}</h4>
-              <p class="text-slate-600 font-extrabold mt-2 text-lg">Rs. ${item.price}</p>
-            </div>
-            <button onclick="addToCart(${item.id})" class="mt-4 w-full bg-slate-100 hover:bg-brand hover:text-white text-slate-800 text-sm font-semibold py-2.5 rounded-lg transition-all flex items-center justify-center gap-1">
-              <span>+</span> Add to Order
-            </button>
-          </div>
+function renderMenu() {
+  const list = currentGroup === 'All' 
+    ? menuData 
+    : menuData.filter(i => i.group === currentGroup);
+  const container = document.getElementById('menu-container');
+  container.innerHTML = list.map(item => `
+    <div class="dish-card">
+      <div class="dish-img-wrap">
+        <img src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.parentElement.style.background='linear-gradient(135deg,#0d5c63,#d97706)';this.style.display='none'">
+        <span class="dish-badge">${item.cat}</span>
+      </div>
+      <div class="p-4 flex flex-col flex-1">
+        <h4 class="font-semibold text-stone-900 text-[15px] leading-snug">${item.name}</h4>
+        <div class="flex items-center justify-between mt-3">
+          <span class="font-display text-xl font-bold text-tea">Rs. ${item.price}</span>
+          <button onclick="addToCart(${item.id})" class="btn btn-primary w-9 h-9 rounded-full flex items-center justify-center text-lg font-bold leading-none" title="Add">+</button>
         </div>
-      `).join('');
-    }
+      </div>
+    </div>
+  `).join('');
+}
 
-    // =========================================================================
-    // CART LOGIC
-    // =========================================================================
-    function addToCart(id) {
-      const item = menuData.find(m => m.id === id);
-      const existing = cart.find(c => c.id === id);
-      if (existing) {
-        existing.qty++;
-      } else {
-        cart.push({ ...item, qty: 1 });
-      }
-      updateCartUI();
-    }
-
-    function updateCartUI() {
-      const cartItemsEl = document.getElementById('cart-items');
-      const countEl = document.getElementById('cart-count');
-      const subtotalEl = document.getElementById('cart-subtotal');
-      const checkoutBtn = document.getElementById('checkout-btn');
-
-      const totalQty = cart.reduce((acc, curr) => acc + curr.qty, 0);
-      const totalAmount = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
-
-      countEl.innerText = totalQty;
-      subtotalEl.innerText = totalAmount;
-      checkoutBtn.disabled = cart.length === 0;
-
-      if (cart.length === 0) {
-        cartItemsEl.innerHTML = `<p class="text-slate-400 text-sm text-center py-4">Your cart is empty</p>`;
-        return;
-      }
-
-      cartItemsEl.innerHTML = cart.map(item => `
-        <div class="flex justify-between items-center text-sm border-b border-slate-200 pb-2">
-          <div class="pr-2">
-            <p class="font-semibold text-slate-800 leading-tight">${item.name}</p>
-            <p class="text-slate-500 text-xs">Rs. ${item.price} × ${item.qty}</p>
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <button onclick="changeQty(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center bg-slate-200 rounded font-bold hover:bg-slate-300 transition-colors">-</button>
-            <span class="w-4 text-center">${item.qty}</span>
-            <button onclick="changeQty(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center bg-slate-200 rounded font-bold hover:bg-slate-300 transition-colors">+</button>
-          </div>
+/* ============================================================
+   RENDER REVIEWS
+============================================================ */
+function renderReviews() {
+  const container = document.getElementById('reviews-container');
+  container.innerHTML = reviews.map(r => `
+    <div class="review-card reveal">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="avatar" style="background:${r.color}">${r.initials}</div>
+        <div>
+          <div class="font-semibold text-stone-900 text-sm">${r.name}</div>
+          <div class="text-xs text-stone-500">${r.tag}</div>
         </div>
-      `).join('');
-    }
+      </div>
+      <div class="text-amber text-sm mb-3">★★★★★</div>
+      <p class="text-stone-600 text-sm leading-relaxed">"${r.text}"</p>
+    </div>
+  `).join('');
+}
 
-    function changeQty(id, delta) {
-      const item = cart.find(c => c.id === id);
-      if (item) {
-        item.qty += delta;
-        if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+/* ============================================================
+   CART
+============================================================ */
+let cart = [];
+
+function addToCart(id) {
+  const item = menuData.find(m => m.id === id);
+  const existing = cart.find(c => c.id === id);
+  if (existing) existing.qty++;
+  else cart.push({ ...item, qty: 1 });
+  updateCartUI();
+  pulseCartButton();
+}
+
+function pulseCartButton() {
+  const btn = document.querySelector('#nav button');
+  btn.style.transform = 'scale(1.1)';
+  setTimeout(() => btn.style.transform = '', 180);
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(c => c.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const countEl = document.getElementById('cart-count');
+  const subtotalEl = document.getElementById('cart-subtotal');
+  const totalEl = document.getElementById('cart-total');
+  const checkoutBtn = document.getElementById('checkout-btn');
+  const cartItemsEl = document.getElementById('cart-items');
+
+  const totalQty = cart.reduce((a, c) => a + c.qty, 0);
+  const totalAmount = cart.reduce((a, c) => a + c.price * c.qty, 0);
+
+  countEl.textContent = totalQty;
+  subtotalEl.textContent = totalAmount;
+  totalEl.textContent = totalAmount;
+  checkoutBtn.disabled = cart.length === 0;
+
+  if (!cart.length) {
+    cartItemsEl.innerHTML = `
+      <div class="text-center py-20 text-stone-400">
+        <div class="text-5xl mb-3">🛒</div>
+        <p class="font-medium">Your cart is empty</p>
+        <p class="text-sm mt-1">Add something delicious from the menu</p>
+      </div>`;
+    return;
+  }
+
+  cartItemsEl.innerHTML = cart.map(item => `
+    <div class="flex items-center gap-3 bg-cream rounded-2xl p-3">
+      <img src="${item.img}" class="w-14 h-14 rounded-xl object-cover flex-shrink-0" onerror="this.style.display='none'">
+      <div class="flex-1 min-w-0">
+        <div class="font-semibold text-stone-900 text-sm truncate">${item.name}</div>
+        <div class="text-tea font-bold text-sm mt-0.5">Rs. ${item.price}</div>
+      </div>
+      <div class="flex items-center gap-1.5 flex-shrink-0">
+        <button onclick="changeQty(${item.id}, -1)" class="w-7 h-7 rounded-full bg-white border border-stone-200 hover:border-tea hover:text-tea flex items-center justify-center font-bold transition">−</button>
+        <span class="w-6 text-center font-semibold text-sm">${item.qty}</span>
+        <button onclick="changeQty(${item.id}, 1)" class="w-7 h-7 rounded-full bg-white border border-stone-200 hover:border-tea hover:text-tea flex items-center justify-center font-bold transition">+</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   DRAWER / MODAL
+============================================================ */
+function openCart() {
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function openCheckout() {
+  if (!cart.length) return;
+  closeCart();
+  const m = document.getElementById('checkout-modal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+function closeCheckout() {
+  const m = document.getElementById('checkout-modal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+  document.body.style.overflow = '';
+}
+
+function handlePlaceOrder(e) {
+  e.preventDefault();
+  const total = cart.reduce((a, c) => a + c.price * c.qty, 0);
+  const name = document.getElementById('cust-name').value;
+  alert(`✓ Order Placed Successfully!\n\nThank you, ${name}.\nTotal: Rs. ${total}\n\nWe'll have your order ready shortly at Chiya San.`);
+  cart = [];
+  updateCartUI();
+  closeCheckout();
+  document.getElementById('order-form').reset();
+}
+
+/* ============================================================
+   NAV SCROLL EFFECT
+============================================================ */
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('nav');
+  if (window.scrollY > 60) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+});
+
+/* ============================================================
+   REVEAL ON SCROLL
+============================================================ */
+function initReveal() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('show');
+        observer.unobserve(e.target);
       }
-      updateCartUI();
-    }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
 
-    // =========================================================================
-    // CHECKOUT MODAL
-    // =========================================================================
-    function openCheckout() {
-      const modal = document.getElementById('checkout-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
+/* ============================================================
+   INIT
+============================================================ */
+window.addEventListener('load', () => {
+  renderTabs();
+  renderMenu();
+  renderReviews();
+  initReveal();
 
-    function closeCheckout() {
-      const modal = document.getElementById('checkout-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function toggleCart() {
-      // For mobile, scroll to cart or show a summary alert
-      if (window.innerWidth < 1024) {
-        const cartEl = document.querySelector('aside');
-        cartEl.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        openCheckout();
-      }
-    }
-
-    function handlePlaceOrder(e) {
-      e.preventDefault();
-      const orderPayload = {
-        name: document.getElementById('cust-name').value,
-        phone: document.getElementById('cust-phone').value,
-        type: document.getElementById('order-type').value,
-        items: cart,
-        total: cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0)
-      };
-
-      alert(`Order Placed Successfully! Total: Rs. ${orderPayload.total}. Thank you, ${orderPayload.name}.`);
-      
-      // Reset cart
-      cart = [];
-      updateCartUI();
-      closeCheckout();
-      document.getElementById('order-form').reset();
-    }
-
-    // Initialize
-    initMenu();
-  </script>
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hide');
+  }, 2600);
+});
+</script>
 </body>
 </html>
