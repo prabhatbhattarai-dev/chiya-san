@@ -9,7 +9,6 @@
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 sm:p-8">
 
   <div class="max-w-6xl mx-auto">
-    <!-- Header -->
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-300">
       <div>
         <h1 class="text-3xl font-bold text-slate-900">☕ Chiya San Kitchen Dashboard</h1>
@@ -18,18 +17,15 @@
       <span class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-sm">Live Realtime</span>
     </div>
 
-    <!-- Orders Grid -->
     <div id="orders-container" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <p class="text-slate-500">Loading incoming orders...</p>
     </div>
   </div>
 
-  <!-- Firebase Integration Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Your exact Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyB8XHVv0U4GtdnI3U26C10fpGDpnELSdg",
       authDomain: "chiya-san-orders.firebaseapp.com",
@@ -45,7 +41,6 @@
 
     const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
 
-    // Listen to database changes in real time
     onSnapshot(ordersQuery, (snapshot) => {
       const container = document.getElementById('orders-container');
       
@@ -64,8 +59,6 @@
         if (status === "Ready") statusBg = "bg-emerald-100 text-emerald-800";
 
         const itemsList = order.items ? order.items.map(i => `<li>${i.name} x${i.qty}</li>`).join('') : '';
-
-        // Generate clean WhatsApp link
         const waLink = formatWhatsAppLink(order.customerPhone, order.customerName, id);
 
         return `
@@ -92,7 +85,6 @@
                 </button>
               ` : ''}
 
-              <!-- Direct HTML Link to bypass pop-up blockers -->
               <a href="${waLink}" target="_blank" onclick="updateStatus('${id}', 'Ready')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all block text-center">
                 💬 Mark Ready & Open WhatsApp
               </a>
@@ -102,23 +94,16 @@
       }).join('');
     });
 
-    // Clean phone number and generate wa.me link
     function formatWhatsAppLink(phone, name, orderId) {
       if (!phone) return "#";
-      
-      // Remove spaces, dashes, + signs
       let cleanNumber = phone.replace(/[^0-9]/g, '');
-
-      // Format for Nepal numbers (+977)
       if (cleanNumber.length === 10) {
         cleanNumber = "977" + cleanNumber;
       }
-
       const message = encodeURIComponent(`Namaste ${name}! ☕\nYour order #${orderId.slice(-4)} from Chiya San is READY! Please come pick it up. Thank you!`);
       return `https://wa.me/${cleanNumber}?text=${message}`;
     }
 
-    // Expose updateStatus function globally for button clicks
     window.updateStatus = async function(orderId, newStatus) {
       await updateDoc(doc(db, "orders", orderId), { status: newStatus });
     };
