@@ -3,23 +3,39 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const apiKey = process.env.VEXTRO_API_KEY;
-    // Set your Admin / Kitchen WhatsApp phone number here or in Vercel env vars
-    const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER || '9779863263690'; 
+    // Reads admin phone from Vercel env or falls back to your configured number
+    const adminPhoneRaw = process.env.ADMIN_WHATSAPP_NUMBER || '9779765566682';
 
     if (!apiKey) {
-      console.error('VEXTRO_API_KEY missing');
-      return NextResponse.json({ error: 'Missing VEXTRO_API_KEY' }, { status: 500 });
+      console.error('VEXTRO_API_KEY missing from environment variables');
+      return NextResponse.json(
+        { error: 'Server Configuration Error: Missing VEXTRO_API_KEY' },
+        { status: 500 }
+      );
     }
 
     const { customerPhone, customerName, orderId, itemsSummary, totalAmount, orderType } = await request.json();
 
-    // 1. Format & sanitize customer phone number
+    if (!customerPhone) {
+      return NextResponse.json(
+        { error: 'Customer phone number is required' },
+        { status: 400 }
+      );
+    }
+
+    // 1. Sanitize customer phone number (digits only)
     let formattedCustomerPhone = customerPhone.replace(/\D/g, '');
     if (formattedCustomerPhone.length === 10 && formattedCustomerPhone.startsWith('9')) {
       formattedCustomerPhone = '977' + formattedCustomerPhone;
     }
 
-    // 2. Customer Receipt Text
+    // 2. Sanitize admin phone number
+    let formattedAdminPhone = adminPhoneRaw.replace(/\D/g, '');
+    if (formattedAdminPhone.length === 10 && formattedAdminPhone.startsWith('9')) {
+      formattedAdminPhone = '977' + formattedAdminPhone;
+    }
+
+    // 3. Customer Receipt Message
     const customerMessageText =
       `🍵 *Chiya SAN - Order Confirmed!*\n\n` +
       `Hi ${customerName || 'Valued Customer'},\n` +
@@ -27,22 +43,21 @@ export async function POST(request: Request) {
       `*Order Type:* ${orderType || 'Dine-in'}\n` +
       `*Items:* ${itemsSummary}\n` +
       `*Total Amount:* NPR ${totalAmount}\n\n` +
-      `We will notify you here when it is ready!`;
+      `We will notify you right here as soon as it's ready at our Chakupat counter!`;
 
-    // 3. Admin / Kitchen Alert Text
+    // 4. Admin / Kitchen Alert Message
     const adminMessageText =
       `🚨 *NEW WEB ORDER RECEIVED!*\n\n` +
       `*Order ID:* #${orderId.slice(-5)}\n` +
-      `*Customer Name:* ${customerName}\n` +
-      `*Customer Phone:* +${formattedCustomerPhone}\n` +
-      `*Order Type:* ${orderType}\n\n` +
+      `*Customer:* ${customerName}\n` +
+      `*Phone:* +${formattedCustomerPhone}\n` +
+      `*Type:* ${orderType}\n\n` +
       `*ITEMS TO PREPARE:*\n` +
       `${itemsSummary.split(', ').map((item: string) => `• ${item}`).join('\n')}\n\n` +
       `*Total Bill:* NPR ${totalAmount}`;
 
-    // 4. Send BOTH WhatsApp messages in parallel
+    // 5. Fire both API dispatches simultaneously
     const [customerRes, adminRes] = await Promise.all([
-      // Message 1: To Customer
       fetch('https://app.vextro.net/api/v1/messages', {
         method: 'POST',
         headers: {
@@ -55,7 +70,6 @@ export async function POST(request: Request) {
           text: customerMessageText,
         }),
       }),
-      // Message 2: To Admin / Kitchen
       fetch('https://app.vextro.net/api/v1/messages', {
         method: 'POST',
         headers: {
@@ -63,7 +77,7 @@ export async function POST(request: Request) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          to: adminPhone,
+          to: formattedAdminPhone,
           type: 'text',
           text: adminMessageText,
         }),
@@ -73,13 +87,23 @@ export async function POST(request: Request) {
     const customerData = await customerRes.json();
     const adminData = await adminRes.json();
 
+    if (!customerRes.ok) {
+      console.error('Customer WhatsApp failed:', customerData);
+    }
+    if (!adminRes.ok) {
+      console.error('Admin WhatsApp failed:', adminData);
+    }
+
     return NextResponse.json({
       success: true,
-      customerNotification: customerData,
-      adminNotification: adminData,
+      customerResult: customerData,
+      adminResult: adminData,
     });
   } catch (error: any) {
     console.error('API Route Error:', error);
-    return NextResponse.json({ error: error.message || 'Server Error' }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }
