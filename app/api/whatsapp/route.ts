@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const apiKey = process.env.VEXTRO_API_KEY;
-    // Reads admin phone from Vercel env or falls back to your configured number
     const adminPhoneRaw = process.env.ADMIN_WHATSAPP_NUMBER || '9779765566682';
 
     if (!apiKey) {
@@ -25,8 +24,18 @@ export async function POST(request: Request) {
 
     // 1. Sanitize customer phone number (digits only)
     let formattedCustomerPhone = customerPhone.replace(/\D/g, '');
+
+    // Prepend Nepal country code (977) if standard 10-digit number starting with 9
     if (formattedCustomerPhone.length === 10 && formattedCustomerPhone.startsWith('9')) {
       formattedCustomerPhone = '977' + formattedCustomerPhone;
+    }
+
+    // Strict validation for 10-digit Nepali mobile numbers (+977 98/97XXXXXXX)
+    if (formattedCustomerPhone.length !== 12 || !formattedCustomerPhone.startsWith('9779')) {
+      return NextResponse.json(
+        { error: 'Please enter a valid 10-digit Nepali mobile number starting with 98 or 97.' },
+        { status: 400 }
+      );
     }
 
     // 2. Sanitize admin phone number
@@ -56,7 +65,7 @@ export async function POST(request: Request) {
       `${itemsSummary.split(', ').map((item: string) => `• ${item}`).join('\n')}\n\n` +
       `*Total Bill:* NPR ${totalAmount}`;
 
-    // 5. Fire both API dispatches simultaneously
+    // 5. Send parallel WhatsApp messages via Vextro API
     const [customerRes, adminRes] = await Promise.all([
       fetch('https://app.vextro.net/api/v1/messages', {
         method: 'POST',
@@ -88,10 +97,11 @@ export async function POST(request: Request) {
     const adminData = await adminRes.json();
 
     if (!customerRes.ok) {
-      console.error('Customer WhatsApp failed:', customerData);
-    }
-    if (!adminRes.ok) {
-      console.error('Admin WhatsApp failed:', adminData);
+      console.error('Customer WhatsApp delivery failed:', customerData);
+      return NextResponse.json(
+        { error: customerData.message || 'Failed to send WhatsApp message to customer.', details: customerData },
+        { status: customerRes.status }
+      );
     }
 
     return NextResponse.json({
