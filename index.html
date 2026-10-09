@@ -398,11 +398,11 @@
     <form id="order-form" onsubmit="handlePlaceOrder(event)" class="space-y-4">
       <div>
         <label class="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1.5">Your Name</label>
-        <input type="text" id="cust-name" required class="w-full border border-stone-300 rounded-xl p-3 focus:ring-2 focus:ring-tea focus:border-tea outline-none">
+        <input type="text" id="cust-name" required class="w-full border border-stone-300 rounded-xl p-3 focus:ring-2 focus:ring-tea focus:border-tea outline-none" placeholder="e.g. Prabhat Bhattarai">
       </div>
       <div>
-        <label class="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1.5">Phone Number</label>
-        <input type="tel" id="cust-phone" required class="w-full border border-stone-300 rounded-xl p-3 focus:ring-2 focus:ring-tea focus:border-tea outline-none">
+        <label class="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1.5">Phone Number (WhatsApp)</label>
+        <input type="tel" id="cust-phone" required class="w-full border border-stone-300 rounded-xl p-3 focus:ring-2 focus:ring-tea focus:border-tea outline-none" placeholder="98XXXXXXXX">
       </div>
       <div>
         <label class="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1.5">Order Type</label>
@@ -413,9 +413,55 @@
       </div>
       <div class="flex justify-end gap-3 pt-4">
         <button type="button" onclick="closeCheckout()" class="px-5 py-2.5 rounded-full font-semibold text-stone-600 hover:bg-stone-100">Cancel</button>
-        <button type="submit" class="px-6 py-2.5 bg-tea text-white font-bold rounded-full hover:bg-tea-dark shadow-lg">Confirm Order</button>
+        <button type="submit" id="submit-order-btn" class="px-6 py-2.5 bg-tea text-white font-bold rounded-full hover:bg-tea-dark shadow-lg">Confirm Order</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- MODERN SUCCESS MODAL (Replaces Browser Alert) -->
+<div id="success-modal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-[70]">
+  <div class="bg-white max-w-sm w-full rounded-3xl p-6 shadow-2xl border border-amber-100 text-center transform transition-all">
+    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </div>
+    <h3 class="font-display text-2xl font-bold text-stone-900 mb-1">Order Received!</h3>
+    <p class="text-xs text-stone-500 font-semibold uppercase tracking-wider mb-4">Chiya SAN • Chakupat Counter</p>
+    
+    <div class="bg-amber-50 border border-amber-200/80 rounded-2xl p-4 text-left mb-4 space-y-2">
+      <div class="flex justify-between text-xs text-stone-600 font-semibold">
+        <span>Order ID:</span>
+        <span id="succ-order-id" class="text-amber-950 font-mono font-bold">#00000</span>
+      </div>
+      <div class="flex justify-between text-xs text-stone-600 font-semibold">
+        <span>Customer:</span>
+        <span id="succ-cust-name" class="text-stone-900 font-bold">-</span>
+      </div>
+      <div class="flex justify-between text-xs text-stone-600 font-semibold">
+        <span>Status:</span>
+        <span class="text-emerald-700 font-bold flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Sent to Kitchen
+        </span>
+      </div>
+      <div class="border-t border-amber-200/80 pt-2 flex justify-between text-sm font-extrabold text-amber-950">
+        <span>Total Amount:</span>
+        <span id="succ-total">Rs. 0</span>
+      </div>
+    </div>
+
+    <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl mb-5 flex items-center gap-3 text-left">
+      <span class="text-2xl">💬</span>
+      <p class="text-xs text-emerald-900 font-medium leading-tight">
+        An official receipt & kitchen alert have been dispatched on <strong class="font-bold">WhatsApp</strong>.
+      </p>
+    </div>
+
+    <button onclick="closeSuccessModal()" class="w-full bg-tea hover:bg-tea-dark text-white font-bold py-3 rounded-xl transition shadow-md">
+      Done & Return to Menu
+    </button>
   </div>
 </div>
 
@@ -659,15 +705,77 @@ function closeCheckout() {
   m.classList.remove('flex');
   document.body.style.overflow = '';
 }
-function handlePlaceOrder(e) {
+
+/* ============================================================
+   UPDATED ORDER HANDLER & WHATSAPP INTEGRATION
+============================================================ */
+async function handlePlaceOrder(e) {
   e.preventDefault();
-  const total = cart.reduce((a, c) => a + c.price * c.qty, 0);
+  
+  const submitBtn = document.getElementById('submit-order-btn');
+  const originalBtnText = submitBtn.innerText;
+  submitBtn.disabled = true;
+  submitBtn.innerText = 'Processing Order...';
+
   const name = document.getElementById('cust-name').value;
-  alert(`✓ Order Placed Successfully!\n\nThank you, ${name}.\nTotal: Rs. ${total}\n\nWe'll have your order ready shortly at Chiya San.`);
-  cart = [];
-  updateCartUI();
-  closeCheckout();
-  document.getElementById('order-form').reset();
+  const phone = document.getElementById('cust-phone').value;
+  const orderType = document.getElementById('order-type').value;
+  const total = cart.reduce((a, c) => a + c.price * c.qty, 0);
+  const itemsSummary = cart.map(c => `${c.name} x${c.qty}`).join(', ');
+  const generatedOrderId = 'ORD-' + Math.floor(10000 + Math.random() * 90000);
+
+  try {
+    // 1. Dispatch WhatsApp message via API Route
+    const res = await fetch('/api/whatsapp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customerName: name,
+        customerPhone: phone,
+        orderType: orderType,
+        orderId: generatedOrderId,
+        itemsSummary: itemsSummary,
+        totalAmount: total
+      })
+    });
+
+    const data = await res.json();
+
+    // 2. Populate Success Modal
+    document.getElementById('succ-order-id').innerText = '#' + generatedOrderId.slice(-5);
+    document.getElementById('succ-cust-name').innerText = name;
+    document.getElementById('succ-total').innerText = 'Rs. ' + total;
+
+    // 3. Reset Cart & Form
+    cart = [];
+    updateCartUI();
+    closeCheckout();
+    document.getElementById('order-form').reset();
+
+    // 4. Open Custom Modal
+    openSuccessModal();
+
+  } catch (err) {
+    console.error('Order submission error:', err);
+    alert('An error occurred while submitting your order. Please try again.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerText = originalBtnText;
+  }
+}
+
+function openSuccessModal() {
+  const m = document.getElementById('success-modal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSuccessModal() {
+  const m = document.getElementById('success-modal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+  document.body.style.overflow = '';
 }
 
 (function runLoader() {
