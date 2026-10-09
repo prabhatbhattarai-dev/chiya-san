@@ -472,15 +472,11 @@
 ============================================================ */
 const GH = 'https://raw.githubusercontent.com/prabhatbhattarai11/chiya-san/main/';
 const IMG = {
-  // YOUR UPLOADED IMAGES (from your GitHub repo)
   chickenSteam: GH + 'Chicken%20Steam%20MoMo.jpg',
   chickenJhol:  GH + 'Chicken%20Jhol%20MoMo.jpg',
   vegSteam:     GH + 'Veg%20%26%20Paneer%20Steam%20MoMo.jpg',
 
-  // Kothey — fallback photo
   kothey:       'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&q=80',
-
-  // ONLINE FALLBACK IMAGES (for all other menu items)
   vegMomo:    'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=600&q=80',
   khaaja:     'https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=600&q=80',
   nuggets:    'https://images.unsplash.com/photo-1562967914-608f82629710?w=600&q=80',
@@ -707,31 +703,38 @@ function closeCheckout() {
 }
 
 /* ============================================================
-   UPDATED ORDER HANDLER & WHATSAPP INTEGRATION
+   UPDATED ORDER HANDLER & FRONTEND VALIDATION
 ============================================================ */
 async function handlePlaceOrder(e) {
   e.preventDefault();
-  
+
+  const name = document.getElementById('cust-name').value.trim();
+  const rawPhone = document.getElementById('cust-phone').value;
+  const phoneDigits = rawPhone.replace(/\D/g, '');
+  const orderType = document.getElementById('order-type').value;
+
+  // Frontend length validation (Nepali numbers must have 10 digits starting with 9)
+  if (phoneDigits.length !== 10 || !phoneDigits.startsWith('9')) {
+    alert('Please enter a valid 10-digit mobile number (e.g. 98XXXXXXXX).');
+    return;
+  }
+
   const submitBtn = document.getElementById('submit-order-btn');
   const originalBtnText = submitBtn.innerText;
   submitBtn.disabled = true;
   submitBtn.innerText = 'Processing Order...';
 
-  const name = document.getElementById('cust-name').value;
-  const phone = document.getElementById('cust-phone').value;
-  const orderType = document.getElementById('order-type').value;
   const total = cart.reduce((a, c) => a + c.price * c.qty, 0);
   const itemsSummary = cart.map(c => `${c.name} x${c.qty}`).join(', ');
   const generatedOrderId = 'ORD-' + Math.floor(10000 + Math.random() * 90000);
 
   try {
-    // 1. Dispatch WhatsApp message via API Route
     const res = await fetch('/api/whatsapp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         customerName: name,
-        customerPhone: phone,
+        customerPhone: phoneDigits,
         orderType: orderType,
         orderId: generatedOrderId,
         itemsSummary: itemsSummary,
@@ -741,23 +744,25 @@ async function handlePlaceOrder(e) {
 
     const data = await res.json();
 
-    // 2. Populate Success Modal
+    if (!res.ok) {
+      alert(`Order Error: ${data.error || 'Failed to process WhatsApp notification.'}`);
+      return;
+    }
+
+    // Populate and display success modal
     document.getElementById('succ-order-id').innerText = '#' + generatedOrderId.slice(-5);
     document.getElementById('succ-cust-name').innerText = name;
     document.getElementById('succ-total').innerText = 'Rs. ' + total;
 
-    // 3. Reset Cart & Form
     cart = [];
     updateCartUI();
     closeCheckout();
     document.getElementById('order-form').reset();
-
-    // 4. Open Custom Modal
     openSuccessModal();
 
   } catch (err) {
     console.error('Order submission error:', err);
-    alert('An error occurred while submitting your order. Please try again.');
+    alert('An unexpected error occurred while placing your order. Please check your network connection.');
   } finally {
     submitBtn.disabled = false;
     submitBtn.innerText = originalBtnText;
