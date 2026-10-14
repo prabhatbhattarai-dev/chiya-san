@@ -8,7 +8,7 @@
     :root {
       --primary-color: #2c5e3b;
       --accent-color: #25D366;
-      --bg-color: #f9f9f9;
+      --bg-color: #f4f6f4;
       --text-color: #333;
     }
     body {
@@ -22,14 +22,28 @@
       background-color: var(--primary-color);
       color: white;
       text-align: center;
-      padding: 20px;
+      padding: 25px 15px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    header p {
+      margin: 5px 0 0 0;
+      font-size: 14px;
+      opacity: 0.9;
     }
     .container {
       max-width: 800px;
       margin: 20px auto;
-      padding: 15px;
+      padding: 0 15px 30px 15px;
     }
-    h2 { border-bottom: 2px solid #ddd; padding-bottom: 5px; }
+    h2 {
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 8px;
+      color: var(--primary-color);
+      margin-top: 25px;
+    }
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -45,9 +59,21 @@
       flex-direction: column;
       justify-content: space-between;
     }
-    .menu-item h3 { margin: 0 0 5px 0; font-size: 18px; }
-    .menu-item p { margin: 0 0 10px 0; color: #666; font-size: 14px; }
-    .price { font-weight: bold; color: var(--primary-color); margin-bottom: 10px; }
+    .menu-item h3 {
+      margin: 0 0 5px 0;
+      font-size: 18px;
+    }
+    .menu-item p {
+      margin: 0 0 10px 0;
+      color: #666;
+      font-size: 13px;
+    }
+    .price {
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
     button {
       background-color: var(--primary-color);
       color: white;
@@ -57,7 +83,9 @@
       border-radius: 4px;
       font-weight: bold;
     }
-    button:hover { opacity: 0.9; }
+    button:hover {
+      opacity: 0.9;
+    }
     .cart-section, .checkout-section {
       background: white;
       padding: 20px;
@@ -65,42 +93,63 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
       margin-bottom: 20px;
     }
-    ul.cart-list { list-style: none; padding: 0; margin: 0 0 15px 0; }
+    ul.cart-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 15px 0;
+    }
     ul.cart-list li {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
+      align-items: center;
+      padding: 10px 0;
       border-bottom: 1px solid #eee;
     }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
     input, select, textarea {
       width: 100%;
       padding: 10px;
       box-sizing: border-box;
       border: 1px solid #ccc;
       border-radius: 4px;
+      font-size: 14px;
     }
     .whatsapp-btn {
       background-color: var(--accent-color);
       color: white;
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       font-size: 16px;
       border-radius: 5px;
       border: none;
       cursor: pointer;
       font-weight: bold;
+      margin-top: 10px;
     }
-    .whatsapp-btn:hover { background-color: #128C7E; }
-    .remove-btn { background-color: #ff4d4d; padding: 3px 8px; font-size: 12px; }
+    .whatsapp-btn:hover {
+      background-color: #128C7E;
+    }
+    .remove-btn {
+      background-color: #ff4d4d;
+      padding: 4px 8px;
+      font-size: 12px;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
 
   <header>
     <h1>🍵 Chiya San</h1>
-    <p>Select your items and send your order straight to our WhatsApp!</p>
+    <p>Select items, enter your details, and place your order directly via WhatsApp!</p>
   </header>
 
   <div class="container">
@@ -108,7 +157,7 @@
     <!-- Menu Section -->
     <h2>Our Menu</h2>
     <div class="menu-grid" id="menuGrid">
-      <!-- Items generated dynamically via JavaScript -->
+      <!-- Generated via JavaScript -->
     </div>
 
     <!-- Cart Section -->
@@ -122,11 +171,11 @@
 
     <!-- Customer Checkout Details -->
     <div class="checkout-section">
-      <h2>Delivery / Table Details</h2>
+      <h2>Order Details</h2>
       <form id="orderForm" onsubmit="event.preventDefault(); sendToWhatsApp();">
         <div class="form-group">
           <label for="customerName">Your Name:</label>
-          <input type="text" id="customerName" required placeholder="e.g. Ram Sharma">
+          <input type="text" id="customerName" required placeholder="e.g. Prabhat Bhattarai">
         </div>
 
         <div class="form-group">
@@ -140,7 +189,7 @@
 
         <div class="form-group" id="locationGroup">
           <label id="locationLabel" for="locationDetails">Table Number:</label>
-          <input type="text" id="locationDetails" required placeholder="e.g. Table 4">
+          <input type="text" id="locationDetails" required placeholder="e.g. Table 3">
         </div>
 
         <button type="submit" class="whatsapp-btn">Send Order via WhatsApp 💬</button>
@@ -150,7 +199,7 @@
   </div>
 
   <script>
-    // 1. Define your Cafe Menu Items and Prices
+    // 1. Menu Items Definition
     const menuItems = [
       { id: 1, name: "Special Milk Chiya", price: 50, desc: "Traditional spiced brewed milk tea" },
       { id: 2, name: "Black Tea (Kalo Chiya)", price: 30, desc: "Fresh lemon and herbal tea" },
@@ -162,7 +211,7 @@
 
     let cart = [];
 
-    // Render Menu on Page Load
+    // 2. Render Menu Cards
     function renderMenu() {
       const grid = document.getElementById('menuGrid');
       grid.innerHTML = '';
@@ -180,6 +229,7 @@
       });
     }
 
+    // 3. Cart Management Functions
     function addToCart(id) {
       const product = menuItems.find(p => p.id === id);
       const existing = cart.find(p => p.id === id);
@@ -215,7 +265,7 @@
         cartList.innerHTML += `
           <li>
             <span>${item.name} (x${item.qty})</span>
-            <span>Rs. ${itemTotal} <button class="remove-btn" onclick="removeFromCart(${item.id})">X</button></span>
+            <span>Rs. ${itemTotal} <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button></span>
           </li>
         `;
       });
@@ -223,6 +273,7 @@
       cartTotal.innerText = `Total: Rs. ${total}`;
     }
 
+    // 4. Form Field Toggling based on Order Type
     function toggleAddressField() {
       const type = document.getElementById('orderType').value;
       const label = document.getElementById('locationLabel');
@@ -230,19 +281,20 @@
 
       if (type === 'Dine-In') {
         label.innerText = 'Table Number:';
-        input.placeholder = 'e.g. Table 4';
+        input.placeholder = 'e.g. Table 3';
       } else if (type === 'Takeaway') {
         label.innerText = 'Pickup Time:';
         input.placeholder = 'e.g. Ready in 15 mins';
       } else {
         label.innerText = 'Delivery Address:';
-        input.placeholder = 'e.g. Jawalakhel, near square';
+        input.placeholder = 'e.g. Kathmandu / Lalitpur address';
       }
     }
 
+    // 5. Send Order to WhatsApp Function
     function sendToWhatsApp() {
       if (cart.length === 0) {
-        alert("Please add at least one item to your cart before ordering.");
+        alert("Please add at least one item to your cart before sending your order.");
         return;
       }
 
@@ -250,14 +302,14 @@
       const orderType = document.getElementById('orderType').value;
       const location = document.getElementById('locationDetails').value;
 
-      // ENTER YOUR WHATSAPP NUMBER HERE (Country code + number, NO '+' or spaces)
-      // Example for Nepal: 9779800000000
+      // REPLACE WITH YOUR ACTUAL WHATSAPP PHONE NUMBER
+      // Formatted as country code + number without plus signs or hyphens (e.g., 9779800000000)
       const phoneNumber = "9779800000000"; 
 
       let message = `*NEW ORDER - CHIYA SAN*\n\n` +
                     `👤 *Customer:* ${name}\n` +
                     `📌 *Type:* ${orderType}\n` +
-                    `📍 *Location/Info:* ${location}\n\n` +
+                    `📍 *Details:* ${location}\n\n` +
                     `🛒 *Items Ordered:*\n`;
 
       let total = 0;
@@ -269,12 +321,11 @@
 
       message += `\n💰 *Total Amount:* Rs. ${total}`;
 
-      // Encode and open WhatsApp chat
       const encodedURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
       window.open(encodedURL, '_blank');
     }
 
-    // Initialize UI
+    // Initialize page
     renderMenu();
   </script>
 </body>
