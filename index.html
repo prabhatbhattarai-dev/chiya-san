@@ -68,6 +68,16 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        /* Floating Animation for Hero Logo */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="bg-brand-cream text-brand-dark font-sans antialiased selection:bg-brand-terracotta selection:text-white overflow-x-hidden">
@@ -159,13 +169,16 @@
                 <a href="#visit" class="bg-white text-brand-green border border-brand-green/20 px-8 py-3.5 rounded-full font-medium hover:bg-brand-lightGreen transition">Get Directions</a>
             </div>
         </div>
+        
+        <!-- Hero Image Replaced with Logo -->
         <div class="flex-1 w-full relative">
-            <div class="aspect-square rounded-3xl bg-brand-lightGreen overflow-hidden relative shadow-2xl">
-                <img src="https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=1000&auto=format&fit=crop" alt="Chiya San Tea" class="w-full h-full object-cover">
-                <!-- Logo Overlay on Hero Image -->
-                <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur p-3 rounded-2xl shadow-lg">
-                    <img src="images/logo.png" alt="Chiya San Logo" class="h-16 w-auto object-contain">
-                </div>
+            <div class="aspect-square rounded-3xl bg-brand-lightGreen flex items-center justify-center relative shadow-2xl p-8 border border-brand-green/10 overflow-hidden">
+                <!-- Decorative Background Circles -->
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/40 rounded-full blur-2xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-terracotta/10 rounded-full blur-2xl"></div>
+                
+                <!-- Large Centered Logo with Floating Animation -->
+                <img src="images/logo.png" alt="Chiya San Logo" class="w-full h-auto max-w-[280px] md:max-w-[350px] object-contain drop-shadow-2xl animate-float relative z-10">
             </div>
         </div>
     </section>
