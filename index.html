@@ -183,7 +183,6 @@
           <select id="orderType" onchange="toggleAddressField()">
             <option value="Dine-In">Dine-In</option>
             <option value="Takeaway">Takeaway / Pick-up</option>
-            <option value="Delivery">Home Delivery</option>
           </select>
         </div>
 
@@ -282,12 +281,9 @@
       if (type === 'Dine-In') {
         label.innerText = 'Table Number:';
         input.placeholder = 'e.g. Table 3';
-      } else if (type === 'Takeaway') {
+      } else {
         label.innerText = 'Pickup Time:';
         input.placeholder = 'e.g. Ready in 15 mins';
-      } else {
-        label.innerText = 'Delivery Address:';
-        input.placeholder = 'e.g. Kathmandu / Lalitpur address';
       }
     }
 
@@ -302,27 +298,28 @@
       const orderType = document.getElementById('orderType').value;
       const location = document.getElementById('locationDetails').value;
 
-      // REPLACE WITH YOUR ACTUAL WHATSAPP PHONE NUMBER
-      // Formatted as country code + number without plus signs or hyphens (e.g., 9779800000000)
-      const phoneNumber = "9779800000000"; 
+      // Chiya San WhatsApp Number
+      const phoneNumber = "9779765566682"; 
 
-      let message = `*NEW ORDER - CHIYA SAN*\n\n` +
-                    `👤 *Customer:* ${name}\n` +
-                    `📌 *Type:* ${orderType}\n` +
-                    `📍 *Details:* ${location}\n\n` +
-                    `🛒 *Items Ordered:*\n`;
+      let message = "*NEW ORDER - CHIYA SAN*\n\n" +
+                    "*Customer:* " + name + "\n" +
+                    "*Type:* " + orderType + "\n" +
+                    "*Details:* " + location + "\n\n" +
+                    "*Items Ordered:*\n";
 
       let total = 0;
       cart.forEach(item => {
         let itemSum = item.price * item.qty;
         total += itemSum;
-        message += `- ${item.name} x${item.qty} = Rs. ${itemSum}\n`;
+        message += "- " + item.name + " x" + item.qty + " = Rs. " + itemSum + "\n";
       });
 
-      message += `\n💰 *Total Amount:* Rs. ${total}`;
+      message += "\n*Total Amount:* Rs. " + total;
 
-      const encodedURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-      window.open(encodedURL, '_blank');
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappURL = "https://api.whatsapp.com/send?phone=" + phoneNumber + "&text=" + encodedMessage;
+      
+      window.open(whatsappURL, '_blank');
     }
 
     // Initialize page
