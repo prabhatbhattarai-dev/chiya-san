@@ -3,95 +3,157 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chiya San | Order Online</title>
+  <title>Chiya San (चिया शान) | Chakupat, Lalitpur</title>
   <style>
     :root {
-      --primary-color: #2c5e3b;
-      --accent-color: #25D366;
-      --bg-color: #f4f6f4;
-      --text-color: #333;
+      --primary: #1b4332;
+      --primary-light: #2d6a4f;
+      --accent: #25D366;
+      --accent-hover: #128C7E;
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --text: #212529;
+      --text-muted: #6c757d;
+      --border: #dee2e6;
     }
+    
+    * { box-sizing: border-box; }
+    
     body {
-      font-family: Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
       margin: 0;
       padding: 0;
+      line-height: 1.6;
     }
+
+    /* Header Styling */
     header {
-      background-color: var(--primary-color);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
       color: white;
       text-align: center;
-      padding: 25px 15px;
+      padding: 35px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     header h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 32px;
+      letter-spacing: 0.5px;
     }
-    header p {
-      margin: 5px 0 0 0;
-      font-size: 14px;
-      opacity: 0.9;
+    header .subtitle {
+      font-size: 16px;
+      opacity: 0.95;
+      margin: 8px 0 4px 0;
     }
+    header .location-info {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-top: 5px;
+    }
+
     .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 0 15px 30px 15px;
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 15px 40px 15px;
     }
+
+    /* Section Titles */
     h2 {
-      border-bottom: 2px solid #ddd;
+      color: var(--primary);
+      border-bottom: 2px solid var(--border);
       padding-bottom: 8px;
-      color: var(--primary-color);
-      margin-top: 25px;
+      margin-top: 30px;
+      font-size: 22px;
     }
+
+    /* Category Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Menu Grid */
     .menu-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      margin-bottom: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-bottom: 35px;
     }
     .menu-item {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      background: var(--card-bg);
+      padding: 18px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      border: 1px solid rgba(0,0,0,0.03);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .menu-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
     }
     .menu-item h3 {
-      margin: 0 0 5px 0;
-      font-size: 18px;
+      margin: 0;
+      font-size: 17px;
+      color: var(--text);
     }
     .menu-item p {
-      margin: 0 0 10px 0;
-      color: #666;
+      margin: 0 0 12px 0;
+      color: var(--text-muted);
       font-size: 13px;
     }
     .price {
-      font-weight: bold;
-      color: var(--primary-color);
-      margin-bottom: 10px;
+      font-weight: 700;
+      color: var(--primary-light);
       font-size: 15px;
     }
-    button {
-      background-color: var(--primary-color);
+    .add-btn {
+      background-color: var(--primary);
       color: white;
       border: none;
-      padding: 8px 12px;
+      padding: 8px 14px;
       cursor: pointer;
-      border-radius: 4px;
-      font-weight: bold;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      transition: background 0.2s;
     }
-    button:hover {
-      opacity: 0.9;
-    }
-    .cart-section, .checkout-section {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
+    .add-btn:hover { background-color: var(--primary-light); }
+
+    /* Cart & Checkout Sections */
+    .card-box {
+      background: var(--card-bg);
+      padding: 22px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin-bottom: 25px;
+      border: 1px solid var(--border);
     }
     ul.cart-list {
       list-style: none;
@@ -103,79 +165,109 @@
       justify-content: space-between;
       align-items: center;
       padding: 10px 0;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .cart-total {
+      font-weight: bold;
+      font-size: 18px;
+      text-align: right;
+      color: var(--primary);
     }
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 16px;
     }
     label {
       display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--text);
     }
-    input, select, textarea {
+    input, select {
       width: 100%;
-      padding: 10px;
+      padding: 11px;
       box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
       font-size: 14px;
+      background: #fff;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(27,67,50,0.1);
     }
     .whatsapp-btn {
-      background-color: var(--accent-color);
+      background-color: var(--accent);
       color: white;
       width: 100%;
       padding: 14px;
       font-size: 16px;
-      border-radius: 5px;
+      border-radius: 6px;
       border: none;
       cursor: pointer;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
       margin-top: 10px;
     }
-    .whatsapp-btn:hover {
-      background-color: #128C7E;
-    }
+    .whatsapp-btn:hover { background-color: var(--accent-hover); }
     .remove-btn {
       background-color: #ff4d4d;
-      padding: 4px 8px;
-      font-size: 12px;
-      margin-left: 10px;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
     }
+    .remove-btn:hover { background-color: #cc0000; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>🍵 Chiya San</h1>
-    <p>Select items, enter your details, and place your order directly via WhatsApp!</p>
+    <h1>🍵 Chiya San (चिया शान)</h1>
+    <div class="subtitle">⭐ 4.7 (41 reviews) • Cozy Vibe & Specialty Teas</div>
+    <div class="location-info">📍 Chakupat Saraswoti Marg, Lalitpur | Open until 8:00 PM</div>
   </header>
 
   <div class="container">
     
     <!-- Menu Section -->
     <h2>Our Menu</h2>
+    
+    <div class="filter-tabs">
+      <button class="tab-btn active" onclick="filterMenu('all', this)">All Items</button>
+      <button class="tab-btn" onclick="filterMenu('tea', this)">Teas & Brews</button>
+      <button class="tab-btn" onclick="filterMenu('food', this)">Snacks & Momo</button>
+    </div>
+
     <div class="menu-grid" id="menuGrid">
-      <!-- Generated via JavaScript -->
+      <!-- Dynamic Items -->
     </div>
 
     <!-- Cart Section -->
-    <div class="cart-section">
+    <div class="card-box">
       <h2>Your Cart</h2>
       <ul class="cart-list" id="cartList">
-        <li style="color: #888;">Your cart is empty.</li>
+        <li style="color: var(--text-muted);">Your cart is empty. Pick items from the menu above.</li>
       </ul>
-      <div style="font-weight: bold; font-size: 18px; text-align: right;" id="cartTotal">Total: Rs. 0</div>
+      <div class="cart-total" id="cartTotal">Total: Rs. 0</div>
     </div>
 
-    <!-- Customer Checkout Details -->
-    <div class="checkout-section">
+    <!-- Checkout Details Section -->
+    <div class="card-box">
       <h2>Order Details</h2>
       <form id="orderForm" onsubmit="event.preventDefault(); sendToWhatsApp();">
         <div class="form-group">
           <label for="customerName">Your Name:</label>
-          <input type="text" id="customerName" required placeholder="e.g. Prabhat Bhattarai">
+          <input type="text" id="customerName" required placeholder="e.g. Ayush Shrestha">
         </div>
 
         <div class="form-group">
@@ -187,48 +279,62 @@
         </div>
 
         <div class="form-group" id="locationGroup">
-          <label id="locationLabel" for="locationDetails">Table Number:</label>
-          <input type="text" id="locationDetails" required placeholder="e.g. Table 3">
+          <label id="locationLabel" for="locationDetails">Table Number / Spot:</label>
+          <input type="text" id="locationDetails" required placeholder="e.g. Table 3 / Rooftop bamboo seating">
         </div>
 
-        <button type="submit" class="whatsapp-btn">Send Order via WhatsApp 💬</button>
+        <button type="submit" class="whatsapp-btn">
+          <span>Send Order via WhatsApp</span> 💬
+        </button>
       </form>
     </div>
 
   </div>
 
   <script>
-    // 1. Menu Items Definition
+    // Menu Dataset with Category tags
     const menuItems = [
-      { id: 1, name: "Special Milk Chiya", price: 50, desc: "Traditional spiced brewed milk tea" },
-      { id: 2, name: "Black Tea (Kalo Chiya)", price: 30, desc: "Fresh lemon and herbal tea" },
-      { id: 3, name: "Masala Chiya", price: 70, desc: "Loaded with aromatic Himalayan spices" },
-      { id: 4, name: "Iced Cold Chiya", price: 120, desc: "Refreshing chilled milk tea over ice" },
-      { id: 5, name: "Veg Momo (Plate)", price: 150, desc: "Steam dumplings with spicy achar" },
-      { id: 6, name: "Buff Momo (Plate)", price: 180, desc: "Juicy local buff dumplings" }
+      { id: 1, name: "Special Milk Chiya", category: "tea", price: 50, desc: "Traditional spiced brewed milk tea" },
+      { id: 2, name: "Honey Milk Tea", category: "tea", price: 65, desc: "Smooth signature blend sweetened with pure honey" },
+      { id: 3, name: "Black Tea (Kalo Chiya)", category: "tea", price: 30, desc: "Fresh lemon and herbal infused brew" },
+      { id: 4, name: "Masala Chiya", category: "tea", price: 70, desc: "Loaded with aromatic Himalayan spices & herbs" },
+      { id: 5, name: "Iced Cold Chiya", category: "tea", price: 120, desc: "Refreshing chilled milk tea over ice cubes" },
+      { id: 6, name: "Veg Momo (Plate)", category: "food", price: 150, desc: "Steam dumplings served with signature spicy achar" },
+      { id: 7, name: "Buff Momo (Plate)", category: "food", price: 180, desc: "Juicy local buff dumplings with rich soup" }
     ];
 
     let cart = [];
 
-    // 2. Render Menu Cards
-    function renderMenu() {
+    function renderMenu(category = 'all') {
       const grid = document.getElementById('menuGrid');
       grid.innerHTML = '';
-      menuItems.forEach(item => {
+      
+      const filtered = category === 'all' 
+        ? menuItems 
+        : menuItems.filter(item => item.category === category);
+
+      filtered.forEach(item => {
         grid.innerHTML += `
           <div class="menu-item">
             <div>
-              <h3>${item.name}</h3>
+              <div class="item-header">
+                <h3>${item.name}</h3>
+                <span class="price">Rs. ${item.price}</span>
+              </div>
               <p>${item.desc}</p>
-              <div class="price">Rs. ${item.price}</div>
             </div>
-            <button onclick="addToCart(${item.id})">+ Add to Cart</button>
+            <button class="add-btn" onclick="addToCart(${item.id})">+ Add to Cart</button>
           </div>
         `;
       });
     }
 
-    // 3. Cart Management Functions
+    function filterMenu(category, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderMenu(category);
+    }
+
     function addToCart(id) {
       const product = menuItems.find(p => p.id === id);
       const existing = cart.find(p => p.id === id);
@@ -250,7 +356,7 @@
       const cartTotal = document.getElementById('cartTotal');
       
       if (cart.length === 0) {
-        cartList.innerHTML = '<li style="color: #888;">Your cart is empty.</li>';
+        cartList.innerHTML = '<li style="color: var(--text-muted);">Your cart is empty. Pick items from the menu above.</li>';
         cartTotal.innerText = 'Total: Rs. 0';
         return;
       }
@@ -263,7 +369,7 @@
         total += itemTotal;
         cartList.innerHTML += `
           <li>
-            <span>${item.name} (x${item.qty})</span>
+            <span><strong>${item.name}</strong> (x${item.qty})</span>
             <span>Rs. ${itemTotal} <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button></span>
           </li>
         `;
@@ -272,22 +378,20 @@
       cartTotal.innerText = `Total: Rs. ${total}`;
     }
 
-    // 4. Form Field Toggling based on Order Type
     function toggleAddressField() {
       const type = document.getElementById('orderType').value;
       const label = document.getElementById('locationLabel');
       const input = document.getElementById('locationDetails');
 
       if (type === 'Dine-In') {
-        label.innerText = 'Table Number:';
-        input.placeholder = 'e.g. Table 3';
+        label.innerText = 'Table Number / Spot:';
+        input.placeholder = 'e.g. Table 3 / Rooftop seating';
       } else {
         label.innerText = 'Pickup Time:';
         input.placeholder = 'e.g. Ready in 15 mins';
       }
     }
 
-    // 5. Send Order to WhatsApp Function
     function sendToWhatsApp() {
       if (cart.length === 0) {
         alert("Please add at least one item to your cart before sending your order.");
@@ -322,7 +426,7 @@
       window.open(whatsappURL, '_blank');
     }
 
-    // Initialize page
+    // Initialize
     renderMenu();
   </script>
 </body>
