@@ -45,7 +45,7 @@
         .cart-open { right: 0 !important; }
         .overlay-open { display: block !important; opacity: 1 !important; }
         
-        /* Premium Loader Transitions */
+        /* --- Coffee/Tea Brewing Loader Animation --- */
         #loader {
             transition: opacity 0.8s ease, visibility 0.8s;
         }
@@ -54,21 +54,61 @@
             visibility: hidden;
             pointer-events: none;
         }
-        .logo-invert {
-            filter: brightness(0) invert(1);
+
+        /* Logo Fill Animation */
+        .logo-wrap {
+            position: relative;
+            width: 160px;
+            height: 160px;
         }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
+        .logo-wrap img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .logo-base {
+            opacity: 0.1;
+            filter: grayscale(100%);
+        }
+        .logo-fill {
+            /* Start hidden from the bottom */
+            clip-path: inset(100% 0 0 0);
+            animation: fillUp 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes fillUp {
+            0% { clip-path: inset(100% 0 0 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+
+        /* Steam Animation */
+        .steam-container {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        .steam-line {
+            width: 4px;
+            height: 20px;
+            background: #B85B3E; /* Brand Terracotta */
             border-radius: 50%;
-            border-top-color: #B85B3E; /* Brand Terracotta */
-            animation: spin 1s ease-in-out infinite;
+            opacity: 0;
+            animation: rise 2s infinite ease-out;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .steam-line:nth-child(2) { animation-delay: 0.5s; height: 15px; background: #2D4A3E; /* Brand Green */ }
+        .steam-line:nth-child(3) { animation-delay: 1s; height: 25px; }
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
         }
-        
+
         /* Floating Animation for Hero Logo */
         @keyframes float {
             0% { transform: translateY(0px); }
@@ -78,25 +118,40 @@
         .animate-float {
             animation: float 4s ease-in-out infinite;
         }
+
+        /* Pulse Text */
+        .brew-text {
+            animation: pulseText 1.5s infinite alternate;
+        }
+        @keyframes pulseText {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body class="bg-brand-cream text-brand-dark font-sans antialiased selection:bg-brand-terracotta selection:text-white overflow-x-hidden">
 
-    <!-- Premium Luxury Loading Screen -->
-    <div id="loader" class="fixed inset-0 bg-brand-green z-[9999] flex flex-col items-center justify-center">
-        <div class="relative z-10 flex flex-col items-center">
-            <!-- White Logo for Dark Background -->
-            <img src="images/logo.png" alt="Chiya San Logo" class="h-28 w-auto object-contain logo-invert mb-8 animate-pulse">
-            
-            <!-- Cycling Taglines -->
-            <div class="h-10 flex items-center justify-center overflow-hidden mb-8">
-                <span id="loader-text" class="font-serif text-2xl md:text-3xl text-white italic tracking-wide transition-opacity duration-300">
-                    Good Food.
-                </span>
+    <!-- Premium Brewing Loading Screen -->
+    <div id="loader" class="fixed inset-0 bg-brand-cream z-[9999] flex flex-col items-center justify-center">
+        
+        <div class="relative flex flex-col items-center">
+            <!-- Steam Particles -->
+            <div class="steam-container">
+                <div class="steam-line"></div>
+                <div class="steam-line"></div>
+                <div class="steam-line"></div>
+            </div>
+
+            <!-- Logo Fill Container -->
+            <div class="logo-wrap">
+                <img src="images/logo.png" alt="Chiya San Logo" class="logo-base">
+                <img src="images/logo.png" alt="Chiya San Logo" class="logo-fill">
             </div>
             
-            <!-- Elegant Spinner -->
-            <div class="spinner"></div>
+            <!-- Brewing Text -->
+            <p class="mt-8 text-brand-green font-serif italic text-xl tracking-wider brew-text">
+                Brewing your experience...
+            </p>
         </div>
     </div>
 
@@ -456,39 +511,23 @@
         // Initialize Icons
         lucide.createIcons();
 
-        // Premium Loading Screen Logic
+        // Premium Brewing Loader Logic
         document.addEventListener('DOMContentLoaded', () => {
             const loader = document.getElementById('loader');
-            const loaderText = document.getElementById('loader-text');
-            const taglines = ["Good Food.", "Good Vibes.", "Great Times."];
-            let index = 0;
-
+            
             // Prevent scrolling while loading
             document.body.classList.add('overflow-hidden');
 
-            // Cycle through taglines
-            const textInterval = setInterval(() => {
-                loaderText.style.opacity = '0'; // Fade out current text
+            // Wait for the brew animation to complete (3 seconds + small buffer)
+            setTimeout(() => {
+                loader.classList.add('loader-hidden');
                 
+                // Re-enable scrolling after the fade transition finishes
                 setTimeout(() => {
-                    index++;
-                    if (index < taglines.length) {
-                        loaderText.innerText = taglines[index]; // Change text
-                        loaderText.style.opacity = '1'; // Fade in new text
-                    } else {
-                        clearInterval(textInterval);
-                        
-                        // Fade out the entire loader
-                        loader.classList.add('loader-hidden');
-                        
-                        // Re-enable scrolling after the fade transition finishes
-                        setTimeout(() => {
-                            document.body.classList.remove('overflow-hidden');
-                            loader.style.display = 'none'; // Remove from DOM completely
-                        }, 800); // Matches the 0.8s CSS transition
-                    }
-                }, 300); // Wait 300ms for fade-out before changing text
-            }, 1200); // Wait 1.2 seconds before starting the fade-out sequence
+                    document.body.classList.remove('overflow-hidden');
+                    loader.style.display = 'none'; // Remove from DOM completely
+                }, 800); // Matches the 0.8s CSS transition
+            }, 3500); // 3.5 seconds total loading time
         });
 
         // Mobile Menu Logic
