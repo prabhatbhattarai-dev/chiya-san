@@ -44,9 +44,51 @@
         html { scroll-behavior: smooth; }
         .cart-open { right: 0 !important; }
         .overlay-open { display: block !important; opacity: 1 !important; }
+        
+        /* Premium Loader Transitions */
+        #loader {
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+        .loader-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .logo-invert {
+            filter: brightness(0) invert(1);
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #B85B3E; /* Brand Terracotta */
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-brand-cream text-brand-dark font-sans antialiased selection:bg-brand-terracotta selection:text-white overflow-x-hidden">
+
+    <!-- Premium Luxury Loading Screen -->
+    <div id="loader" class="fixed inset-0 bg-brand-green z-[9999] flex flex-col items-center justify-center">
+        <div class="relative z-10 flex flex-col items-center">
+            <!-- White Logo for Dark Background -->
+            <img src="images/logo.png" alt="Chiya San Logo" class="h-28 w-auto object-contain logo-invert mb-8 animate-pulse">
+            
+            <!-- Cycling Taglines -->
+            <div class="h-10 flex items-center justify-center overflow-hidden mb-8">
+                <span id="loader-text" class="font-serif text-2xl md:text-3xl text-white italic tracking-wide transition-opacity duration-300">
+                    Good Food.
+                </span>
+            </div>
+            
+            <!-- Elegant Spinner -->
+            <div class="spinner"></div>
+        </div>
+    </div>
 
     <!-- Navigation -->
     <nav class="fixed w-full bg-brand-cream/90 backdrop-blur-md z-40 border-b border-brand-green/10">
@@ -333,7 +375,6 @@
     <!-- Footer -->
     <footer class="bg-brand-dark text-white/60 py-12 text-center text-sm">
         <div class="max-w-7xl mx-auto px-4">
-            <!-- Logo in Footer (Turned White using CSS filter) -->
             <img src="images/logo.png" alt="Chiya San Logo" class="h-20 w-auto mx-auto mb-4 object-contain brightness-0 invert">
             <p class="mb-4 text-white">Good Food · Good Vibes · Great Times</p>
             <p>© 2025 Chiya San · Chakupat, Lalitpur</p>
@@ -390,7 +431,6 @@
                 <span>Total</span>
                 <span id="cart-total">Rs. 0</span>
             </div>
-            <!-- Updated onclick to use the new processOrder() function -->
             <button onclick="processOrder()" class="w-full bg-[#25D366] text-white py-4 rounded-xl font-medium hover:bg-[#128C7E] transition shadow-lg shadow-green-500/30 flex items-center justify-center gap-2">
                 <i data-lucide="message-circle" class="w-5 h-5"></i>
                 <span>Send Order via WhatsApp</span>
@@ -403,6 +443,41 @@
         // Initialize Icons
         lucide.createIcons();
 
+        // Premium Loading Screen Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const loader = document.getElementById('loader');
+            const loaderText = document.getElementById('loader-text');
+            const taglines = ["Good Food.", "Good Vibes.", "Great Times."];
+            let index = 0;
+
+            // Prevent scrolling while loading
+            document.body.classList.add('overflow-hidden');
+
+            // Cycle through taglines
+            const textInterval = setInterval(() => {
+                loaderText.style.opacity = '0'; // Fade out current text
+                
+                setTimeout(() => {
+                    index++;
+                    if (index < taglines.length) {
+                        loaderText.innerText = taglines[index]; // Change text
+                        loaderText.style.opacity = '1'; // Fade in new text
+                    } else {
+                        clearInterval(textInterval);
+                        
+                        // Fade out the entire loader
+                        loader.classList.add('loader-hidden');
+                        
+                        // Re-enable scrolling after the fade transition finishes
+                        setTimeout(() => {
+                            document.body.classList.remove('overflow-hidden');
+                            loader.style.display = 'none'; // Remove from DOM completely
+                        }, 800); // Matches the 0.8s CSS transition
+                    }
+                }, 300); // Wait 300ms for fade-out before changing text
+            }, 1200); // Wait 1.2 seconds before starting the fade-out sequence
+        });
+
         // Mobile Menu Logic
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
@@ -410,7 +485,6 @@
         }
 
         // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
-        // Example: "https://script.google.com/macros/s/AKfycb.../exec"
         const scriptURL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"; 
 
         // Menu Data
