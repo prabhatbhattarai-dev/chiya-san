@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chiya SAN | Chakupat, Lalitpur</title>
     
+    <!-- Favicon (Browser Tab Icon) -->
+    <link rel="icon" type="image/png" href="images/logo.png">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -51,7 +54,9 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center">
-                    <span class="font-serif font-bold text-2xl text-brand-green tracking-tight">Chiya SAN</span>
+                    <a href="#home">
+                        <img src="images/logo.png" alt="Chiya San Logo" class="h-14 w-auto object-contain">
+                    </a>
                 </div>
                 
                 <!-- Desktop Menu -->
@@ -115,8 +120,9 @@
         <div class="flex-1 w-full relative">
             <div class="aspect-square rounded-3xl bg-brand-lightGreen overflow-hidden relative shadow-2xl">
                 <img src="https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=1000&auto=format&fit=crop" alt="Chiya San Tea" class="w-full h-full object-cover">
-                <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur px-4 py-2 rounded-xl text-sm font-medium text-brand-green">
-                    ☕ Chiya SAN चिया शान
+                <!-- Logo Overlay on Hero Image -->
+                <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur p-3 rounded-2xl shadow-lg">
+                    <img src="images/logo.png" alt="Chiya San Logo" class="h-16 w-auto object-contain">
                 </div>
             </div>
         </div>
@@ -327,8 +333,9 @@
     <!-- Footer -->
     <footer class="bg-brand-dark text-white/60 py-12 text-center text-sm">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="text-white font-serif font-bold text-xl mb-4">Chiya SAN चिया शान</div>
-            <p class="mb-4">Good Food · Good Vibes · Great Times</p>
+            <!-- Logo in Footer (Turned White using CSS filter) -->
+            <img src="images/logo.png" alt="Chiya San Logo" class="h-20 w-auto mx-auto mb-4 object-contain brightness-0 invert">
+            <p class="mb-4 text-white">Good Food · Good Vibes · Great Times</p>
             <p>© 2025 Chiya San · Chakupat, Lalitpur</p>
         </div>
     </footer>
@@ -383,7 +390,8 @@
                 <span>Total</span>
                 <span id="cart-total">Rs. 0</span>
             </div>
-            <button onclick="sendToWhatsApp()" class="w-full bg-[#25D366] text-white py-4 rounded-xl font-medium hover:bg-[#128C7E] transition shadow-lg shadow-green-500/30 flex items-center justify-center gap-2">
+            <!-- Updated onclick to use the new processOrder() function -->
+            <button onclick="processOrder()" class="w-full bg-[#25D366] text-white py-4 rounded-xl font-medium hover:bg-[#128C7E] transition shadow-lg shadow-green-500/30 flex items-center justify-center gap-2">
                 <i data-lucide="message-circle" class="w-5 h-5"></i>
                 <span>Send Order via WhatsApp</span>
             </button>
@@ -401,7 +409,11 @@
             menu.classList.toggle('hidden');
         }
 
-        // Menu Data (Full Menu from your original text file)
+        // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+        // Example: "https://script.google.com/macros/s/AKfycb.../exec"
+        const scriptURL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"; 
+
+        // Menu Data
         const menuItems = [
             { name: "Chicken Steam Mo:Mo", category: "Mo:Mo", price: 200 },
             { name: "Chicken Jhol Mo:Mo", category: "Mo:Mo", price: 230 },
@@ -598,7 +610,19 @@
             }
         }
 
-        function sendToWhatsApp() {
+        // Helper function to generate a unique Order ID
+        function generateOrderId() {
+            const now = new Date();
+            const datePart = now.getFullYear().toString().slice(-2) + 
+                             (now.getMonth()+1).toString().padStart(2, '0') + 
+                             now.getDate().toString().padStart(2, '0');
+            const randomPart = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+            return `CS-${datePart}-${randomPart}`;
+        }
+
+        // Main function to process the order (Saves to Sheet + Opens WhatsApp)
+        async function processOrder() {
+            // Validation
             if (cart.length === 0) {
                 alert("Please add at least one item to your cart before sending your order.");
                 return;
@@ -612,33 +636,73 @@
                 return;
             }
 
+            const orderId = generateOrderId();
             const name = nameInput.value;
             const orderType = document.getElementById('orderType').value;
             const location = locationInput.value;
 
-            // ⚠️ IMPORTANT: Replace this with your actual WhatsApp number
-            // Format: Country code + Number, WITHOUT the "+" sign. (e.g., 9779709085103)
-            const phoneNumber = "9779765566682"; 
-
-            let message = "*NEW ORDER - CHIYA SAN*\n\n" +
-                          "*Customer:* " + name + "\n" +
-                          "*Type:* " + orderType + "\n" +
-                          "*Details:* " + location + "\n\n" +
-                          "*Items Ordered:*\n";
-
+            // Prepare data for Google Sheets
+            let itemsSummary = [];
             let total = 0;
             cart.forEach(item => {
                 let itemSum = item.price * item.qty;
                 total += itemSum;
-                message += "- " + item.name + " x" + item.qty + " = Rs. " + itemSum + "\n";
+                itemsSummary.push(`${item.name} x${item.qty} = Rs. ${itemSum}`);
             });
 
-            message += "\n*Total Amount:* Rs. " + total;
+            const orderData = {
+                orderId: orderId,
+                customerName: name,
+                orderType: orderType,
+                location: location,
+                items: itemsSummary.join(', '),
+                total: total
+            };
+
+            // 1. Save to Google Sheets (Backend)
+            const saveButton = document.querySelector('button[onclick="processOrder()"]');
+            const originalButtonText = saveButton.innerHTML;
+            saveButton.innerHTML = 'Saving...';
+            saveButton.disabled = true;
+
+            try {
+                await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Necessary for GitHub Pages -> Apps Script
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                console.log('Order saved to Google Sheet successfully!');
+            } catch (error) {
+                console.error('Error saving to Google Sheet:', error);
+                // Even if the sheet fails, we still want to open WhatsApp
+            } finally {
+                // Re-enable button and reset text
+                saveButton.innerHTML = originalButtonText;
+                saveButton.disabled = false;
+            }
+
+            // 2. Send via WhatsApp (Frontend)
+            const phoneNumber = "9779765566682"; // Your WhatsApp number
+            let message = `*NEW ORDER - CHIYA SAN*\n\n` +
+                          `*Order ID:* ${orderId}\n` +
+                          `*Customer:* ${name}\n` +
+                          `*Type:* ${orderType}\n` +
+                          `*Details:* ${location}\n\n` +
+                          `*Items Ordered:*\n`;
+            
+            itemsSummary.forEach(item => message += `- ${item}\n`);
+            message += `\n*Total Amount:* Rs. ${total}`;
 
             const encodedMessage = encodeURIComponent(message);
             const whatsappURL = "https://api.whatsapp.com/send?phone=" + phoneNumber + "&text=" + encodedMessage;
             
             window.open(whatsappURL, '_blank');
+
+            // 3. Clear the cart and close the drawer
+            cart = [];
+            updateCartUI();
+            toggleCart();
         }
 
         // Initial Render
