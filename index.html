@@ -446,8 +446,8 @@
             menu.classList.toggle('hidden');
         }
 
-        // ⚠️ IMPORTANT: PASTE YOUR NEW GOOGLE APPS SCRIPT URL BELOW
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyut1z8CVECUiycX_OwtKL1-luA0GfecChf2OUxqTarZhM52uFEA9Hq7STt0opl2Xaw/exec"; 
+        // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT URL BELOW
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
 
         const menuItems = [
             { name: "Chicken Steam Mo:Mo", category: "Mo:Mo", price: 200 },
@@ -589,11 +589,10 @@
             if (type === 'Dine-In') { label.innerText = 'Table Number / Spot:'; input.placeholder = 'e.g. Table 3 / Rooftop seating'; } else { label.innerText = 'Pickup Time:'; input.placeholder = 'e.g. Ready in 15 mins'; }
         }
 
+        // NEW: Short & Simple Order ID Generator
         function generateOrderId() {
-            const now = new Date();
-            const datePart = now.getFullYear().toString().slice(-2) + (now.getMonth()+1).toString().padStart(2, '0') + now.getDate().toString().padStart(2, '0');
-            const randomPart = Math.floor(1000 + Math.random() * 9000);
-            return `CS-${datePart}-${randomPart}`;
+            const randomPart = Math.floor(100 + Math.random() * 900); // 3-digit number (100-999)
+            return `CS-${randomPart}`;
         }
 
         async function processOrder() {
