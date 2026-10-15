@@ -393,9 +393,11 @@
     <!-- Footer -->
     <footer class="bg-brand-dark text-white/60 py-10 md:py-12 text-center text-xs md:text-sm">
         <div class="max-w-7xl mx-auto px-4">
-            <img src="images/logo.png" alt="Chiya San Logo" class="h-14 md:h-20 w-auto mx-auto mb-3 md:mb-4 object-contain brightness-0 invert">
+            <!-- Removed the brightness-0 invert filter so the logo shows correctly -->
+            <img src="images/logo.png" alt="Chiya San Logo" class="h-16 md:h-24 w-auto mx-auto mb-4 object-contain drop-shadow-md">
             <p class="mb-3 md:mb-4 text-white">Good Food · Good Vibes · Great Times</p>
             <p>© 2025 Chiya San · Chakupat, Lalitpur</p>
+            <p class="mt-2 text-brand-terracotta font-semibold">Made by Prabhat Bhattarai</p>
         </div>
     </footer>
 
@@ -447,7 +449,7 @@
         }
 
         // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT URL BELOW
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyut1z8CVECUiycX_OwtKL1-luA0GfecChf2OUxqTarZhM52uFEA9Hq7STt0opl2Xaw/exec"; 
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
 
         const menuItems = [
             { name: "Chicken Steam Mo:Mo", category: "Mo:Mo", price: 200 },
@@ -589,7 +591,7 @@
             if (type === 'Dine-In') { label.innerText = 'Table Number / Spot:'; input.placeholder = 'e.g. Table 3 / Rooftop seating'; } else { label.innerText = 'Pickup Time:'; input.placeholder = 'e.g. Ready in 15 mins'; }
         }
 
-        // NEW: Short & Simple Order ID Generator
+        // Short & Simple Order ID Generator
         function generateOrderId() {
             const randomPart = Math.floor(100 + Math.random() * 900); // 3-digit number (100-999)
             return `CS-${randomPart}`;
