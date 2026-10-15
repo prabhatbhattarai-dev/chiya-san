@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chiya SAN | Chakupat, Lalitpur</title>
+    <title>Chiya SAN | Admin Dashboard</title>
     
-    <!-- Favicon (Browser Tab Icon) -->
-    <link rel="icon" type="image/png" href="images/logo.png">
-
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -41,482 +38,88 @@
         }
     </script>
     <style>
-        html { scroll-behavior: smooth; }
-        .cart-open { right: 0 !important; }
-        .overlay-open { display: block !important; opacity: 1 !important; }
-        
-        /* --- Coffee/Tea Brewing Loader Animation --- */
-        #loader {
-            transition: opacity 0.8s ease, visibility 0.8s;
+        body { font-family: 'Inter', sans-serif; }
+        .order-card {
+            transition: all 0.2s ease-in-out;
         }
-        .loader-hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        /* Logo Fill Animation */
-        .logo-wrap {
-            position: relative;
-            width: 120px; /* Smaller for mobile */
-            height: 120px;
-        }
-        @media (min-width: 768px) {
-            .logo-wrap {
-                width: 160px;
-                height: 160px;
-            }
-        }
-        .logo-wrap img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .logo-base {
-            opacity: 0.1;
-            filter: grayscale(100%);
-        }
-        .logo-fill {
-            clip-path: inset(100% 0 0 0);
-            animation: fillUp 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes fillUp {
-            0% { clip-path: inset(100% 0 0 0); }
-            100% { clip-path: inset(0 0 0 0); }
-        }
-
-        /* Steam Animation */
-        .steam-container {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
-            z-index: 10;
-        }
-        .steam-line {
-            width: 4px;
-            height: 20px;
-            background: #B85B3E; /* Brand Terracotta */
-            border-radius: 50%;
-            opacity: 0;
-            animation: rise 2s infinite ease-out;
-        }
-        .steam-line:nth-child(2) { animation-delay: 0.5s; height: 15px; background: #2D4A3E; /* Brand Green */ }
-        .steam-line:nth-child(3) { animation-delay: 1s; height: 25px; }
-        @keyframes rise {
-            0% { transform: translateY(0) scale(1); opacity: 0; }
-            50% { opacity: 0.6; }
-            100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
-        }
-
-        /* Floating Animation for Hero Logo */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        .animate-float {
-            animation: float 4s ease-in-out infinite;
-        }
-
-        /* Pulse Text */
-        .brew-text {
-            animation: pulseText 1.5s infinite alternate;
-        }
-        @keyframes pulseText {
-            from { opacity: 0.4; }
-            to { opacity: 1; }
-        }
-
-        /* Prevent iOS Zoom on Input Focus */
-        input, select, textarea {
-            font-size: 16px !important;
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body class="bg-brand-cream text-brand-dark font-sans antialiased selection:bg-brand-terracotta selection:text-white overflow-x-hidden">
+<body class="bg-brand-cream text-brand-dark antialiased min-h-screen">
 
-    <!-- Premium Brewing Loading Screen -->
-    <div id="loader" class="fixed inset-0 bg-brand-cream z-[9999] flex flex-col items-center justify-center">
-        
-        <div class="relative flex flex-col items-center">
-            <!-- Steam Particles -->
-            <div class="steam-container">
-                <div class="steam-line"></div>
-                <div class="steam-line"></div>
-                <div class="steam-line"></div>
-            </div>
-
-            <!-- Logo Fill Container -->
-            <div class="logo-wrap">
-                <img src="images/logo.png" alt="Chiya San Logo" class="logo-base">
-                <img src="images/logo.png" alt="Chiya San Logo" class="logo-fill">
-            </div>
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 bg-brand-green z-[9999] flex items-center justify-center">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md mx-4 text-center">
+            <img src="images/logo.png" alt="Chiya San Logo" class="h-24 w-auto mx-auto mb-6 object-contain">
+            <h1 class="font-serif font-bold text-2xl text-brand-green mb-2">Admin Dashboard</h1>
+            <p class="text-brand-dark/60 text-sm mb-6">Enter password to view orders</p>
             
-            <!-- Brewing Text -->
-            <p class="mt-6 md:mt-8 text-brand-green font-serif italic text-lg md:text-xl tracking-wider brew-text">
-                Brewing your experience...
-            </p>
+            <input type="password" id="password" placeholder="Password" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-center text-lg tracking-widest mb-4" onkeypress="if(event.key === 'Enter') login()">
+            
+            <button onclick="login()" class="w-full bg-brand-green text-white py-3.5 rounded-xl font-medium hover:bg-brand-green/90 transition shadow-lg shadow-brand-green/20">
+                Login
+            </button>
+            <p id="login-error" class="text-red-500 text-sm mt-3 hidden">Incorrect password. Try again.</p>
         </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="fixed w-full bg-brand-cream/90 backdrop-blur-md z-40 border-b border-brand-green/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Reduced Height on Mobile -->
-            <div class="flex justify-between items-center h-16 md:h-20">
-                <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center">
-                    <a href="#home">
-                        <img src="images/logo.png" alt="Chiya San Logo" class="h-10 md:h-14 w-auto object-contain">
-                    </a>
-                </div>
-                
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#home" class="text-sm font-medium hover:text-brand-terracotta transition">Home</a>
-                    <a href="#about" class="text-sm font-medium hover:text-brand-terracotta transition">About</a>
-                    <a href="#gallery" class="text-sm font-medium hover:text-brand-terracotta transition">Gallery</a>
-                    <a href="#menu" class="text-sm font-medium hover:text-brand-terracotta transition">Menu</a>
-                    <a href="#reviews" class="text-sm font-medium hover:text-brand-terracotta transition">Reviews</a>
-                    <a href="#visit" class="text-sm font-medium hover:text-brand-terracotta transition">Visit</a>
-                </div>
-
-                <!-- Right Side Icons -->
-                <div class="flex items-center space-x-2 md:space-x-4">
-                    <button onclick="toggleCart()" class="relative p-2 text-brand-green hover:bg-brand-lightGreen rounded-full transition">
-                        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
-                        <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-brand-terracotta rounded-full">0</span>
-                    </button>
-                    
-                    <!-- Mobile Menu Button -->
-                    <div class="md:hidden flex items-center">
-                        <button onclick="toggleMobileMenu()" class="p-2 text-brand-green hover:text-brand-terracotta focus:outline-none">
-                            <i data-lucide="menu" class="w-7 h-7"></i>
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="hidden">
+        <!-- Navbar -->
+        <nav class="bg-white border-b border-brand-green/10 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-3">
+                        <img src="images/logo.png" alt="Chiya San Logo" class="h-10 w-auto object-contain">
+                        <span class="font-serif font-bold text-brand-green text-lg hidden sm:block">Admin Dashboard</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="fetchOrders()" class="flex items-center gap-2 px-4 py-2 bg-brand-lightGreen text-brand-green rounded-full text-sm font-medium hover:bg-brand-green hover:text-white transition">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            Refresh
+                        </button>
+                        <button onclick="logout()" class="flex items-center gap-2 px-4 py-2 bg-brand-lightTerracotta text-brand-terracotta rounded-full text-sm font-medium hover:bg-brand-terracotta hover:text-white transition">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                            Logout
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </nav>
 
-        <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden bg-brand-cream border-b border-brand-green/10 absolute top-16 left-0 w-full shadow-lg transition-all duration-300">
-            <div class="px-4 pt-2 pb-6 space-y-1 flex flex-col">
-                <a href="#home" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">Home</a>
-                <a href="#about" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">About</a>
-                <a href="#gallery" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">Gallery</a>
-                <a href="#menu" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">Menu</a>
-                <a href="#reviews" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">Reviews</a>
-                <a href="#visit" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">Visit</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-20 lg:pt-48 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 scroll-mt-20">
-        <div class="flex-1 space-y-6 md:space-y-8 w-full">
-            <div class="inline-flex items-center space-x-2 bg-brand-lightTerracotta px-3 py-1 rounded-full text-brand-terracotta text-xs md:text-sm font-medium">
-                <span>★ 4.8</span>
-                <span class="text-brand-dark/60">· 40 Google reviews</span>
-            </div>
-            <!-- Scaled down text for mobile -->
-            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-brand-green leading-tight">
-                Where every cup tells a story.
-            </h1>
-            <p class="text-base md:text-lg text-brand-dark/80 max-w-lg leading-relaxed">
-                A vibrant cultural hub celebrating Nepal's beloved tea tradition. Located in the historic Chakupat area of Lalitpur.
-            </p>
-            <!-- Full-width buttons on mobile for easier tapping -->
-            <div class="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2">
-                <a href="#menu" class="w-full sm:w-auto text-center bg-brand-green text-white px-6 py-3.5 md:px-8 rounded-full font-medium hover:bg-brand-green/90 transition shadow-lg shadow-brand-green/20">Order Now</a>
-                <a href="#visit" class="w-full sm:w-auto text-center bg-white text-brand-green border border-brand-green/20 px-6 py-3.5 md:px-8 rounded-full font-medium hover:bg-brand-lightGreen transition">Get Directions</a>
-            </div>
-        </div>
-        
-        <!-- Hero Logo Container -->
-        <div class="flex-1 w-full relative mt-4 md:mt-0">
-            <div class="aspect-square rounded-3xl bg-brand-lightGreen flex items-center justify-center relative shadow-2xl p-4 md:p-8 border border-brand-green/10 overflow-hidden max-w-[280px] md:max-w-none mx-auto">
-                <!-- Decorative Background Circles -->
-                <div class="absolute -top-10 -right-10 w-32 h-32 md:w-40 md:h-40 bg-white/40 rounded-full blur-2xl"></div>
-                <div class="absolute -bottom-10 -left-10 w-32 h-32 md:w-40 md:h-40 bg-brand-terracotta/10 rounded-full blur-2xl"></div>
-                
-                <!-- Large Centered Logo with Floating Animation -->
-                <img src="images/logo.png" alt="Chiya San Logo" class="w-full h-auto max-w-[200px] md:max-w-[350px] object-contain drop-shadow-2xl animate-float relative z-10">
-            </div>
-        </div>
-    </section>
-
-    <!-- Our Story -->
-    <section id="about" class="py-16 md:py-20 bg-white scroll-mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16">
-                <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Our Story</h2>
-                <p class="text-base md:text-lg text-brand-dark/70">More than a café — a celebration of tea.</p>
-            </div>
-            <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                <div class="space-y-4 md:space-y-6 text-brand-dark/80 text-sm md:text-base leading-relaxed">
-                    <p>Chiya SAN is a vibrant cultural hub in Lalitpur, dedicated to Nepal's beloved tea tradition. We celebrate "Chiya" not just as a beverage, but as a social ritual that binds communities together.</p>
-                    <p>The atmosphere is lively and inviting — often featuring live music, poetry readings, and cultural performances that reflect the rich heritage of the Kathmandu Valley.</p>
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="font-serif font-bold text-3xl text-brand-green">Live Orders</h2>
+                    <p class="text-brand-dark/60 text-sm">Real-time orders from your website</p>
                 </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-6">
-                    <div class="bg-brand-cream p-4 md:p-6 rounded-2xl text-center">
-                        <div class="text-2xl md:text-3xl font-serif font-bold text-brand-terracotta mb-1 md:mb-2">4.8★</div>
-                        <div class="text-xs md:text-sm font-medium text-brand-dark/60">Google Rating</div>
-                    </div>
-                    <div class="bg-brand-cream p-4 md:p-6 rounded-2xl text-center">
-                        <div class="text-2xl md:text-3xl font-serif font-bold text-brand-terracotta mb-1 md:mb-2">50+</div>
-                        <div class="text-xs md:text-sm font-medium text-brand-dark/60">Menu Items</div>
-                    </div>
-                    <div class="bg-brand-cream p-4 md:p-6 rounded-2xl text-center col-span-2">
-                        <div class="text-2xl md:text-3xl font-serif font-bold text-brand-terracotta mb-1 md:mb-2">100%</div>
-                        <div class="text-xs md:text-sm font-medium text-brand-dark/60">Nepali Warmth</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Gallery -->
-    <section id="gallery" class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-20">
-        <div class="text-center mb-12 md:mb-16">
-            <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">A glimpse of the vibe</h2>
-            <p class="text-sm md:text-base text-brand-dark/70">Bamboo seating, lush greenery, rooftop hangs — and of course, tea.</p>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-            <div class="aspect-square rounded-2xl overflow-hidden relative group">
-                <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Momos">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
-                <span class="absolute bottom-3 left-3 text-white text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition">Jhol momo</span>
-            </div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group">
-                <img src="https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Tea">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
-                <span class="absolute bottom-3 left-3 text-white text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition">Signature chiya</span>
-            </div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group">
-                <img src="https://images.unsplash.com/photo-1626200419199-391ae4be7a41?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Steam momo">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
-                <span class="absolute bottom-3 left-3 text-white text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition">Steamy mo:mo</span>
-            </div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group">
-                <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Seating">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
-                <span class="absolute bottom-3 left-3 text-white text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition">Bamboo seating</span>
-            </div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group">
-                <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Snacks">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
-                <span class="absolute bottom-3 left-3 text-white text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition">Snacks & sides</span>
-            </div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group">
-                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Evening">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
-                <span class="absolute bottom-3 left-3 text-white text-xs md:text-sm font-medium opacity-0 group-hover:opacity-100 transition">Evening gatherings</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Menu -->
-    <section id="menu" class="py-16 md:py-20 bg-white scroll-mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-10 md:mb-12">
-                <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Our Menu</h2>
-                <p class="text-sm md:text-base text-brand-dark/70 mb-6 md:mb-8">From classic masala chai to hearty momo — pick your favourites.</p>
-                
-                <!-- Filters -->
-                <div class="flex flex-wrap justify-center gap-2 px-2" id="menu-filters">
-                    <button class="filter-btn active px-4 py-2 rounded-full text-xs md:text-sm font-medium transition bg-brand-green text-white" data-category="all">All</button>
-                    <button class="filter-btn px-4 py-2 rounded-full text-xs md:text-sm font-medium transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white" data-category="Mo:Mo">Mo:Mo</button>
-                    <button class="filter-btn px-4 py-2 rounded-full text-xs md:text-sm font-medium transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white" data-category="Snacks">Snacks</button>
-                    <button class="filter-btn px-4 py-2 rounded-full text-xs md:text-sm font-medium transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white" data-category="Tea">Tea</button>
-                    <button class="filter-btn px-4 py-2 rounded-full text-xs md:text-sm font-medium transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white" data-category="Bakery">Bakery</button>
-                    <button class="filter-btn px-4 py-2 rounded-full text-xs md:text-sm font-medium transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white" data-category="Cold Drinks">Cold Drinks</button>
+                <div class="text-right">
+                    <p class="text-sm font-medium text-brand-dark/60">Total Orders: <span id="order-count" class="text-brand-green font-bold">0</span></p>
                 </div>
             </div>
 
-            <!-- Menu Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" id="menu-grid">
-                <!-- Menu items will be injected here by JS -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Reviews -->
-    <section id="reviews" class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-20">
-        <div class="text-center mb-12 md:mb-16">
-            <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Loved by guests</h2>
-            <p class="text-sm md:text-base text-brand-dark/70">What people are saying</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-            <!-- Review 1 -->
-            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5">
-                <div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4">
-                    <span>★★★★★</span>
-                </div>
-                <p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"This cozy tea place is a hidden gem! The mix of open and semi-open spaces with bamboo seating and lush greenery creates such a relaxing vibe. The rooftop area is perfect for hanging out, and they even have games like Jenga, Uno, and chess."</p>
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 md:w-10 md:h-10 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs md:text-sm">AK</div>
-                    <div>
-                        <div class="font-medium text-xs md:text-sm">Avishek Kadel</div>
-                        <div class="text-[10px] md:text-xs text-brand-dark/50">Local Guide</div>
-                    </div>
-                </div>
-            </div>
-            <!-- Review 2 -->
-            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5">
-                <div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4">
-                    <span>★★★★★</span>
-                </div>
-                <p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"This new chiya spot was a pleasant surprise. As soon as the first sip of honey milk tea hit my tongue, I was taken — the flavours are so authentic and comforting."</p>
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 md:w-10 md:h-10 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs md:text-sm">AJ</div>
-                    <div>
-                        <div class="font-medium text-xs md:text-sm">Ashutosh Jha</div>
-                        <div class="text-[10px] md:text-xs text-brand-dark/50">Local Guide</div>
-                    </div>
-                </div>
-            </div>
-            <!-- Review 3 -->
-            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5">
-                <div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4">
-                    <span>★★★★★</span>
-                </div>
-                <p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"Chiya San is a newly opened tea-focused spot in a quiet area, ideal for youngsters to hang out. With an extensive variety of teas, from classic masala chai to unique blends, it caters to all tastes."</p>
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 md:w-10 md:h-10 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs md:text-sm">MB</div>
-                    <div>
-                        <div class="font-medium text-xs md:text-sm">Madhusudhan Baral</div>
-                        <div class="text-[10px] md:text-xs text-brand-dark/50">Local Guide</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Visit Us -->
-    <section id="visit" class="py-16 md:py-20 bg-brand-green text-white scroll-mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
-                <div class="space-y-6 md:space-y-8">
-                    <h2 class="text-3xl md:text-5xl font-serif font-bold leading-tight">Come for the tea.<br>Stay for the vibes.</h2>
-                    <p class="text-sm md:text-lg text-brand-lightGreen/80 leading-relaxed">Drop by for a cup, a chat, or a game of chess. We're in the heart of Chakupat, a short walk from Patan Durbar Square.</p>
-                    
-                    <div class="space-y-4 md:space-y-6">
-                        <div class="flex items-start space-x-3 md:space-x-4">
-                            <div class="bg-white/10 p-2 md:p-3 rounded-full mt-0.5 md:mt-1"><i data-lucide="map-pin" class="w-4 h-4 md:w-5 md:h-5 text-brand-terracotta"></i></div>
-                            <div>
-                                <div class="font-medium text-sm md:text-lg">Address</div>
-                                <div class="text-brand-lightGreen/70 text-xs md:text-base">Chakupat Saraswoti Marg<br>Lalitpur, Bagmati Province 44600</div>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3 md:space-x-4">
-                            <div class="bg-white/10 p-2 md:p-3 rounded-full mt-0.5 md:mt-1"><i data-lucide="phone" class="w-4 h-4 md:w-5 md:h-5 text-brand-terracotta"></i></div>
-                            <div>
-                                <div class="font-medium text-sm md:text-lg">Phone</div>
-                                <div class="text-brand-lightGreen/70 text-xs md:text-base">+977 970-9085103</div>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3 md:space-x-4">
-                            <div class="bg-white/10 p-2 md:p-3 rounded-full mt-0.5 md:mt-1"><i data-lucide="clock" class="w-4 h-4 md:w-5 md:h-5 text-brand-terracotta"></i></div>
-                            <div>
-                                <div class="font-medium text-sm md:text-lg">Hours</div>
-                                <div class="text-brand-lightGreen/70 text-xs md:text-base">Open · Closes 8 PM</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
-                        <a href="tel:+9779709085103" class="w-full sm:w-auto text-center bg-brand-terracotta text-white px-6 py-3.5 md:px-8 rounded-full font-medium hover:bg-brand-terracotta/90 transition shadow-lg shadow-brand-terracotta/20 flex items-center justify-center space-x-2">
-                            <i data-lucide="phone-call" class="w-4 h-4 md:w-5 md:h-5"></i>
-                            <span>Call Now</span>
-                        </a>
-                        <a href="https://maps.google.com/?q=Chiya+San+Chakupat+Lalitpur" target="_blank" class="w-full sm:w-auto text-center bg-white/10 border border-white/20 text-white px-6 py-3.5 md:px-8 rounded-full font-medium hover:bg-white/20 transition flex items-center justify-center space-x-2">
-                            <i data-lucide="navigation" class="w-4 h-4 md:w-5 md:h-5"></i>
-                            <span>Directions</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 aspect-square flex flex-col items-center justify-center text-center relative overflow-hidden max-w-[280px] md:max-w-none mx-auto w-full">
-                    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
-                    <div class="bg-brand-terracotta/20 p-4 md:p-6 rounded-full mb-4 md:mb-6 relative z-10">
-                        <i data-lucide="dice-5" class="w-8 h-8 md:w-12 md:h-12 text-brand-terracotta"></i>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-serif font-bold relative z-10 mb-1 md:mb-2">Board games available</h3>
-                    <p class="text-brand-lightGreen/70 text-xs md:text-sm relative z-10">Jenga · Uno · Chess & more</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-brand-dark text-white/60 py-10 md:py-12 text-center text-xs md:text-sm">
-        <div class="max-w-7xl mx-auto px-4">
-            <img src="images/logo.png" alt="Chiya San Logo" class="h-14 md:h-20 w-auto mx-auto mb-3 md:mb-4 object-contain brightness-0 invert">
-            <p class="mb-3 md:mb-4 text-white">Good Food · Good Vibes · Great Times</p>
-            <p>© 2025 Chiya San · Chakupat, Lalitpur</p>
-        </div>
-    </footer>
-
-    <!-- Cart Drawer & Overlay -->
-    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300"></div>
-    <div id="cart-drawer" class="fixed top-0 -right-full w-full h-full bg-white z-50 shadow-2xl transition-all duration-300 flex flex-col">
-        
-        <!-- Cart Header -->
-        <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-brand-cream">
-            <h2 class="text-lg md:text-xl font-serif font-bold text-brand-green">Your Order</h2>
-            <button onclick="toggleCart()" class="p-2 hover:bg-gray-100 rounded-full transition"><i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i></button>
-        </div>
-        
-        <!-- Cart Body (Scrollable) -->
-        <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8">
-            <!-- Cart Items -->
-            <div id="cart-items">
-                <!-- Cart items will be injected here -->
+            <!-- Loading State -->
+            <div id="loading" class="text-center py-20">
+                <div class="inline-block w-10 h-10 border-4 border-brand-lightGreen border-t-brand-terracotta rounded-full animate-spin"></div>
+                <p class="mt-4 text-brand-dark/50">Loading orders...</p>
             </div>
 
-            <!-- Order Details Form -->
-            <div id="checkout-form" class="border-t border-gray-100 pt-4 md:pt-6">
-                <h3 class="font-serif font-bold text-brand-green mb-3 md:mb-4">Order Details</h3>
-                <div class="space-y-3 md:space-y-4">
-                    <div>
-                        <label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Your Name</label>
-                        <input type="text" id="customerName" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. Ayush Shrestha" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Order Type</label>
-                        <select id="orderType" onchange="toggleAddressField()" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm">
-                            <option value="Dine-In">Dine-In</option>
-                            <option value="Takeaway">Takeaway / Pick-up</option>
-                        </select>
-                    </div>
-                    <div id="locationGroup">
-                        <label id="locationLabel" class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Table Number / Spot</label>
-                        <input type="text" id="locationDetails" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. Table 3 / Rooftop seating" required>
-                    </div>
-                </div>
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-brand-green/20">
+                <i data-lucide="inbox" class="w-16 h-16 text-brand-lightGreen mx-auto mb-4"></i>
+                <h3 class="text-xl font-medium text-brand-dark/60">No orders yet</h3>
+                <p class="text-brand-dark/40 text-sm">New orders will appear here automatically.</p>
             </div>
-        </div>
-        
-        <!-- Cart Footer (Fixed) -->
-        <div class="p-4 md:p-6 border-t border-gray-100 bg-brand-cream shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
-            <div class="flex justify-between mb-2 text-xs md:text-sm text-brand-dark/70">
-                <span>Subtotal</span>
-                <span id="cart-subtotal">Rs. 0</span>
+
+            <!-- Orders Grid -->
+            <div id="orders-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Orders will be injected here -->
             </div>
-            <div class="flex justify-between mb-4 md:mb-6 font-bold text-base md:text-lg text-brand-green">
-                <span>Total</span>
-                <span id="cart-total">Rs. 0</span>
-            </div>
-            <button onclick="processOrder()" class="w-full bg-[#25D366] text-white py-3.5 md:py-4 rounded-xl font-medium hover:bg-[#128C7E] transition shadow-lg shadow-green-500/30 flex items-center justify-center gap-2 text-sm md:text-base">
-                <i data-lucide="message-circle" class="w-4 h-4 md:w-5 md:h-5"></i>
-                <span>Send Order via WhatsApp</span>
-            </button>
-        </div>
+        </main>
     </div>
 
     <!-- JavaScript Logic -->
@@ -524,330 +127,119 @@
         // Initialize Icons
         lucide.createIcons();
 
-        // Premium Brewing Loader Logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const loader = document.getElementById('loader');
-            
-            // Prevent scrolling while loading
-            document.body.classList.add('overflow-hidden');
+        // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+        const scriptURL = "https://script.google.com/macros/s/AKfycbzDeGNAV3iF.../exec"; 
 
-            // Wait for the brew animation to complete (3 seconds + small buffer)
-            setTimeout(() => {
-                loader.classList.add('loader-hidden');
-                
-                // Re-enable scrolling after the fade transition finishes
-                setTimeout(() => {
-                    document.body.classList.remove('overflow-hidden');
-                    loader.style.display = 'none'; // Remove from DOM completely
-                }, 800); // Matches the 0.8s CSS transition
-            }, 3500); // 3.5 seconds total loading time
-        });
+        // ⚠️ CHANGE YOUR PASSWORD HERE
+        const ADMIN_PASSWORD = "chiyaadmin"; 
 
-        // Mobile Menu Logic
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        }
-
-        // ⚠️ IMPORTANT: YOUR GOOGLE APPS SCRIPT URL IS ALREADY INSERTED BELOW
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyut1z8CVECUiycX_OwtKL1-luA0GfecChf2OUxqTarZhM52uFEA9Hq7STt0opl2Xaw/exec";
-        // Menu Data
-        const menuItems = [
-            { name: "Chicken Steam Mo:Mo", category: "Mo:Mo", price: 200 },
-            { name: "Chicken Jhol Mo:Mo", category: "Mo:Mo", price: 230 },
-            { name: "Chicken Kothey Mo:Mo", category: "Mo:Mo", price: 250 },
-            { name: "Veg & Paneer Steam Mo:Mo", category: "Mo:Mo", price: 180 },
-            { name: "Veg & Paneer Jhol Mo:Mo", category: "Mo:Mo", price: 210 },
-            { name: "Veg & Paneer Kothey Mo:Mo", category: "Mo:Mo", price: 230 },
-            { name: "Panga Set", category: "Snacks", price: 250 },
-            { name: "Chicken Nuggets", category: "Snacks", price: 300 },
-            { name: "Wai-Wai Sadeko", category: "Snacks", price: 100 },
-            { name: "Sausage Wai-Wai Sadeko", category: "Snacks", price: 180 },
-            { name: "Veg Sandwich", category: "Snacks", price: 180 },
-            { name: "Chicken Sandwich", category: "Snacks", price: 250 },
-            { name: "French Fries", category: "Snacks", price: 180 },
-            { name: "Spicy Fries", category: "Snacks", price: 200 },
-            { name: "Chicken Chilly", category: "Snacks", price: 300 },
-            { name: "Chicken Drumsticks", category: "Snacks", price: 300 },
-            { name: "Boiled Sausage", category: "Snacks", price: 60 },
-            { name: "Fry Sausage", category: "Snacks", price: 60 },
-            { name: "Sausage Sadeko", category: "Snacks", price: 340 },
-            { name: "Normal Milk Tea", category: "Tea", price: 40 },
-            { name: "Honey Milk Tea", category: "Tea", price: 55 },
-            { name: "Masala Milk Tea", category: "Tea", price: 65 },
-            { name: "Normal Black Tea", category: "Tea", price: 30 },
-            { name: "Lemon Tea", category: "Tea", price: 35 },
-            { name: "Masala Black Tea", category: "Tea", price: 35 },
-            { name: "Hot Lemon", category: "Tea", price: 80 },
-            { name: "Hot Lemon with Ginger Honey", category: "Tea", price: 120 },
-            { name: "Peanut Macarons", category: "Bakery", price: 25 },
-            { name: "Choco Chips Cookies (4 Pcs.)", category: "Bakery", price: 50 },
-            { name: "Bread Omelette", category: "Bakery", price: 130 },
-            { name: "Chocolate Milkshake", category: "Cold Drinks", price: 250 },
-            { name: "Oreo Milkshake", category: "Cold Drinks", price: 280 },
-            { name: "Plain Lassi", category: "Cold Drinks", price: 100 },
-            { name: "Banana Lassi", category: "Cold Drinks", price: 200 },
-            { name: "Iced Americano", category: "Cold Drinks", price: 180 },
-            { name: "Iced Milk Coffee", category: "Cold Drinks", price: 200 },
-            { name: "Vanilla Ice Cream", category: "Cold Drinks", price: 150 },
-            { name: "Strawberry Ice Cream", category: "Cold Drinks", price: 150 },
-            { name: "Chocolate Ice Cream", category: "Cold Drinks", price: 150 },
-            { name: "Cold Lemon Tea", category: "Cold Drinks", price: 80 },
-            { name: "Lemon Soda", category: "Cold Drinks", price: 110 },
-            { name: "Masala Coke", category: "Cold Drinks", price: 130 },
-            { name: "Lemon Sprite", category: "Cold Drinks", price: 130 },
-            { name: "Virgin Mojito", category: "Cold Drinks", price: 150 },
-            { name: "Lemonade", category: "Cold Drinks", price: 150 },
-            { name: "Mint Lemonade", category: "Cold Drinks", price: 160 },
-            { name: "Mocktail Mojito", category: "Cold Drinks", price: 180 },
-            { name: "Normal Hookah", category: "Smoke", price: 300 },
-            { name: "Special Hookah", category: "Smoke", price: 500 },
-            { name: "Shikhar Ice", category: "Smoke", price: 20 },
-            { name: "Surya Red", category: "Smoke", price: 25 },
-            { name: "Surya Light", category: "Smoke", price: 25 },
-            { name: "Surya Arctic", category: "Smoke", price: 30 },
-        ];
-
-        // Render Menu
-        const menuGrid = document.getElementById('menu-grid');
-        
-        function renderMenu(category = 'all') {
-            menuGrid.innerHTML = '';
-            const filtered = category === 'all' ? menuItems : menuItems.filter(item => item.category === category);
-            
-            filtered.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'bg-brand-cream p-4 md:p-5 rounded-2xl flex justify-between items-center group hover:shadow-md transition border border-transparent hover:border-brand-green/10';
-                div.innerHTML = `
-                    <div class="pr-3">
-                        <div class="font-medium text-sm md:text-base text-brand-dark">${item.name}</div>
-                        <div class="text-xs md:text-sm text-brand-terracotta font-semibold mt-1">Rs. ${item.price}</div>
-                    </div>
-                    <!-- Increased button size for mobile taps -->
-                    <button onclick="addToCart('${item.name}', ${item.price})" class="w-12 h-12 flex-shrink-0 rounded-full bg-white flex items-center justify-center text-brand-green hover:bg-brand-green hover:text-white transition shadow-sm border border-brand-green/10">
-                        <i data-lucide="plus" class="w-5 h-5 md:w-6 md:h-6"></i>
-                    </button>
-                `;
-                menuGrid.appendChild(div);
-            });
-            lucide.createIcons();
-        }
-
-        // Filter Logic
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                filterBtns.forEach(b => {
-                    b.classList.remove('bg-brand-green', 'text-white');
-                    b.classList.add('bg-brand-lightGreen', 'text-brand-dark');
-                });
-                e.target.classList.remove('bg-brand-lightGreen', 'text-brand-dark');
-                e.target.classList.add('bg-brand-green', 'text-white');
-                renderMenu(e.target.dataset.category);
-            });
-        });
-
-        // Cart Logic
-        let cart = [];
-
-        function addToCart(name, price) {
-            const existing = cart.find(item => item.name === name);
-            if (existing) {
-                existing.qty += 1;
+        // Login Logic
+        function login() {
+            const input = document.getElementById('password').value;
+            if (input === ADMIN_PASSWORD) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                fetchOrders(); // Load orders immediately after login
             } else {
-                cart.push({ name, price, qty: 1 });
+                document.getElementById('login-error').classList.remove('hidden');
             }
-            updateCartUI();
-            
-            // Simple animation/feedback
-            const cartBtn = document.querySelector('button[onclick="toggleCart()"]');
-            cartBtn.classList.add('scale-110');
-            setTimeout(() => cartBtn.classList.remove('scale-110'), 200);
         }
 
-        function updateCartUI() {
-            const cartItemsDiv = document.getElementById('cart-items');
-            const cartCount = document.getElementById('cart-count');
-            const subtotalEl = document.getElementById('cart-subtotal');
-            const totalEl = document.getElementById('cart-total');
+        // Logout Logic
+        function logout() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('password').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+        }
 
-            let totalItems = 0;
-            let subtotal = 0;
+        // Fetch Orders from Google Sheets
+        async function fetchOrders() {
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+            const ordersGrid = document.getElementById('orders-grid');
+            const orderCount = document.getElementById('order-count');
 
-            if (cart.length === 0) {
-                cartItemsDiv.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-center text-brand-dark/40 py-10">
-                        <i data-lucide="shopping-cart" class="w-16 h-16 mb-4 opacity-50"></i>
-                        <p class="text-lg font-medium">Your cart is empty</p>
-                        <p class="text-sm">Add something delicious from the menu</p>
-                    </div>
-                `;
-            } else {
-                cartItemsDiv.innerHTML = cart.map((item, index) => {
-                    totalItems += item.qty;
-                    subtotal += item.price * item.qty;
-                    return `
-                        <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 last:border-0">
-                            <div class="pr-3">
-                                <div class="font-medium text-sm md:text-base text-brand-dark">${item.name}</div>
-                                <div class="text-xs md:text-sm text-brand-terracotta font-semibold mt-1">Rs. ${item.price}</div>
+            loading.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            ordersGrid.innerHTML = '';
+            
+            try {
+                const response = await fetch(scriptURL);
+                const data = await response.json();
+
+                loading.classList.add('hidden');
+
+                if (data.error) {
+                    ordersGrid.innerHTML = `<div class="col-span-full text-center text-red-500 py-10">Error: ${data.error}</div>`;
+                    return;
+                }
+
+                if (data.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    orderCount.innerText = '0';
+                    return;
+                }
+
+                orderCount.innerText = data.length;
+
+                // Render each order as a card
+                data.forEach((order, index) => {
+                    // Format the timestamp
+                    const date = new Date(order.Timestamp);
+                    const timeString = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    const dateString = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+
+                    // Format items: replace newlines with <br> for HTML display
+                    const formattedItems = order['Items Ordered'].replace(/\n/g, '<br>');
+
+                    const card = document.createElement('div');
+                    card.className = 'order-card bg-white rounded-2xl shadow-sm border border-brand-green/10 p-5 flex flex-col relative overflow-hidden';
+                    
+                    // Add a colored bar for Dine-In vs Takeaway
+                    const barColor = order['Order Type'] === 'Dine-In' ? 'bg-brand-green' : 'bg-brand-terracotta';
+                    
+                    card.innerHTML = `
+                        <div class="absolute top-0 left-0 w-1.5 h-full ${barColor}"></div>
+                        
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="text-xs font-bold text-brand-terracotta tracking-wider">${order['Order ID']}</span>
+                                <h3 class="font-serif font-bold text-xl text-brand-green mt-0.5">${order['Customer Name']}</h3>
                             </div>
-                            <div class="flex items-center space-x-3 flex-shrink-0">
-                                <!-- Increased button sizes for mobile -->
-                                <button onclick="updateQty(${index}, -1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">-</button>
-                                <span class="w-4 text-center font-medium text-sm md:text-base">${item.qty}</span>
-                                <button onclick="updateQty(${index}, 1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">+</button>
+                            <div class="text-right">
+                                <div class="text-xs font-medium text-brand-dark/50">${dateString} · ${timeString}</div>
+                                <div class="text-xs font-bold px-2 py-0.5 rounded-full mt-1 inline-block ${order['Order Type'] === 'Dine-In' ? 'bg-brand-lightGreen text-brand-green' : 'bg-brand-lightTerracotta text-brand-terracotta'}">${order['Order Type']}</div>
                             </div>
                         </div>
+
+                        <div class="bg-brand-cream rounded-xl p-3 mb-4 flex-1">
+                            <div class="text-xs font-semibold text-brand-dark/50 uppercase tracking-wider mb-2">Items</div>
+                            <div class="text-sm text-brand-dark leading-relaxed">${formattedItems}</div>
+                        </div>
+
+                        <div class="flex justify-between items-center border-t border-gray-100 pt-3 mt-auto">
+                            <div class="text-xs font-medium text-brand-dark/50">${order['Table / Pickup Time']}</div>
+                            <div class="font-bold text-brand-green text-lg">Rs. ${order['Total Amount']}</div>
+                        </div>
                     `;
-                }).join('');
-            }
 
-            cartCount.innerText = totalItems;
-            subtotalEl.innerText = `Rs. ${subtotal}`;
-            totalEl.innerText = `Rs. ${subtotal}`;
-            lucide.createIcons();
-        }
-
-        function updateQty(index, change) {
-            cart[index].qty += change;
-            if (cart[index].qty <= 0) {
-                cart.splice(index, 1);
-            }
-            updateCartUI();
-        }
-
-        function toggleCart() {
-            const drawer = document.getElementById('cart-drawer');
-            const overlay = document.getElementById('cart-overlay');
-            const body = document.body;
-            
-            if (drawer.classList.contains('cart-open')) {
-                drawer.classList.remove('cart-open');
-                overlay.classList.remove('overlay-open');
-                setTimeout(() => overlay.classList.add('hidden'), 300);
-                body.classList.remove('overflow-hidden');
-            } else {
-                overlay.classList.remove('hidden');
-                setTimeout(() => overlay.classList.add('overlay-open'), 10);
-                drawer.classList.add('cart-open');
-                body.classList.add('overflow-hidden');
-            }
-        }
-
-        // WhatsApp Integration Form Logic
-        function toggleAddressField() {
-            const type = document.getElementById('orderType').value;
-            const label = document.getElementById('locationLabel');
-            const input = document.getElementById('locationDetails');
-
-            if (type === 'Dine-In') {
-                label.innerText = 'Table Number / Spot:';
-                input.placeholder = 'e.g. Table 3 / Rooftop seating';
-            } else {
-                label.innerText = 'Pickup Time:';
-                input.placeholder = 'e.g. Ready in 15 mins';
-            }
-        }
-
-        // Helper function to generate a unique Order ID
-        function generateOrderId() {
-            const now = new Date();
-            const datePart = now.getFullYear().toString().slice(-2) + 
-                             (now.getMonth()+1).toString().padStart(2, '0') + 
-                             now.getDate().toString().padStart(2, '0');
-            const randomPart = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
-            return `CS-${datePart}-${randomPart}`;
-        }
-
-        // Main function to process the order (Saves to Sheet + Opens WhatsApp)
-        async function processOrder() {
-            // Validation
-            if (cart.length === 0) {
-                alert("Please add at least one item to your cart before sending your order.");
-                return;
-            }
-
-            const nameInput = document.getElementById('customerName');
-            const locationInput = document.getElementById('locationDetails');
-
-            if (!nameInput.value || !locationInput.value) {
-                alert("Please fill in your name and order details (Table or Pickup time).");
-                return;
-            }
-
-            const orderId = generateOrderId();
-            const name = nameInput.value;
-            const orderType = document.getElementById('orderType').value;
-            const location = locationInput.value;
-
-            // Prepare data for Google Sheets
-            let itemsSummary = [];
-            let total = 0;
-            cart.forEach(item => {
-                let itemSum = item.price * item.qty;
-                total += itemSum;
-                itemsSummary.push(`${item.name} x${item.qty} = Rs. ${itemSum}`);
-            });
-
-            const orderData = {
-                orderId: orderId,
-                customerName: name,
-                orderType: orderType,
-                location: location,
-               items: itemsSummary.join('\n'),
-                total: total
-            };
-
-            // 1. Save to Google Sheets (Backend)
-            const saveButton = document.querySelector('button[onclick="processOrder()"]');
-            const originalButtonText = saveButton.innerHTML;
-            saveButton.innerHTML = 'Saving...';
-            saveButton.disabled = true;
-
-            try {
-                await fetch(scriptURL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Necessary for GitHub Pages -> Apps Script
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
+                    ordersGrid.appendChild(card);
                 });
-                console.log('Order saved to Google Sheet successfully!');
+
             } catch (error) {
-                console.error('Error saving to Google Sheet:', error);
-                // Even if the sheet fails, we still want to open WhatsApp
-            } finally {
-                // Re-enable button and reset text
-                saveButton.innerHTML = originalButtonText;
-                saveButton.disabled = false;
+                loading.classList.add('hidden');
+                ordersGrid.innerHTML = `<div class="col-span-full text-center text-red-500 py-10">Failed to load orders. Please check your internet connection or script URL.</div>`;
+                console.error('Error fetching orders:', error);
             }
-
-            // 2. Send via WhatsApp (Frontend)
-            const phoneNumber = "9779765566682"; // Your WhatsApp number
-            let message = `*NEW ORDER - CHIYA SAN*\n\n` +
-                          `*Order ID:* ${orderId}\n` +
-                          `*Customer:* ${name}\n` +
-                          `*Type:* ${orderType}\n` +
-                          `*Details:* ${location}\n\n` +
-                          `*Items Ordered:*\n`;
-            
-            itemsSummary.forEach(item => message += `- ${item}\n`);
-            message += `\n*Total Amount:* Rs. ${total}`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappURL = "https://api.whatsapp.com/send?phone=" + phoneNumber + "&text=" + encodedMessage;
-            
-            window.open(whatsappURL, '_blank');
-
-            // 3. Clear the cart and close the drawer
-            cart = [];
-            updateCartUI();
-            toggleCart();
         }
 
-        // Initial Render
-        renderMenu();
-        updateCartUI();
+        // Auto-refresh every 60 seconds if logged in
+        setInterval(() => {
+            if (!document.getElementById('dashboard').classList.contains('hidden')) {
+                fetchOrders();
+            }
+        }, 60000);
     </script>
 </body>
 </html>
