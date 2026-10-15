@@ -1,112 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chiya San | Kitchen Admin</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiya SAN | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { brand: { green: '#2D4A3E', lightGreen: '#EBF0EC', terracotta: '#B85B3E', lightTerracotta: '#FDF5F2', cream: '#F9F6F0', dark: '#1A1A1A', } }, fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'], } } }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .order-card { transition: all 0.2s ease-in-out; }
+        .order-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 sm:p-8">
+<body class="bg-brand-cream text-brand-dark antialiased min-h-screen">
 
-  <div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-300">
-      <div>
-        <h1 class="text-3xl font-bold text-slate-900">☕ Chiya San Kitchen Dashboard</h1>
-        <p class="text-slate-500 text-sm">Live Incoming Orders</p>
-      </div>
-      <span class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-sm">Live Realtime</span>
+    <div id="login-screen" class="fixed inset-0 bg-brand-green z-[9999] flex items-center justify-center">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md mx-4 text-center">
+            <img src="images/logo.png" alt="Chiya San Logo" class="h-24 w-auto mx-auto mb-6 object-contain">
+            <h1 class="font-serif font-bold text-2xl text-brand-green mb-2">Admin Dashboard</h1>
+            <p class="text-brand-dark/60 text-sm mb-6">Enter password to view orders</p>
+            <input type="password" id="password" placeholder="Password" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-center text-lg tracking-widest mb-4" onkeypress="if(event.key === 'Enter') login()">
+            <button onclick="login()" class="w-full bg-brand-green text-white py-3.5 rounded-xl font-medium hover:bg-brand-green/90 transition shadow-lg shadow-brand-green/20">Login</button>
+            <p id="login-error" class="text-red-500 text-sm mt-3 hidden">Incorrect password. Try again.</p>
+        </div>
     </div>
 
-    <div id="orders-container" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <p class="text-slate-500">Loading incoming orders...</p>
+    <div id="dashboard" class="hidden">
+        <nav class="bg-white border-b border-brand-green/10 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-3">
+                        <img src="images/logo.png" alt="Chiya San Logo" class="h-10 w-auto object-contain">
+                        <span class="font-serif font-bold text-brand-green text-lg hidden sm:block">Admin Dashboard</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="fetchOrders()" class="flex items-center gap-2 px-4 py-2 bg-brand-lightGreen text-brand-green rounded-full text-sm font-medium hover:bg-brand-green hover:text-white transition">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Refresh
+                        </button>
+                        <button onclick="logout()" class="flex items-center gap-2 px-4 py-2 bg-brand-lightTerracotta text-brand-terracotta rounded-full text-sm font-medium hover:bg-brand-terracotta hover:text-white transition">
+                            <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex justify-between items-end mb-6">
+                <div><h2 class="font-serif font-bold text-3xl text-brand-green">Live Orders</h2><p class="text-brand-dark/60 text-sm">Real-time orders from your website</p></div>
+                <div class="text-right"><p class="text-sm font-medium text-brand-dark/60">Total Orders: <span id="order-count" class="text-brand-green font-bold">0</span></p></div>
+            </div>
+
+            <div id="loading" class="text-center py-20">
+                <div class="inline-block w-10 h-10 border-4 border-brand-lightGreen border-t-brand-terracotta rounded-full animate-spin"></div>
+                <p class="mt-4 text-brand-dark/50">Loading orders...</p>
+            </div>
+
+            <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl border border-dashed border-brand-green/20">
+                <i data-lucide="inbox" class="w-16 h-16 text-brand-lightGreen mx-auto mb-4"></i>
+                <h3 class="text-xl font-medium text-brand-dark/60">No orders yet</h3>
+                <p class="text-brand-dark/40 text-sm">New orders will appear here automatically.</p>
+            </div>
+
+            <div id="orders-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </main>
     </div>
-  </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <script>
+        lucide.createIcons();
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB8XHVv0U4GtdnI3U26C10fpGDpnELSdg",
-      authDomain: "chiya-san-orders.firebaseapp.com",
-      projectId: "chiya-san-orders",
-      storageBucket: "chiya-san-orders.firebasestorage.app",
-      messagingSenderId: "171390546624",
-      appId: "1:171390546624:web:58120d6d4cb7c2e667f325",
-      measurementId: "G-9JLY2XD0MG"
-    };
+        // ⚠️ IMPORTANT: PASTE YOUR NEW GOOGLE APPS SCRIPT URL BELOW
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
+        const ADMIN_PASSWORD = "chiyaadmin"; 
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        function login() {
+            const input = document.getElementById('password').value;
+            if (input === ADMIN_PASSWORD) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                fetchOrders();
+            } else { document.getElementById('login-error').classList.remove('hidden'); }
+        }
 
-    const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+        function logout() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('password').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+        }
 
-    onSnapshot(ordersQuery, (snapshot) => {
-      const container = document.getElementById('orders-container');
-      
-      if (snapshot.empty) {
-        container.innerHTML = `<p class="text-slate-400 col-span-3 text-center py-8">No active orders right now.</p>`;
-        return;
-      }
+        async function fetchOrders() {
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+            const ordersGrid = document.getElementById('orders-grid');
+            const orderCount = document.getElementById('order-count');
+            loading.classList.remove('hidden'); emptyState.classList.add('hidden'); ordersGrid.innerHTML = '';
+            try {
+                const response = await fetch(scriptURL);
+                const data = await response.json();
+                loading.classList.add('hidden');
+                if (data.error) { ordersGrid.innerHTML = `<div class="col-span-full text-center text-red-500 py-10">Error: ${data.error}</div>`; return; }
+                if (data.length === 0) { emptyState.classList.remove('hidden'); orderCount.innerText = '0'; return; }
+                orderCount.innerText = data.length;
+                data.forEach((order) => {
+                    const date = new Date(order.Timestamp);
+                    const timeString = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                    const dateString = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+                    const formattedItems = order['Items Ordered'].replace(/\n/g, '<br>');
+                    const card = document.createElement('div');
+                    card.className = 'order-card bg-white rounded-2xl shadow-sm border border-brand-green/10 p-5 flex flex-col relative overflow-hidden';
+                    const barColor = order['Order Type'] === 'Dine-In' ? 'bg-brand-green' : 'bg-brand-terracotta';
+                    card.innerHTML = `
+                        <div class="absolute top-0 left-0 w-1.5 h-full ${barColor}"></div>
+                        <div class="flex justify-between items-start mb-4">
+                            <div><span class="text-xs font-bold text-brand-terracotta tracking-wider">${order['Order ID']}</span><h3 class="font-serif font-bold text-xl text-brand-green mt-0.5">${order['Customer Name']}</h3></div>
+                            <div class="text-right"><div class="text-xs font-medium text-brand-dark/50">${dateString} · ${timeString}</div><div class="text-xs font-bold px-2 py-0.5 rounded-full mt-1 inline-block ${order['Order Type'] === 'Dine-In' ? 'bg-brand-lightGreen text-brand-green' : 'bg-brand-lightTerracotta text-brand-terracotta'}">${order['Order Type']}</div></div>
+                        </div>
+                        <div class="bg-brand-cream rounded-xl p-3 mb-4 flex-1"><div class="text-xs font-semibold text-brand-dark/50 uppercase tracking-wider mb-2">Items</div><div class="text-sm text-brand-dark leading-relaxed">${formattedItems}</div></div>
+                        <div class="flex justify-between items-center border-t border-gray-100 pt-3 mt-auto"><div class="text-xs font-medium text-brand-dark/50">${order['Table / Pickup Time']}</div><div class="font-bold text-brand-green text-lg">Rs. ${order['Total Amount']}</div></div>
+                    `;
+                    ordersGrid.appendChild(card);
+                });
+            } catch (error) {
+                loading.classList.add('hidden');
+                ordersGrid.innerHTML = `<div class="col-span-full text-center text-red-500 py-10">Failed to load orders. Please check your internet connection or script URL.</div>`;
+                console.error('Error fetching orders:', error);
+            }
+        }
 
-      container.innerHTML = snapshot.docs.map(docSnap => {
-        const order = docSnap.data();
-        const id = docSnap.id;
-        const status = order.status || "Pending";
-
-        let statusBg = "bg-yellow-100 text-yellow-800";
-        if (status === "Preparing") statusBg = "bg-blue-100 text-blue-800";
-        if (status === "Ready") statusBg = "bg-emerald-100 text-emerald-800";
-
-        const itemsList = order.items ? order.items.map(i => `<li>${i.name} x${i.qty}</li>`).join('') : '';
-        const waLink = formatWhatsAppLink(order.customerPhone, order.customerName, id);
-
-        return `
-          <div class="bg-white border rounded-2xl p-5 shadow-sm flex flex-col justify-between">
-            <div>
-              <div class="flex justify-between items-start mb-3">
-                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${statusBg}">${status}</span>
-                <span class="text-xs text-slate-400 font-mono">#${id.slice(-4)}</span>
-              </div>
-              <h3 class="font-bold text-lg text-slate-900">${order.customerName || 'Customer'}</h3>
-              <p class="text-sm text-slate-500 font-medium">${order.customerPhone} • <span class="text-cyan-700">${order.orderType}</span></p>
-
-              <ul class="my-4 text-sm space-y-1 text-slate-700 border-t border-b py-3 list-disc list-inside">
-                ${itemsList}
-              </ul>
-
-              <p class="font-bold text-slate-900 text-right mb-4">Total: Rs. ${order.totalAmount}</p>
-            </div>
-
-            <div class="space-y-2 pt-2 border-t">
-              ${status !== 'Ready' ? `
-                <button onclick="updateStatus('${id}', 'Preparing')" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 rounded-lg transition-all">
-                  Set to Preparing
-                </button>
-              ` : ''}
-
-              <a href="${waLink}" target="_blank" onclick="updateStatus('${id}', 'Ready')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all block text-center">
-                💬 Mark Ready & Open WhatsApp
-              </a>
-            </div>
-          </div>
-        `;
-      }).join('');
-    });
-
-    function formatWhatsAppLink(phone, name, orderId) {
-      if (!phone) return "#";
-      let cleanNumber = phone.replace(/[^0-9]/g, '');
-      if (cleanNumber.length === 10) {
-        cleanNumber = "977" + cleanNumber;
-      }
-      const message = encodeURIComponent(`Namaste ${name}! ☕\nYour order #${orderId.slice(-4)} from Chiya San is READY! Please come pick it up. Thank you!`);
-      return `https://wa.me/${cleanNumber}?text=${message}`;
-    }
-
-    window.updateStatus = async function(orderId, newStatus) {
-      await updateDoc(doc(db, "orders", orderId), { status: newStatus });
-    };
-  </script>
+        setInterval(() => { if (!document.getElementById('dashboard').classList.contains('hidden')) { fetchOrders(); } }, 60000);
+    </script>
 </body>
 </html>
