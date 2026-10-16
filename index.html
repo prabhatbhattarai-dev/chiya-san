@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- ⭐ html2canvas library for image generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         tailwind.config = { theme: { extend: { colors: { brand: { green: '#2D4A3E', lightGreen: '#EBF0EC', terracotta: '#B85B3E', lightTerracotta: '#FDF5F2', cream: '#F9F6F0', dark: '#1A1A1A', } }, fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Playfair Display', 'serif'], } } } }
     </script>
@@ -18,16 +20,6 @@
         input, select, textarea { font-size: 16px !important; }
         #main-header { transition: transform 0.35s ease-in-out; }
         #main-header.header-hidden { transform: translateY(-100%); }
-        
-        /* Hide the print receipt on screen */
-        #print-receipt { display: none; }
-        
-        /* Print Styles - Show ONLY the receipt */
-        @media print {
-            body > *:not(#print-receipt) { display: none !important; }
-            #print-receipt { display: block !important; }
-            @page { margin: 5mm; size: 80mm auto; }
-        }
     </style>
 </head>
 <body class="bg-brand-cream text-brand-dark font-sans antialiased selection:bg-brand-terracotta selection:text-white overflow-x-hidden">
@@ -201,15 +193,16 @@
         </div>
     </footer>
 
+    <!-- Cart Drawer -->
     <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300 no-print"></div>
     <div id="cart-drawer" class="fixed top-0 -right-full w-full h-full bg-white z-50 shadow-2xl transition-all duration-300 flex flex-col">
-        <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-brand-cream no-print">
+        <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-brand-cream">
             <h2 class="text-lg md:text-xl font-serif font-bold text-brand-green">Your Order</h2>
             <button onclick="toggleCart()" class="p-2 hover:bg-gray-100 rounded-full transition"><i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i></button>
         </div>
         <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8">
             <div id="cart-items"></div>
-            <div id="checkout-form" class="border-t border-gray-100 pt-4 md:pt-6 no-print">
+            <div id="checkout-form" class="border-t border-gray-100 pt-4 md:pt-6">
                 <h3 class="font-serif font-bold text-brand-green mb-3 md:mb-4">Order Details</h3>
                 <div class="space-y-3 md:space-y-4">
                     <div><label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Your Name</label><input type="text" id="customerName" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. Ayush Shrestha" required></div>
@@ -223,47 +216,84 @@
                 </div>
             </div>
         </div>
-        <div class="p-4 md:p-6 border-t border-gray-100 bg-brand-cream shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] no-print">
+        <div class="p-4 md:p-6 border-t border-gray-100 bg-brand-cream shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
             <div class="flex justify-between mb-2 text-xs md:text-sm text-brand-dark/70"><span>Subtotal</span><span id="cart-subtotal">Rs. 0</span></div>
             <div class="flex justify-between mb-4 md:mb-6 font-bold text-base md:text-lg text-brand-green"><span>Total</span><span id="cart-total">Rs. 0</span></div>
             <div class="flex gap-3">
-                <button onclick="printBill()" class="w-full bg-brand-lightGreen text-brand-green py-3.5 rounded-xl font-medium hover:bg-brand-green hover:text-white transition flex items-center justify-center gap-2 text-sm md:text-base"><i data-lucide="printer" class="w-4 h-4"></i><span>Print Bill</span></button>
+                <button onclick="generateBill()" class="w-full bg-brand-lightGreen text-brand-green py-3.5 rounded-xl font-medium hover:bg-brand-green hover:text-white transition flex items-center justify-center gap-2 text-sm md:text-base"><i data-lucide="receipt" class="w-4 h-4"></i><span>Get Bill</span></button>
                 <button onclick="processOrder()" class="w-full bg-[#25D366] text-white py-3.5 rounded-xl font-medium hover:bg-[#128C7E] transition shadow-lg shadow-green-500/30 flex items-center justify-center gap-2 text-sm md:text-base"><i data-lucide="message-circle" class="w-4 h-4"></i><span>Send WhatsApp</span></button>
             </div>
         </div>
     </div>
 
-    <!-- PRINT RECEIPT (Hidden on screen, visible when printing) -->
-    <div id="print-receipt">
-        <div style="font-family: 'Courier New', monospace; max-width: 320px; margin: 0 auto; padding: 20px; background: white; color: black;">
-            <div style="text-align: center; border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 15px;">
-                <img src="images/logo.png" style="height: 60px; margin-bottom: 8px;" alt="Chiya San">
-                <h1 style="font-size: 22px; font-weight: bold; margin: 5px 0;">CHIYA SAN</h1>
-                <p style="font-size: 11px; margin: 3px 0;">Chakupat, Lalitpur</p>
-                <p style="font-size: 11px; margin: 3px 0;">+977 970-9085103</p>
+    <!-- ⭐ BILL MODAL (with image preview) -->
+    <div id="bill-modal" class="fixed inset-0 bg-black/70 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-hidden flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="bill-modal-content">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-100">
+                <div class="flex items-center gap-2">
+                    <div class="bg-brand-lightGreen p-2 rounded-full"><i data-lucide="receipt" class="w-5 h-5 text-brand-green"></i></div>
+                    <h3 class="font-serif font-bold text-lg text-brand-green">Your Bill</h3>
+                </div>
+                <button onclick="closeBillModal()" class="p-2 hover:bg-gray-100 rounded-full transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
-            
-            <div style="font-size: 12px; margin-bottom: 12px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Order ID:</span><strong id="print-orderid">-</strong></div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Date:</span><span id="print-date">-</span></div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Customer:</span><strong id="print-customer">-</strong></div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Phone:</span><span id="print-phone">-</span></div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Type:</span><span id="print-type">-</span></div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Table/Pickup:</span><span id="print-location">-</span></div>
+
+            <!-- Bill Content (this will be captured as image) -->
+            <div class="flex-1 overflow-y-auto p-4 bg-gray-100">
+                <div id="bill-capture-area" style="background: #ffffff; padding: 20px; border-radius: 12px; max-width: 400px; margin: 0 auto; font-family: 'Courier New', monospace;">
+                    <!-- Header -->
+                    <div style="text-align: center; border-bottom: 2px dashed #2D4A3E; padding-bottom: 12px; margin-bottom: 12px;">
+                        <div style="font-size: 22px; font-weight: bold; color: #2D4A3E; margin-bottom: 4px;">CHIYA SAN</div>
+                        <div style="font-size: 11px; color: #666;">चिया शान</div>
+                        <div style="font-size: 10px; color: #888; margin-top: 6px;">Chakupat, Lalitpur</div>
+                        <div style="font-size: 10px; color: #888;">+977 970-9085103</div>
+                    </div>
+                    
+                    <!-- Order Info -->
+                    <div style="font-size: 11px; margin-bottom: 12px; line-height: 1.6;">
+                        <div style="display: flex; justify-content: space-between;"><span style="color: #666;">Order ID:</span><strong id="bill-orderid">-</strong></div>
+                        <div style="display: flex; justify-content: space-between;"><span style="color: #666;">Date:</span><span id="bill-date">-</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span style="color: #666;">Customer:</span><strong id="bill-customer">-</strong></div>
+                        <div style="display: flex; justify-content: space-between;"><span style="color: #666;">Phone:</span><span id="bill-phone">-</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span style="color: #666;">Type:</span><span id="bill-type">-</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span style="color: #666;">Table/Pickup:</span><span id="bill-location">-</span></div>
+                    </div>
+                    
+                    <!-- Items -->
+                    <div style="border-top: 2px dashed #2D4A3E; border-bottom: 2px dashed #2D4A3E; padding: 10px 0; margin-bottom: 12px;">
+                        <div style="font-size: 11px; font-weight: bold; margin-bottom: 8px; color: #2D4A3E;">ITEMS:</div>
+                        <div id="bill-items" style="font-size: 11px; line-height: 1.8;"></div>
+                    </div>
+                    
+                    <!-- Total -->
+                    <div style="text-align: right; font-size: 15px; font-weight: bold; color: #2D4A3E; padding: 8px 0; border-bottom: 2px solid #2D4A3E; margin-bottom: 12px;">
+                        TOTAL: Rs. <span id="bill-total">0</span>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="text-align: center; font-size: 10px; color: #666; line-height: 1.6;">
+                        <div style="font-style: italic; margin-bottom: 4px;">Thank you for visiting Chiya San! 💚</div>
+                        <div style="font-weight: bold; color: #2D4A3E;">Good Food · Good Vibes · Great Times</div>
+                        <div style="margin-top: 8px; font-size: 9px;">Follow us @chiya_san_</div>
+                    </div>
+                </div>
             </div>
-            
-            <div style="border-top: 2px dashed #000; border-bottom: 2px dashed #000; padding: 10px 0; margin-bottom: 12px;">
-                <p style="font-size: 12px; font-weight: bold; margin: 0 0 8px 0;">ITEMS ORDERED:</p>
-                <div id="print-items" style="font-size: 12px;"></div>
-            </div>
-            
-            <div style="text-align: right; font-size: 16px; font-weight: bold; margin-bottom: 15px;">
-                TOTAL: Rs. <span id="print-total">0</span>
-            </div>
-            
-            <div style="text-align: center; border-top: 2px dashed #000; padding-top: 12px; font-size: 11px;">
-                <p style="margin: 5px 0; font-style: italic;">Thank you for visiting Chiya San! 💚</p>
-                <p style="margin: 5px 0;">Good Food · Good Vibes · Great Times</p>
+
+            <!-- Action Buttons -->
+            <div class="p-4 border-t border-gray-100 bg-white space-y-2">
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="downloadBill()" class="bg-brand-green text-white py-3 rounded-xl font-medium hover:bg-brand-green/90 transition flex items-center justify-center gap-2 text-sm">
+                        <i data-lucide="download" class="w-4 h-4"></i> Download
+                    </button>
+                    <button onclick="shareBill()" class="bg-[#25D366] text-white py-3 rounded-xl font-medium hover:bg-[#128C7E] transition flex items-center justify-center gap-2 text-sm">
+                        <i data-lucide="share-2" class="w-4 h-4"></i> Share
+                    </button>
+                </div>
+                <button onclick="printBillImage()" class="w-full bg-gray-100 text-brand-dark py-2.5 rounded-xl font-medium hover:bg-gray-200 transition flex items-center justify-center gap-2 text-sm">
+                    <i data-lucide="printer" class="w-4 h-4"></i> Print Instead
+                </button>
             </div>
         </div>
     </div>
@@ -281,7 +311,9 @@
         lucide.createIcons();
         
         // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT URL HERE
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyUsPj419DZ5dbciSDtvcx0eBmtFNAAnwtXX0nX7vUMIBf1FjNlSW_FPodyxrruDk13/exec"; 
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
+
+        let billImageDataUrl = null; // Store generated image
 
         let lastScrollTop = 0;
         const header = document.getElementById('main-header');
@@ -356,8 +388,8 @@
         function updateCartUI() {
             const cartItemsDiv = document.getElementById('cart-items'); const cartCount = document.getElementById('cart-count'); const subtotalEl = document.getElementById('cart-subtotal'); const totalEl = document.getElementById('cart-total');
             let totalItems = 0; let subtotal = 0;
-            if (cart.length === 0) { cartItemsDiv.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-center text-brand-dark/40 py-10 no-print"><i data-lucide="shopping-cart" class="w-16 h-16 mb-4 opacity-50"></i><p class="text-lg font-medium">Your cart is empty</p><p class="text-sm">Add something delicious from the menu</p></div>`; } 
-            else { cartItemsDiv.innerHTML = cart.map((item, index) => { totalItems += item.qty; subtotal += item.price * item.qty; return `<div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 last:border-0"><div class="pr-3"><div class="font-medium text-sm md:text-base text-brand-dark">${item.name}</div><div class="text-xs md:text-sm text-brand-terracotta font-semibold mt-1">Rs. ${item.price}</div></div><div class="flex items-center space-x-3 flex-shrink-0 no-print"><button onclick="updateQty(${index}, -1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">-</button><span class="w-4 text-center font-medium text-sm">${item.qty}</span><button onclick="updateQty(${index}, 1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">+</button></div></div>`; }).join(''); }
+            if (cart.length === 0) { cartItemsDiv.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-center text-brand-dark/40 py-10"><i data-lucide="shopping-cart" class="w-16 h-16 mb-4 opacity-50"></i><p class="text-lg font-medium">Your cart is empty</p><p class="text-sm">Add something delicious from the menu</p></div>`; } 
+            else { cartItemsDiv.innerHTML = cart.map((item, index) => { totalItems += item.qty; subtotal += item.price * item.qty; return `<div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 last:border-0"><div class="pr-3"><div class="font-medium text-sm md:text-base text-brand-dark">${item.name}</div><div class="text-xs md:text-sm text-brand-terracotta font-semibold mt-1">Rs. ${item.price}</div></div><div class="flex items-center space-x-3 flex-shrink-0"><button onclick="updateQty(${index}, -1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">-</button><span class="w-4 text-center font-medium text-sm">${item.qty}</span><button onclick="updateQty(${index}, 1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">+</button></div></div>`; }).join(''); }
             cartCount.innerText = totalItems; subtotalEl.innerText = `Rs. ${subtotal}`; totalEl.innerText = `Rs. ${subtotal}`; lucide.createIcons();
         }
 
@@ -366,12 +398,9 @@
         function toggleAddressField() { const type = document.getElementById('orderType').value; const label = document.getElementById('locationLabel'); const input = document.getElementById('locationDetails'); if (type === 'Dine-In') { label.innerText = 'Table Number / Spot:'; input.placeholder = 'e.g. Table 3 / Rooftop seating'; } else { label.innerText = 'Pickup Time:'; input.placeholder = 'e.g. Ready in 15 mins'; } }
         function generateOrderId() { const randomPart = Math.floor(100 + Math.random() * 900); return `CS-${randomPart}`; }
 
-        // ============ PRINT BILL (Complete New Function) ============
-        function printBill() {
-            if (cart.length === 0) { 
-                alert("Your cart is empty. Add items first."); 
-                return; 
-            }
+        // ============ BILL IMAGE GENERATION ============
+        function generateBill() {
+            if (cart.length === 0) { alert("Your cart is empty. Add items first."); return; }
             
             const name = document.getElementById('customerName').value || 'Guest';
             const phone = document.getElementById('customerPhone').value || '-';
@@ -379,17 +408,16 @@
             const location = document.getElementById('locationDetails').value || '-';
             
             const tempOrderId = generateOrderId();
-            
             const now = new Date();
-            const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
             const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             
-            document.getElementById('print-orderid').innerText = tempOrderId;
-            document.getElementById('print-date').innerText = dateStr + ' ' + timeStr;
-            document.getElementById('print-customer').innerText = name;
-            document.getElementById('print-phone').innerText = phone;
-            document.getElementById('print-type').innerText = orderType;
-            document.getElementById('print-location').innerText = location;
+            document.getElementById('bill-orderid').innerText = tempOrderId;
+            document.getElementById('bill-date').innerText = dateStr + ' • ' + timeStr;
+            document.getElementById('bill-customer').innerText = name;
+            document.getElementById('bill-phone').innerText = phone;
+            document.getElementById('bill-type').innerText = orderType;
+            document.getElementById('bill-location').innerText = location;
             
             let itemsHtml = '';
             let total = 0;
@@ -397,16 +425,152 @@
                 const itemTotal = item.price * item.qty;
                 total += itemTotal;
                 itemsHtml += `
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span>${item.name} x${item.qty}</span>
-                        <span>Rs. ${itemTotal}</span>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span>${item.name} × ${item.qty}</span>
+                        <span style="font-weight: 600;">Rs. ${itemTotal}</span>
                     </div>
                 `;
             });
-            document.getElementById('print-items').innerHTML = itemsHtml;
-            document.getElementById('print-total').innerText = total;
+            document.getElementById('bill-items').innerHTML = itemsHtml;
+            document.getElementById('bill-total').innerText = total;
             
-            window.print();
+            // Show the modal
+            const modal = document.getElementById('bill-modal');
+            const content = document.getElementById('bill-modal-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            // Reset the cached image
+            billImageDataUrl = null;
+        }
+
+        function closeBillModal() {
+            const modal = document.getElementById('bill-modal');
+            const content = document.getElementById('bill-modal-content');
+            content.classList.add('scale-95', 'opacity-0');
+            content.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // Convert the bill HTML into a PNG image
+        async function getBillImage() {
+            if (billImageDataUrl) return billImageDataUrl;
+            
+            const element = document.getElementById('bill-capture-area');
+            const canvas = await html2canvas(element, {
+                scale: 3, // High quality
+                backgroundColor: '#ffffff',
+                useCORS: true,
+                logging: false
+            });
+            
+            billImageDataUrl = canvas.toDataURL('image/png');
+            return billImageDataUrl;
+        }
+
+        async function downloadBill() {
+            try {
+                const btn = event.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Generating...';
+                btn.disabled = true;
+                
+                const imageUrl = await getBillImage();
+                const orderId = document.getElementById('bill-orderid').innerText;
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = `ChiyaSan-Bill-${orderId}.png`;
+                link.href = imageUrl;
+                link.click();
+                
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            } catch (error) {
+                console.error('Error generating bill:', error);
+                alert('Failed to generate bill image. Please try again.');
+            }
+        }
+
+        async function shareBill() {
+            try {
+                const btn = event.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Sharing...';
+                btn.disabled = true;
+                
+                const imageUrl = await getBillImage();
+                const orderId = document.getElementById('bill-orderid').innerText;
+                
+                // Convert data URL to Blob
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const file = new File([blob], `ChiyaSan-Bill-${orderId}.png`, { type: 'image/png' });
+                
+                // Check if Web Share API is available
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: `Chiya San Bill - ${orderId}`,
+                        text: `My order bill from Chiya San 💚 Order #${orderId}`
+                    });
+                } else {
+                    // Fallback: download the image
+                    const link = document.createElement('a');
+                    link.download = `ChiyaSan-Bill-${orderId}.png`;
+                    link.href = imageUrl;
+                    link.click();
+                    alert('Sharing not supported on this device. Image downloaded instead! ✅');
+                }
+                
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error('Error sharing:', error);
+                    alert('Failed to share. Please try downloading instead.');
+                }
+                const btn = event.target.closest('button');
+                btn.innerHTML = '<i data-lucide="share-2" class="w-4 h-4"></i> Share';
+                btn.disabled = false;
+                lucide.createIcons();
+            }
+        }
+
+        async function printBillImage() {
+            try {
+                const imageUrl = await getBillImage();
+                const orderId = document.getElementById('bill-orderid').innerText;
+                
+                // Open new window with just the image
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Chiya San Bill - ${orderId}</title>
+                            <style>
+                                body { margin: 0; padding: 20px; text-align: center; font-family: sans-serif; }
+                                img { max-width: 100%; height: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+                                @media print { body { padding: 0; } img { box-shadow: none; } }
+                            </style>
+                        </head>
+                        <body>
+                            <img src="${imageUrl}" onload="window.print(); window.onafterprint = () => window.close();" />
+                        </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            } catch (error) {
+                console.error('Print error:', error);
+                alert('Failed to print. Please try downloading first.');
+            }
         }
 
         async function sendFeedback() {
