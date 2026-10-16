@@ -17,7 +17,7 @@
         .preset-msg { transition: all 0.2s ease-in-out; }
         .preset-msg:hover { background-color: #EBF0EC; border-color: #2D4A3E; }
         .preset-msg.active { background-color: #2D4A3E; color: white; border-color: #2D4A3E; }
-        .filter-tab { transition: all 0.2s ease-in-out; position: relative; }
+        .filter-tab { transition: all 0.2s ease-in-out; }
         .filter-tab.active { background-color: #2D4A3E; color: white; }
         .filter-tab:not(.active):hover { background-color: #EBF0EC; }
         .count-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 9999px; margin-left: 6px; }
@@ -27,55 +27,169 @@
         .filter-tab[data-status="preparing"].active { background-color: #CA8A04; }
         .filter-tab[data-status="ready"].active { background-color: #16A34A; }
         .filter-tab[data-status="completed"].active { background-color: #6B7280; }
+        
+        /* Login Screen Animations */
+        .login-bg-pattern {
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.08) 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+        @keyframes floatLogin {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float-login {
+            animation: floatLogin 4s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="bg-brand-cream text-brand-dark antialiased min-h-screen">
 
-    <div id="login-screen" class="fixed inset-0 bg-brand-green z-[9999] flex items-center justify-center">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md mx-4 text-center">
-            <img src="images/logo.png" alt="Chiya San Logo" class="h-24 w-auto mx-auto mb-6 object-contain">
-            <h1 class="font-serif font-bold text-2xl text-brand-green mb-2">Admin Dashboard</h1>
-            <p class="text-brand-dark/60 text-sm mb-6">Enter password to view orders</p>
-            <input type="password" id="password" placeholder="Password" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-center text-lg tracking-widest mb-4" onkeypress="if(event.key === 'Enter') login()">
-            <p id="login-error" class="text-red-500 text-sm mb-4 hidden font-medium"></p>
-            <button id="loginBtn" onclick="login()" class="w-full bg-brand-green text-white py-3.5 rounded-xl font-medium hover:bg-brand-green/90 transition shadow-lg shadow-brand-green/20">Login</button>
+    <!-- ==================== LOGIN SCREEN (Mobile Optimized) ==================== -->
+    <div id="login-screen" class="fixed inset-0 bg-brand-green z-[9999] overflow-hidden">
+        
+        <!-- Decorative Background -->
+        <div class="absolute inset-0 login-bg-pattern"></div>
+        <div class="absolute -top-32 -right-32 w-96 h-96 bg-brand-terracotta/20 rounded-full blur-3xl animate-pulse-glow"></div>
+        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-brand-lightGreen/10 rounded-full blur-3xl animate-pulse-glow"></div>
+        
+        <!-- Login Content -->
+        <div class="relative h-full flex flex-col items-center justify-center p-5 sm:p-6">
+            
+            <!-- Logo with floating animation -->
+            <div class="mb-8 md:mb-10 animate-float-login">
+                <div class="bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl">
+                    <img src="images/logo.png" alt="Chiya San Logo" class="h-20 md:h-28 w-auto object-contain">
+                </div>
+            </div>
+
+            <!-- Welcome Text -->
+            <div class="text-center mb-8 md:mb-10">
+                <h1 class="font-serif font-bold text-3xl md:text-4xl text-white mb-2">Staff Login</h1>
+                <p class="text-brand-lightGreen/70 text-sm md:text-base">Chiya San Order Management</p>
+            </div>
+
+            <!-- Login Card -->
+            <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <!-- Top accent bar -->
+                <div class="h-1.5 bg-gradient-to-r from-brand-terracotta via-brand-green to-brand-terracotta"></div>
+                
+                <div class="p-6 md:p-8">
+                    <!-- Input Label -->
+                    <label class="block text-sm font-semibold text-brand-dark mb-2">
+                        Admin Password
+                    </label>
+                    
+                    <!-- Password Input with Show/Hide Toggle -->
+                    <div class="relative mb-4">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i data-lucide="lock" class="w-5 h-5 text-brand-dark/40"></i>
+                        </div>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="Enter your password" 
+                            class="w-full pl-12 pr-12 py-4 rounded-2xl border-2 border-gray-200 focus:outline-none focus:border-brand-green focus:ring-4 focus:ring-brand-green/10 text-base font-medium transition-all"
+                            onkeypress="if(event.key === 'Enter') login()"
+                            autocomplete="current-password"
+                        >
+                        <button 
+                            type="button"
+                            onclick="togglePasswordVisibility()" 
+                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-brand-dark/40 hover:text-brand-green transition"
+                            id="togglePasswordBtn"
+                        >
+                            <i data-lucide="eye" class="w-5 h-5" id="eyeIcon"></i>
+                        </button>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="login-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+                        <div class="flex items-start gap-2">
+                            <i data-lucide="alert-circle" class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"></i>
+                            <p id="login-error-text" class="text-red-600 text-sm font-medium"></p>
+                        </div>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button 
+                        id="loginBtn" 
+                        onclick="login()" 
+                        class="w-full bg-brand-green text-white py-4 rounded-2xl font-bold text-base hover:bg-brand-green/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-green/30 flex items-center justify-center gap-2"
+                    >
+                        <i data-lucide="log-in" class="w-5 h-5" id="loginBtnIcon"></i>
+                        <span id="loginBtnText">Login to Dashboard</span>
+                    </button>
+
+                    <!-- Small Security Notice -->
+                    <div class="mt-6 pt-5 border-t border-gray-100">
+                        <div class="flex items-center justify-center gap-2 text-xs text-brand-dark/50">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                            <span>Secured with encrypted password verification</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Website Link -->
+            <a href="index.html" class="mt-6 md:mt-8 inline-flex items-center gap-2 text-brand-lightGreen/70 hover:text-white text-sm font-medium transition">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Back to Website</span>
+            </a>
         </div>
     </div>
 
+    <!-- ==================== DASHBOARD ==================== -->
     <div id="dashboard" class="hidden pb-12">
         <nav class="bg-white border-b border-brand-green/10 sticky top-0 z-40 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-20">
-                    <div class="flex items-center gap-4">
-                        <img src="images/logo.png" alt="Logo" class="h-12 w-auto object-contain">
-                        <div class="hidden sm:block"><h1 class="font-serif font-bold text-xl text-brand-green leading-tight">Admin Dashboard</h1><p class="text-xs text-brand-dark/50">Chiya San Order Management</p></div>
+                <div class="flex justify-between items-center h-16 md:h-20">
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <img src="images/logo.png" alt="Logo" class="h-10 md:h-12 w-auto object-contain">
+                        <div class="hidden sm:block">
+                            <h1 class="font-serif font-bold text-lg md:text-xl text-brand-green leading-tight">Admin Dashboard</h1>
+                            <p class="text-xs text-brand-dark/50">Chiya San Order Management</p>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <button onclick="fetchOrders()" class="flex items-center gap-2 px-5 py-2.5 bg-brand-lightGreen text-brand-green rounded-full text-sm font-semibold hover:bg-brand-green hover:text-white transition shadow-sm"><i data-lucide="refresh-cw" class="w-4 h-4"></i> <span class="hidden sm:inline">Refresh</span></button>
-                        <button onclick="logout()" class="flex items-center gap-2 px-5 py-2.5 bg-brand-lightTerracotta text-brand-terracotta rounded-full text-sm font-semibold hover:bg-brand-terracotta hover:text-white transition shadow-sm"><i data-lucide="log-out" class="w-4 h-4"></i> <span class="hidden sm:inline">Logout</span></button>
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <button onclick="fetchOrders()" class="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-brand-lightGreen text-brand-green rounded-full text-sm font-semibold hover:bg-brand-green hover:text-white transition shadow-sm">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> <span class="hidden sm:inline">Refresh</span>
+                        </button>
+                        <button onclick="logout()" class="flex items-center gap-2 px-4 md:px-5 py-2.5 bg-brand-lightTerracotta text-brand-terracotta rounded-full text-sm font-semibold hover:bg-brand-terracotta hover:text-white transition shadow-sm">
+                            <i data-lucide="log-out" class="w-4 h-4"></i> <span class="hidden sm:inline">Logout</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
             <!-- Broadcast -->
-            <div class="bg-white rounded-3xl shadow-sm border border-brand-green/10 mb-8 overflow-hidden">
-                <button onclick="toggleBroadcast()" class="w-full flex items-center justify-between p-6 text-left hover:bg-brand-cream/50 transition">
+            <div class="bg-white rounded-3xl shadow-sm border border-brand-green/10 mb-6 md:mb-8 overflow-hidden">
+                <button onclick="toggleBroadcast()" class="w-full flex items-center justify-between p-5 md:p-6 text-left hover:bg-brand-cream/50 transition">
                     <div class="flex items-center gap-3">
-                        <div class="bg-brand-lightGreen p-3 rounded-full"><i data-lucide="megaphone" class="w-6 h-6 text-brand-green"></i></div>
-                        <div><h3 class="font-serif font-bold text-xl text-brand-green">WhatsApp Broadcast</h3><p class="text-xs text-brand-dark/50">Send promotional messages to your customers</p></div>
+                        <div class="bg-brand-lightGreen p-2.5 md:p-3 rounded-full"><i data-lucide="megaphone" class="w-5 h-5 md:w-6 md:h-6 text-brand-green"></i></div>
+                        <div>
+                            <h3 class="font-serif font-bold text-base md:text-xl text-brand-green">WhatsApp Broadcast</h3>
+                            <p class="text-xs text-brand-dark/50">Send promotional messages to your customers</p>
+                        </div>
                     </div>
-                    <i data-lucide="chevron-down" id="broadcastChevron" class="w-6 h-6 text-brand-dark/40 transition-transform"></i>
+                    <i data-lucide="chevron-down" id="broadcastChevron" class="w-5 h-5 md:w-6 md:h-6 text-brand-dark/40 transition-transform"></i>
                 </button>
-                <div id="broadcastContent" class="hidden px-6 pb-6">
+                <div id="broadcastContent" class="hidden px-5 md:px-6 pb-5 md:pb-6">
                     <div class="flex flex-wrap gap-2 mb-4">
-                        <button onclick="filterPresets('all', this)" class="category-tab active px-4 py-2 rounded-full text-xs font-bold transition bg-brand-green text-white">All</button>
-                        <button onclick="filterPresets('greeting', this)" class="category-tab px-4 py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">👋 Greetings</button>
-                        <button onclick="filterPresets('promo', this)" class="category-tab px-4 py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">🎉 Promo</button>
-                        <button onclick="filterPresets('thanks', this)" class="category-tab px-4 py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">💚 Thank You</button>
-                        <button onclick="filterPresets('festival', this)" class="category-tab px-4 py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">🪔 Festival</button>
-                        <button onclick="filterPresets('casual', this)" class="category-tab px-4 py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">😊 Casual</button>
+                        <button onclick="filterPresets('all', this)" class="category-tab active px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold transition bg-brand-green text-white">All</button>
+                        <button onclick="filterPresets('greeting', this)" class="category-tab px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">👋 Greetings</button>
+                        <button onclick="filterPresets('promo', this)" class="category-tab px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">🎉 Promo</button>
+                        <button onclick="filterPresets('thanks', this)" class="category-tab px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">💚 Thank You</button>
+                        <button onclick="filterPresets('festival', this)" class="category-tab px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">🪔 Festival</button>
+                        <button onclick="filterPresets('casual', this)" class="category-tab px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs font-bold transition bg-brand-lightGreen text-brand-dark hover:bg-brand-green hover:text-white">😊 Casual</button>
                     </div>
                     <div id="presetContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4 max-h-56 overflow-y-auto pr-2"></div>
                     <textarea id="broadcastMsg" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm bg-brand-cream/50 mb-3" placeholder="Click a template above or type your own message..."></textarea>
@@ -86,26 +200,28 @@
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                <div><h2 class="font-serif font-bold text-3xl text-brand-green">Live Orders</h2><p class="text-sm text-brand-dark/60">Click a status tab to filter orders</p></div>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-3">
+                <div>
+                    <h2 class="font-serif font-bold text-2xl md:text-3xl text-brand-green">Live Orders</h2>
+                    <p class="text-xs md:text-sm text-brand-dark/60">Click a status tab to filter orders</p>
+                </div>
             </div>
 
-            <!-- Status Filter Tabs -->
-            <div class="bg-white rounded-2xl shadow-sm border border-brand-green/10 p-2 mb-6 overflow-x-auto">
+            <div class="bg-white rounded-2xl shadow-sm border border-brand-green/10 p-2 mb-5 md:mb-6 overflow-x-auto">
                 <div class="flex gap-2 min-w-max">
-                    <button onclick="filterOrders('all', this)" data-status="all" class="filter-tab active flex items-center px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap">
-                        <i data-lucide="layers" class="w-4 h-4 mr-2"></i> All Orders <span class="count-badge" id="count-all">0</span>
+                    <button onclick="filterOrders('all', this)" data-status="all" class="filter-tab active flex items-center px-4 md:px-5 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap">
+                        <i data-lucide="layers" class="w-4 h-4 mr-2"></i> All <span class="count-badge" id="count-all">0</span>
                     </button>
-                    <button onclick="filterOrders('Pending', this)" data-status="pending" class="filter-tab flex items-center px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap text-brand-dark">
+                    <button onclick="filterOrders('Pending', this)" data-status="pending" class="filter-tab flex items-center px-4 md:px-5 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap text-brand-dark">
                         <i data-lucide="clock" class="w-4 h-4 mr-2"></i> Pending <span class="count-badge" id="count-pending">0</span>
                     </button>
-                    <button onclick="filterOrders('Preparing', this)" data-status="preparing" class="filter-tab flex items-center px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap text-brand-dark">
+                    <button onclick="filterOrders('Preparing', this)" data-status="preparing" class="filter-tab flex items-center px-4 md:px-5 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap text-brand-dark">
                         <i data-lucide="chef-hat" class="w-4 h-4 mr-2"></i> Preparing <span class="count-badge" id="count-preparing">0</span>
                     </button>
-                    <button onclick="filterOrders('Ready', this)" data-status="ready" class="filter-tab flex items-center px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap text-brand-dark">
+                    <button onclick="filterOrders('Ready', this)" data-status="ready" class="filter-tab flex items-center px-4 md:px-5 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap text-brand-dark">
                         <i data-lucide="check-circle" class="w-4 h-4 mr-2"></i> Ready <span class="count-badge" id="count-ready">0</span>
                     </button>
-                    <button onclick="filterOrders('Completed', this)" data-status="completed" class="filter-tab flex items-center px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap text-brand-dark">
+                    <button onclick="filterOrders('Completed', this)" data-status="completed" class="filter-tab flex items-center px-4 md:px-5 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap text-brand-dark">
                         <i data-lucide="archive" class="w-4 h-4 mr-2"></i> Completed <span class="count-badge" id="count-completed">0</span>
                     </button>
                 </div>
@@ -120,18 +236,33 @@
                 <h3 class="text-xl font-serif font-bold text-brand-dark/70" id="empty-title">No orders yet</h3>
                 <p class="text-brand-dark/50 text-sm mt-1" id="empty-subtitle">New orders will appear here automatically.</p>
             </div>
-            <div id="orders-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="orders-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
         </main>
     </div>
 
     <script>
         lucide.createIcons();
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyUsPj419DZ5dbciSDtvcx0eBmtFNAAnwtXX0nX7vUMIBf1FjNlSW_FPodyxrruDk13/exec"; 
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
         let adminPassword = "";
         let isFetching = false;
         let allOrders = [];
         let currentFilter = "all";
 
+        // ============ PASSWORD VISIBILITY TOGGLE ============
+        function togglePasswordVisibility() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        // ============ PRESET MESSAGES ============
         const presetMessages = [
             { category: "greeting", text: "Namaste 🙏 Welcome to Chiya San! Your daily tea escape awaits. ☕" },
             { category: "greeting", text: "Good Morning! ☀️ Start your day the Chiya San way." },
@@ -157,46 +288,93 @@
             { category: "casual", text: "Freshly brewed happiness, made with love. Come grab yours! ☕" },
         ];
 
-        function toggleBroadcast() { const content = document.getElementById('broadcastContent'); const chevron = document.getElementById('broadcastChevron'); content.classList.toggle('hidden'); chevron.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)'; }
-        function renderPresets(category = "all") { const container = document.getElementById('presetContainer'); container.innerHTML = ''; const filtered = category === "all" ? presetMessages : presetMessages.filter(m => m.category === category); filtered.forEach(msg => { const btn = document.createElement('button'); btn.className = 'preset-msg text-left bg-white border border-gray-200 rounded-xl p-3 text-sm text-brand-dark hover:shadow-sm'; btn.innerText = msg.text; btn.onclick = () => usePreset(msg.text, btn); container.appendChild(btn); }); }
-        function usePreset(text, btn) { document.getElementById('broadcastMsg').value = text; document.querySelectorAll('.preset-msg').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-        function filterPresets(category, btn) { document.querySelectorAll('.category-tab').forEach(b => { b.classList.remove('bg-brand-green', 'text-white', 'active'); b.classList.add('bg-brand-lightGreen', 'text-brand-dark'); }); btn.classList.remove('bg-brand-lightGreen', 'text-brand-dark'); btn.classList.add('bg-brand-green', 'text-white', 'active'); renderPresets(category); }
-        function clearBroadcast() { document.getElementById('broadcastMsg').value = ''; document.querySelectorAll('.preset-msg').forEach(b => b.classList.remove('active')); }
-        function sendBroadcast() { const msg = document.getElementById('broadcastMsg').value; if (!msg) { alert("Please pick a template or type a message first."); return; } window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank'); }
+        function toggleBroadcast() { 
+            const content = document.getElementById('broadcastContent'); 
+            const chevron = document.getElementById('broadcastChevron'); 
+            content.classList.toggle('hidden'); 
+            chevron.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)'; 
+        }
+        
+        function renderPresets(category = "all") { 
+            const container = document.getElementById('presetContainer'); 
+            container.innerHTML = ''; 
+            const filtered = category === "all" ? presetMessages : presetMessages.filter(m => m.category === category); 
+            filtered.forEach(msg => { 
+                const btn = document.createElement('button'); 
+                btn.className = 'preset-msg text-left bg-white border border-gray-200 rounded-xl p-3 text-sm text-brand-dark hover:shadow-sm'; 
+                btn.innerText = msg.text; 
+                btn.onclick = () => usePreset(msg.text, btn); 
+                container.appendChild(btn); 
+            }); 
+        }
+        
+        function usePreset(text, btn) { 
+            document.getElementById('broadcastMsg').value = text; 
+            document.querySelectorAll('.preset-msg').forEach(b => b.classList.remove('active')); 
+            btn.classList.add('active'); 
+        }
+        
+        function filterPresets(category, btn) { 
+            document.querySelectorAll('.category-tab').forEach(b => { 
+                b.classList.remove('bg-brand-green', 'text-white', 'active'); 
+                b.classList.add('bg-brand-lightGreen', 'text-brand-dark'); 
+            }); 
+            btn.classList.remove('bg-brand-lightGreen', 'text-brand-dark'); 
+            btn.classList.add('bg-brand-green', 'text-white', 'active'); 
+            renderPresets(category); 
+        }
+        
+        function clearBroadcast() { 
+            document.getElementById('broadcastMsg').value = ''; 
+            document.querySelectorAll('.preset-msg').forEach(b => b.classList.remove('active')); 
+        }
+        
+        function sendBroadcast() { 
+            const msg = document.getElementById('broadcastMsg').value; 
+            if (!msg) { alert("Please pick a template or type a message first."); return; } 
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank'); 
+        }
 
-        // 🆕 GREET CUSTOMER - sends DIRECTLY to customer's WhatsApp
+        // ============ GREET CUSTOMER ============
         function greetCustomer(customerName, customerPhone, orderId, total) {
-            // Clean the phone number
             let cleanPhone = (customerPhone || '').toString().replace(/[^0-9]/g, '');
-            
-            // If no phone, fall back to opening WhatsApp with just text
-            if (!cleanPhone) {
-                alert("This order doesn't have a phone number. Please contact the customer manually.");
-                return;
-            }
-            
-            // Add Nepal country code if it's a 10-digit number without code
-            if (cleanPhone.length === 10) {
-                cleanPhone = '977' + cleanPhone;
-            }
+            if (!cleanPhone) { alert("This order doesn't have a phone number. Please contact the customer manually."); return; }
+            if (cleanPhone.length === 10) { cleanPhone = '977' + cleanPhone; }
             
             const greetingMsg = `Namaste ${customerName}! 🙏\n\nThank you for ordering from *Chiya San*! ☕\n\nWe've received your order *${orderId}* worth *Rs. ${total}* and our team is on it. Your chiya will be ready very soon!\n\nHave a great day! 💚\n— Team Chiya San`;
-            
-            // Direct link to customer's WhatsApp
             window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(greetingMsg)}`, '_blank');
         }
 
+        // ============ LOGIN ============
         async function login() {
             const passwordInput = document.getElementById('password').value;
             const loginBtn = document.getElementById('loginBtn');
+            const loginBtnText = document.getElementById('loginBtnText');
             const errorDiv = document.getElementById('login-error');
-            if (passwordInput.trim() === "") { errorDiv.innerText = "Please enter a password."; errorDiv.classList.remove('hidden'); return; }
-            loginBtn.innerHTML = 'Connecting...'; loginBtn.disabled = true; errorDiv.classList.add('hidden');
+            const errorText = document.getElementById('login-error-text');
+            
+            if (passwordInput.trim() === "") { 
+                errorText.innerText = "Please enter your password.";
+                errorDiv.classList.remove('hidden'); 
+                return; 
+            }
+            
+            loginBtnText.innerText = 'Verifying...';
+            loginBtn.disabled = true; 
+            errorDiv.classList.add('hidden');
+            
             try {
                 const response = await fetch(`${scriptURL}?password=${encodeURIComponent(passwordInput)}`);
                 const data = await response.json();
-                if (data.error && data.error.includes("Unauthorized")) { errorDiv.innerText = "Incorrect password."; errorDiv.classList.remove('hidden'); }
-                else if (data.error) { errorDiv.innerText = "Server Error: " + data.error; errorDiv.classList.remove('hidden'); }
+                
+                if (data.error && data.error.includes("Unauthorized")) { 
+                    errorText.innerText = "Incorrect password. Please try again.";
+                    errorDiv.classList.remove('hidden'); 
+                } 
+                else if (data.error) { 
+                    errorText.innerText = "Server Error: " + data.error;
+                    errorDiv.classList.remove('hidden'); 
+                } 
                 else {
                     adminPassword = passwordInput;
                     document.getElementById('login-screen').classList.add('hidden');
@@ -206,12 +384,27 @@
                     updateCounts();
                     renderOrders();
                 }
-            } catch (error) { errorDiv.innerText = "Failed to connect."; errorDiv.classList.remove('hidden'); }
-            finally { loginBtn.innerHTML = 'Login'; loginBtn.disabled = false; }
+            } catch (error) { 
+                errorText.innerText = "Failed to connect. Please check your internet connection.";
+                errorDiv.classList.remove('hidden'); 
+            } 
+            finally { 
+                loginBtnText.innerText = 'Login to Dashboard';
+                loginBtn.disabled = false; 
+            }
         }
 
-        function logout() { adminPassword = ""; allOrders = []; currentFilter = "all"; document.getElementById('dashboard').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('password').value = ''; document.getElementById('login-error').classList.add('hidden'); }
+        function logout() { 
+            adminPassword = ""; 
+            allOrders = []; 
+            currentFilter = "all"; 
+            document.getElementById('dashboard').classList.add('hidden'); 
+            document.getElementById('login-screen').classList.remove('hidden'); 
+            document.getElementById('password').value = ''; 
+            document.getElementById('login-error').classList.add('hidden'); 
+        }
 
+        // ============ ORDER FUNCTIONS ============
         async function updateOrderStatus(orderId, newStatus) {
             const updateData = { type: 'updateStatus', orderId: orderId, status: newStatus };
             try {
@@ -232,7 +425,11 @@
                 const response = await fetch(`${scriptURL}?password=${encodeURIComponent(adminPassword)}`);
                 const data = await response.json();
                 loading.classList.add('hidden');
-                if (data.error) { document.getElementById('orders-grid').innerHTML = `<div class="col-span-full text-center text-red-500 py-10 font-bold">Error: ${data.error}</div>`; isFetching = false; return; }
+                if (data.error) { 
+                    document.getElementById('orders-grid').innerHTML = `<div class="col-span-full text-center text-red-500 py-10 font-bold">Error: ${data.error}</div>`; 
+                    isFetching = false; 
+                    return; 
+                }
                 allOrders = data;
                 updateCounts();
                 renderOrders();
@@ -271,8 +468,14 @@
 
             if (filtered.length === 0) {
                 emptyState.classList.remove('hidden');
-                if (currentFilter === "all") { emptyTitle.innerText = "No orders yet"; emptySubtitle.innerText = "New orders will appear here automatically."; }
-                else { emptyTitle.innerText = `No ${currentFilter} orders`; emptySubtitle.innerText = `There are currently no ${currentFilter.toLowerCase()} orders. Check other tabs.`; }
+                if (currentFilter === "all") { 
+                    emptyTitle.innerText = "No orders yet"; 
+                    emptySubtitle.innerText = "New orders will appear here automatically."; 
+                }
+                else { 
+                    emptyTitle.innerText = `No ${currentFilter} orders`; 
+                    emptySubtitle.innerText = `There are currently no ${currentFilter.toLowerCase()} orders. Check other tabs.`; 
+                }
                 return;
             }
             emptyState.classList.add('hidden');
@@ -281,7 +484,7 @@
                 const date = new Date(order.Timestamp);
                 const timeString = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
                 const dateString = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-                const formattedItems = order['Items Ordered'].replace(/\n/g, '<br>');
+                const formattedItems = (order['Items Ordered'] || '').replace(/\n/g, '<br>');
                 const card = document.createElement('div');
                 card.className = 'order-card bg-white rounded-2xl shadow-sm border border-brand-green/10 flex flex-col relative overflow-hidden';
 
@@ -303,11 +506,11 @@
 
                 card.innerHTML = `
                     <div class="absolute top-0 left-0 w-full h-1.5 ${barColor}"></div>
-                    <div class="p-5 flex-1 flex flex-col">
+                    <div class="p-4 md:p-5 flex-1 flex flex-col">
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <span class="inline-block bg-brand-cream text-brand-terracotta text-xs font-bold px-2.5 py-1 rounded-md tracking-wider mb-1">${order['Order ID']}</span>
-                                <h3 class="font-serif font-bold text-xl text-brand-green leading-tight">${order['Customer Name']}</h3>
+                                <h3 class="font-serif font-bold text-lg md:text-xl text-brand-green leading-tight">${order['Customer Name']}</h3>
                                 <div class="flex items-center gap-2 mt-1 flex-wrap">
                                     <span class="inline-block ${orderTypeColor} text-white text-[10px] font-bold px-2 py-0.5 rounded-full">${order['Order Type']}</span>
                                     ${phone ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-brand-dark/60 bg-brand-cream px-2 py-0.5 rounded-full"><i data-lucide="phone" class="w-3 h-3"></i> ${phone}</span>` : ''}
@@ -318,13 +521,13 @@
                                 <span class="inline-block border ${badgeColor} text-xs px-2.5 py-1 rounded-full font-bold">${statusBadge}</span>
                             </div>
                         </div>
-                        <div class="bg-brand-cream/60 rounded-xl p-4 mb-4 flex-1">
+                        <div class="bg-brand-cream/60 rounded-xl p-3 md:p-4 mb-4 flex-1">
                             <div class="text-[10px] font-bold text-brand-dark/40 uppercase tracking-wider mb-2">Items Ordered</div>
                             <div class="text-sm text-brand-dark font-medium leading-relaxed">${formattedItems}</div>
                         </div>
-                        <div class="flex justify-between items-center border-t border-gray-100 pt-4 mb-4">
+                        <div class="flex justify-between items-center border-t border-gray-100 pt-3 md:pt-4 mb-3 md:mb-4">
                             <div class="flex items-center gap-1.5 text-xs font-medium text-brand-dark/60"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> ${order['Table / Pickup Time']}</div>
-                            <div class="font-bold text-brand-green text-xl">Rs. ${order['Total Amount']}</div>
+                            <div class="font-bold text-brand-green text-lg md:text-xl">Rs. ${order['Total Amount']}</div>
                         </div>
                         <button onclick="greetCustomer('${order['Customer Name'].replace(/'/g, "\\'")}', '${phone}', '${order['Order ID']}', '${order['Total Amount']}')" class="w-full bg-brand-lightTerracotta text-brand-terracotta py-3 rounded-xl text-sm font-bold hover:bg-brand-terracotta hover:text-white transition shadow-sm mb-3 flex items-center justify-center gap-2">
                             <i data-lucide="hand-heart" class="w-4 h-4"></i> Greet ${order['Customer Name'].split(' ')[0]}
