@@ -16,8 +16,6 @@
         .cart-open { right: 0 !important; }
         .overlay-open { display: block !important; opacity: 1 !important; }
         input, select, textarea { font-size: 16px !important; }
-
-        /* PRINT BILL CSS - Only shows the cart drawer when printing */
         @media print {
             body * { visibility: hidden; }
             #cart-drawer, #cart-drawer * { visibility: visible; }
@@ -212,6 +210,8 @@
             <p class="mb-3 md:mb-4 text-white">Good Food · Good Vibes · Great Times</p>
             <p>© 2025 Chiya San · Chakupat, Lalitpur</p>
             <p class="mt-2 text-brand-terracotta font-semibold">Made by Prabhat Bhattarai</p>
+            <!-- NEW: Discreet Staff Login Link -->
+            <a href="admin.html" class="inline-block mt-4 text-[10px] text-white/30 hover:text-brand-terracotta transition">Staff Login</a>
         </div>
     </footer>
 
@@ -250,8 +250,6 @@
 
     <script>
         lucide.createIcons();
-        
-        // ⚠️ PASTE YOUR NEW GOOGLE APPS SCRIPT URL HERE
         const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
 
         function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
@@ -318,48 +316,20 @@
         function toggleAddressField() { const type = document.getElementById('orderType').value; const label = document.getElementById('locationLabel'); const input = document.getElementById('locationDetails'); if (type === 'Dine-In') { label.innerText = 'Table Number / Spot:'; input.placeholder = 'e.g. Table 3 / Rooftop seating'; } else { label.innerText = 'Pickup Time:'; input.placeholder = 'e.g. Ready in 15 mins'; } }
         function generateOrderId() { const randomPart = Math.floor(100 + Math.random() * 900); return `CS-${randomPart}`; }
 
-        // NEW FEATURE: SEND FEEDBACK
         async function sendFeedback() {
-            const btn = document.getElementById('fbSubmitBtn');
-            btn.innerHTML = 'Submitting...'; btn.disabled = true;
-            const feedbackData = {
-                type: 'feedback',
-                name: document.getElementById('fbName').value,
-                rating: document.getElementById('fbRating').value,
-                comment: document.getElementById('fbComment').value
-            };
-            try {
-                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(feedbackData) });
-                alert("Thank you for your feedback! We appreciate it. ☕");
-                document.getElementById('feedbackForm').reset();
-            } catch (e) { alert("Something went wrong. Please try again."); }
-            finally { btn.innerHTML = 'Submit Feedback'; btn.disabled = false; }
+            const btn = document.getElementById('fbSubmitBtn'); btn.innerHTML = 'Submitting...'; btn.disabled = true;
+            const feedbackData = { type: 'feedback', name: document.getElementById('fbName').value, rating: document.getElementById('fbRating').value, comment: document.getElementById('fbComment').value };
+            try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(feedbackData) }); alert("Thank you for your feedback! We appreciate it. ☕"); document.getElementById('feedbackForm').reset(); } catch (e) { alert("Something went wrong. Please try again."); } finally { btn.innerHTML = 'Submit Feedback'; btn.disabled = false; }
         }
 
-        // NEW FEATURE: TRACK ORDER
         async function trackOrder() {
-            const orderId = document.getElementById('trackingInput').value.trim().toUpperCase();
-            const resultDiv = document.getElementById('trackingResult');
+            const orderId = document.getElementById('trackingInput').value.trim().toUpperCase(); const resultDiv = document.getElementById('trackingResult');
             if (!orderId) { alert("Please enter an Order ID."); return; }
-            
             resultDiv.innerHTML = 'Searching...'; resultDiv.classList.remove('hidden');
             try {
-                const response = await fetch(`${scriptURL}?action=track&orderId=${orderId}`);
-                const data = await response.json();
-                if (data.found) {
-                    resultDiv.innerHTML = `
-                        <div class="text-brand-green"><i data-lucide="check-circle" class="w-12 h-12 mx-auto mb-2"></i>
-                        <h3 class="font-bold text-xl mb-1">Order Found!</h3>
-                        <p class="text-brand-dark/70 text-sm mb-4">Customer: ${data.customerName} | Total: Rs. ${data.total}</p>
-                        <div class="inline-block bg-brand-lightTerracotta text-brand-terracotta px-4 py-2 rounded-full font-medium">Status: ${data.status}</div>
-                    `;
-                } else {
-                    resultDiv.innerHTML = `
-                        <div class="text-red-500"><i data-lucide="x-circle" class="w-12 h-12 mx-auto mb-2"></i>
-                        <h3 class="font-bold text-xl mb-1">Order Not Found</h3>
-                        <p class="text-brand-dark/70 text-sm">Please check your Order ID and try again.</p>
-                    `;
-                }
+                const response = await fetch(`${scriptURL}?action=track&orderId=${orderId}`); const data = await response.json();
+                if (data.found) { resultDiv.innerHTML = `<div class="text-brand-green"><i data-lucide="check-circle" class="w-12 h-12 mx-auto mb-2"></i><h3 class="font-bold text-xl mb-1">Order Found!</h3><p class="text-brand-dark/70 text-sm mb-4">Customer: ${data.customerName} | Total: Rs. ${data.total}</p><div class="inline-block bg-brand-lightTerracotta text-brand-terracotta px-4 py-2 rounded-full font-medium">Status: ${data.status}</div></div>`; } 
+                else { resultDiv.innerHTML = `<div class="text-red-500"><i data-lucide="x-circle" class="w-12 h-12 mx-auto mb-2"></i><h3 class="font-bold text-xl mb-1">Order Not Found</h3><p class="text-brand-dark/70 text-sm">Please check your Order ID and try again.</p></div>`; }
                 lucide.createIcons();
             } catch (e) { resultDiv.innerHTML = '<div class="text-red-500">Error connecting to server.</div>'; }
         }
@@ -372,12 +342,9 @@
             let itemsSummary = []; let total = 0; cart.forEach(item => { let itemSum = item.price * item.qty; total += itemSum; itemsSummary.push(`${item.name} x${item.qty} = Rs. ${itemSum}`); });
             const phoneNumber = "9779765566682";
             let message = `*NEW ORDER - CHIYA SAN*\n\n*Order ID:* ${orderId}\n*Customer:* ${name}\n*Type:* ${orderType}\n*Details:* ${location}\n\n*Items Ordered:*\n`;
-            itemsSummary.forEach(item => message += `- ${item}\n`); 
-            message += `\n*Total Amount:* Rs. ${total}`;
+            itemsSummary.forEach(item => message += `- ${item}\n`); message += `\n*Total Amount:* Rs. ${total}`;
             message += `\n\n*Thank you for ordering from Chiya San!* ☕\nWe'll start preparing your order right away.`;
-            
             window.open("https://api.whatsapp.com/send?phone=" + phoneNumber + "&text=" + encodeURIComponent(message), '_blank');
-
             const saveButton = document.querySelector('button[onclick="processOrder()"]'); const originalButtonText = saveButton.innerHTML; saveButton.innerHTML = 'Saving...'; saveButton.disabled = true;
             const orderData = { orderId, customerName: name, orderType, location, items: itemsSummary.join('\n'), total };
             try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }); } catch (error) { console.error(error); } finally { saveButton.innerHTML = originalButtonText; saveButton.disabled = false; }
