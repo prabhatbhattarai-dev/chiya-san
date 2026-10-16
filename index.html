@@ -16,15 +16,8 @@
         .cart-open { right: 0 !important; }
         .overlay-open { display: block !important; opacity: 1 !important; }
         input, select, textarea { font-size: 16px !important; }
-        
-        /* Hide on Scroll - Navbar transition */
-        #main-header {
-            transition: transform 0.35s ease-in-out;
-        }
-        #main-header.header-hidden {
-            transform: translateY(-100%);
-        }
-        
+        #main-header { transition: transform 0.35s ease-in-out; }
+        #main-header.header-hidden { transform: translateY(-100%); }
         @media print {
             body * { visibility: hidden; }
             #cart-drawer, #cart-drawer * { visibility: visible; }
@@ -35,20 +28,14 @@
 </head>
 <body class="bg-brand-cream text-brand-dark font-sans antialiased selection:bg-brand-terracotta selection:text-white overflow-x-hidden">
 
-    <!-- FIXED HEADER: Greeting + Nav combined, hides on scroll down -->
     <header id="main-header" class="fixed top-0 left-0 right-0 z-40 no-print">
-        <!-- Rotating Greeting Banner -->
         <div class="bg-brand-green text-white text-center py-2 px-4 text-xs md:text-sm font-medium">
             <span id="greetingText" class="transition-opacity duration-500 ease-in-out inline-block">Namaste! 🙏 Welcome to Chiya San.</span>
         </div>
-
-        <!-- Navigation -->
         <nav class="bg-brand-cream/95 backdrop-blur-md border-b border-brand-green/10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16 md:h-20">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="#home"><img src="images/logo.png" alt="Logo" class="h-10 md:h-14 w-auto object-contain"></a>
-                    </div>
+                    <div class="flex-shrink-0 flex items-center"><a href="#home"><img src="images/logo.png" alt="Logo" class="h-10 md:h-14 w-auto object-contain"></a></div>
                     <div class="hidden md:flex space-x-8 items-center">
                         <a href="#home" class="text-sm font-medium hover:text-brand-terracotta transition">Home</a>
                         <a href="#about" class="text-sm font-medium hover:text-brand-terracotta transition">About</a>
@@ -59,21 +46,12 @@
                         <a href="#visit" class="text-sm font-medium hover:text-brand-terracotta transition">Visit</a>
                     </div>
                     <div class="flex items-center space-x-2 md:space-x-4">
-                        <button onclick="toggleCart()" class="relative p-2 text-brand-green hover:bg-brand-lightGreen rounded-full transition">
-                            <i data-lucide="shopping-bag" class="w-6 h-6"></i>
-                            <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-brand-terracotta rounded-full">0</span>
-                        </button>
-                        <div class="md:hidden flex items-center">
-                            <button onclick="toggleMobileMenu()" class="p-2 text-brand-green hover:text-brand-terracotta focus:outline-none">
-                                <i data-lucide="menu" class="w-7 h-7"></i>
-                            </button>
-                        </div>
+                        <button onclick="toggleCart()" class="relative p-2 text-brand-green hover:bg-brand-lightGreen rounded-full transition"><i data-lucide="shopping-bag" class="w-6 h-6"></i><span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-brand-terracotta rounded-full">0</span></button>
+                        <div class="md:hidden flex items-center"><button onclick="toggleMobileMenu()" class="p-2 text-brand-green hover:text-brand-terracotta focus:outline-none"><i data-lucide="menu" class="w-7 h-7"></i></button></div>
                     </div>
                 </div>
             </div>
         </nav>
-
-        <!-- Mobile Menu Dropdown -->
         <div id="mobile-menu" class="hidden md:hidden bg-brand-cream border-b border-brand-green/10 shadow-lg transition-all duration-300">
             <div class="px-4 pt-2 pb-6 space-y-1 flex flex-col">
                 <a href="#home" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">Home</a>
@@ -87,12 +65,9 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section id="home" class="pt-32 pb-16 md:pt-44 md:pb-20 lg:pt-52 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 scroll-mt-32">
         <div class="flex-1 space-y-6 md:space-y-8 w-full">
-            <div class="inline-flex items-center space-x-2 bg-brand-lightTerracotta px-3 py-1 rounded-full text-brand-terracotta text-xs md:text-sm font-medium">
-                <span>★ 4.8</span><span class="text-brand-dark/60">· 40 Google reviews</span>
-            </div>
+            <div class="inline-flex items-center space-x-2 bg-brand-lightTerracotta px-3 py-1 rounded-full text-brand-terracotta text-xs md:text-sm font-medium"><span>★ 4.8</span><span class="text-brand-dark/60">· 40 Google reviews</span></div>
             <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-brand-green leading-tight">Where every cup tells a story.</h1>
             <p class="text-base md:text-lg text-brand-dark/80 max-w-lg leading-relaxed">A vibrant cultural hub celebrating Nepal's beloved tea tradition. Located in the historic Chakupat area of Lalitpur.</p>
             <div class="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2">
@@ -109,18 +84,11 @@
         </div>
     </section>
 
-    <!-- Our Story -->
     <section id="about" class="py-16 md:py-20 bg-white scroll-mt-28">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16">
-                <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Our Story</h2>
-                <p class="text-base md:text-lg text-brand-dark/70">More than a café — a celebration of tea.</p>
-            </div>
+            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16"><h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Our Story</h2><p class="text-base md:text-lg text-brand-dark/70">More than a café — a celebration of tea.</p></div>
             <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                <div class="space-y-4 md:space-y-6 text-brand-dark/80 text-sm md:text-base leading-relaxed">
-                    <p>Chiya SAN is a vibrant cultural hub in Lalitpur, dedicated to Nepal's beloved tea tradition. We celebrate "Chiya" not just as a beverage, but as a social ritual that binds communities together.</p>
-                    <p>The atmosphere is lively and inviting — often featuring live music, poetry readings, and cultural performances that reflect the rich heritage of the Kathmandu Valley.</p>
-                </div>
+                <div class="space-y-4 md:space-y-6 text-brand-dark/80 text-sm md:text-base leading-relaxed"><p>Chiya SAN is a vibrant cultural hub in Lalitpur, dedicated to Nepal's beloved tea tradition.</p><p>The atmosphere is lively and inviting — often featuring live music, poetry readings, and cultural performances.</p></div>
                 <div class="grid grid-cols-2 gap-4 md:gap-6">
                     <div class="bg-brand-cream p-4 md:p-6 rounded-2xl text-center"><div class="text-2xl md:text-3xl font-serif font-bold text-brand-terracotta mb-1 md:mb-2">4.8★</div><div class="text-xs md:text-sm font-medium text-brand-dark/60">Google Rating</div></div>
                     <div class="bg-brand-cream p-4 md:p-6 rounded-2xl text-center"><div class="text-2xl md:text-3xl font-serif font-bold text-brand-terracotta mb-1 md:mb-2">50+</div><div class="text-xs md:text-sm font-medium text-brand-dark/60">Menu Items</div></div>
@@ -130,23 +98,18 @@
         </div>
     </section>
 
-    <!-- Gallery -->
     <section id="gallery" class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-28">
-        <div class="text-center mb-12 md:mb-16">
-            <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">A glimpse of the vibe</h2>
-            <p class="text-sm md:text-base text-brand-dark/70">Bamboo seating, lush greenery, rooftop hangs — and of course, tea.</p>
-        </div>
+        <div class="text-center mb-12 md:mb-16"><h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">A glimpse of the vibe</h2><p class="text-sm md:text-base text-brand-dark/70">Bamboo seating, lush greenery, rooftop hangs — and of course, tea.</p></div>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery1.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery 1"></div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery2.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery 2"></div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery3.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery 3"></div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery4.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery 4"></div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery5.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery 5"></div>
-            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery6.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery 6"></div>
+            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery1.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="1"></div>
+            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery2.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="2"></div>
+            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery3.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="3"></div>
+            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery4.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="4"></div>
+            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery5.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="5"></div>
+            <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery6.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="6"></div>
         </div>
     </section>
 
-    <!-- Menu -->
     <section id="menu" class="py-16 md:py-20 bg-white scroll-mt-28">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-10 md:mb-12">
@@ -165,30 +128,13 @@
         </div>
     </section>
 
-    <!-- Reviews -->
     <section id="reviews" class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-28">
-        <div class="text-center mb-12 md:mb-16">
-            <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Loved by guests</h2>
-            <p class="text-sm md:text-base text-brand-dark/70">What people are saying</p>
-        </div>
+        <div class="text-center mb-12 md:mb-16"><h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Loved by guests</h2><p class="text-sm md:text-base text-brand-dark/70">What people are saying</p></div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12">
-            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5">
-                <div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div>
-                <p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"This cozy tea place is a hidden gem! The mix of open and semi-open spaces with bamboo seating and lush greenery creates such a relaxing vibe."</p>
-                <div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">AK</div><div><div class="font-medium text-xs">Avishek Kadel</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div>
-            </div>
-            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5">
-                <div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div>
-                <p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"This new chiya spot was a pleasant surprise. As soon as the first sip of honey milk tea hit my tongue, I was taken — the flavours are so authentic and comforting."</p>
-                <div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">AJ</div><div><div class="font-medium text-xs">Ashutosh Jha</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div>
-            </div>
-            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5">
-                <div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div>
-                <p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"Chiya San is a newly opened tea-focused spot in a quiet area, ideal for youngsters to hang out."</p>
-                <div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">MB</div><div><div class="font-medium text-xs">Madhusudhan Baral</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div>
-            </div>
+            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5"><div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div><p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"This cozy tea place is a hidden gem!"</p><div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">AK</div><div><div class="font-medium text-xs">Avishek Kadel</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div></div>
+            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5"><div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div><p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"The flavours are so authentic and comforting."</p><div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">AJ</div><div><div class="font-medium text-xs">Ashutosh Jha</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div></div>
+            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5"><div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div><p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"Ideal for youngsters to hang out."</p><div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">MB</div><div><div class="font-medium text-xs">Madhusudhan Baral</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div></div>
         </div>
-        
         <div class="max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-brand-green/10">
             <h3 class="font-serif font-bold text-2xl text-brand-green mb-2 text-center">Leave us a Review</h3>
             <p class="text-brand-dark/60 text-sm mb-6 text-center">We'd love to hear about your experience!</p>
@@ -201,7 +147,6 @@
         </div>
     </section>
 
-    <!-- Track Order -->
     <section id="track" class="py-16 md:py-20 bg-brand-lightGreen scroll-mt-28">
         <div class="max-w-3xl mx-auto px-4 text-center">
             <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Track Your Order</h2>
@@ -214,13 +159,12 @@
         </div>
     </section>
 
-    <!-- Visit Us -->
     <section id="visit" class="py-16 md:py-20 bg-brand-green text-white scroll-mt-28">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
                 <div class="space-y-6 md:space-y-8">
                     <h2 class="text-3xl md:text-5xl font-serif font-bold leading-tight">Come for the tea.<br>Stay for the vibes.</h2>
-                    <p class="text-sm md:text-lg text-brand-lightGreen/80 leading-relaxed">Drop by for a cup, a chat, or a game of chess. We're in the heart of Chakupat, a short walk from Patan Durbar Square.</p>
+                    <p class="text-sm md:text-lg text-brand-lightGreen/80 leading-relaxed">Drop by for a cup, a chat, or a game of chess.</p>
                     <div class="space-y-4 md:space-y-6">
                         <div class="flex items-start space-x-3"><div class="bg-white/10 p-2 rounded-full mt-0.5"><i data-lucide="map-pin" class="w-4 h-4 text-brand-terracotta"></i></div><div><div class="font-medium text-sm">Address</div><div class="text-brand-lightGreen/70 text-xs">Chakupat Saraswoti Marg<br>Lalitpur, Bagmati Province 44600</div></div></div>
                         <div class="flex items-start space-x-3"><div class="bg-white/10 p-2 rounded-full mt-0.5"><i data-lucide="phone" class="w-4 h-4 text-brand-terracotta"></i></div><div><div class="font-medium text-sm">Phone</div><div class="text-brand-lightGreen/70 text-xs">+977 970-9085103</div></div></div>
@@ -241,7 +185,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-brand-dark text-white/60 py-10 md:py-12 text-center text-xs md:text-sm no-print">
         <div class="max-w-7xl mx-auto px-4">
             <img src="images/logo.png" alt="Logo" class="h-16 md:h-24 w-auto mx-auto mb-4 object-contain drop-shadow-md">
@@ -249,13 +192,11 @@
             <p>© 2025 Chiya San · Chakupat, Lalitpur</p>
             <p class="mt-2 text-brand-terracotta font-semibold">Made by Prabhat Bhattarai</p>
             <a href="admin.html" class="inline-flex items-center gap-1.5 mt-5 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-xs font-medium text-white/50 hover:text-brand-terracotta hover:border-brand-terracotta/30 hover:bg-white/10 transition">
-                <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-                <span>Staff Login</span>
+                <i data-lucide="lock" class="w-3.5 h-3.5"></i><span>Staff Login</span>
             </a>
         </div>
     </footer>
 
-    <!-- Cart Drawer -->
     <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300 no-print"></div>
     <div id="cart-drawer" class="fixed top-0 -right-full w-full h-full bg-white z-50 shadow-2xl transition-all duration-300 flex flex-col print:static print:block print:shadow-none print:w-full print:h-auto">
         <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-brand-cream no-print">
@@ -289,7 +230,6 @@
         </div>
     </div>
 
-    <!-- Thank You Modal -->
     <div id="feedback-thanks-modal" class="fixed inset-0 bg-black/60 z-[110] hidden flex items-center justify-center p-4 backdrop-blur-sm no-print">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm text-center p-8 transform transition-all duration-300 scale-95 opacity-0" id="feedback-modal-content">
             <div class="bg-brand-lightGreen w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="heart" class="w-10 h-10 text-brand-green"></i></div>
@@ -302,68 +242,32 @@
     <script>
         lucide.createIcons();
         
-        // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT URL HERE
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyUsPj419DZ5dbciSDtvcx0eBmtFNAAnwtXX0nX7vUMIBf1FjNlSW_FPodyxrruDk13/exec"; 
+        // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
 
-        // ============ HIDE NAVBAR ON SCROLL ============
+        // ============ HIDE HEADER ON SCROLL ============
         let lastScrollTop = 0;
         const header = document.getElementById('main-header');
-        const scrollThreshold = 80; // Don't hide until we've scrolled a bit
-
+        const scrollThreshold = 80;
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-            
-            // Always show header when near top
-            if (currentScroll <= scrollThreshold) {
-                header.classList.remove('header-hidden');
-                return;
-            }
-
-            // Scrolling down → hide
-            if (currentScroll > lastScrollTop) {
-                header.classList.add('header-hidden');
-                // Also close mobile menu if open
+            if (currentScroll <= scrollThreshold) { header.classList.remove('header-hidden'); return; }
+            if (currentScroll > lastScrollTop) { 
+                header.classList.add('header-hidden'); 
                 const mobileMenu = document.getElementById('mobile-menu');
-                if (!mobileMenu.classList.contains('hidden')) {
-                    mobileMenu.classList.add('hidden');
-                }
-            } 
-            // Scrolling up → show
-            else {
-                header.classList.remove('header-hidden');
-            }
-            
+                if (!mobileMenu.classList.contains('hidden')) mobileMenu.classList.add('hidden');
+            } else { header.classList.remove('header-hidden'); }
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         }, false);
 
         // ============ ROTATING GREETINGS ============
-        const greetings = [
-            "Namaste! 🙏 Welcome to Chiya San.",
-            "Where every cup tells a story. ☕",
-            "Good Food · Good Vibes · Great Times 💚",
-            "Sip, sip, hooray! Try our signature chiya today.",
-            "Life is short. Drink good chiya. ✨",
-            "Your chai break called — it misses you. 🍵",
-            "Freshly brewed happiness, made with love.",
-            "Come for the tea. Stay for the vibes."
-        ];
+        const greetings = ["Namaste! 🙏 Welcome to Chiya San.", "Where every cup tells a story. ☕", "Good Food · Good Vibes · Great Times 💚", "Sip, sip, hooray! Try our signature chiya today.", "Life is short. Drink good chiya. ✨", "Your chai break called — it misses you. 🍵", "Freshly brewed happiness, made with love.", "Come for the tea. Stay for the vibes."];
         let greetingIndex = 0;
         const greetingEl = document.getElementById('greetingText');
-        setInterval(() => {
-            greetingEl.style.opacity = '0';
-            setTimeout(() => {
-                greetingIndex = (greetingIndex + 1) % greetings.length;
-                greetingEl.innerText = greetings[greetingIndex];
-                greetingEl.style.opacity = '1';
-            }, 500);
-        }, 4000);
+        setInterval(() => { greetingEl.style.opacity = '0'; setTimeout(() => { greetingIndex = (greetingIndex + 1) % greetings.length; greetingEl.innerText = greetings[greetingIndex]; greetingEl.style.opacity = '1'; }, 500); }, 4000);
 
-        // ============ MOBILE MENU ============
-        function toggleMobileMenu() { 
-            document.getElementById('mobile-menu').classList.toggle('hidden'); 
-        }
+        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
-        // ============ MENU DATA ============
         const menuItems = [
             { name: "Chicken Steam Mo:Mo", category: "Mo:Mo", price: 200 }, { name: "Chicken Jhol Mo:Mo", category: "Mo:Mo", price: 230 },
             { name: "Chicken Kothey Mo:Mo", category: "Mo:Mo", price: 250 }, { name: "Veg & Paneer Steam Mo:Mo", category: "Mo:Mo", price: 180 },
@@ -409,33 +313,15 @@
         const filterBtns = document.querySelectorAll('.filter-btn');
         filterBtns.forEach(btn => { btn.addEventListener('click', (e) => { filterBtns.forEach(b => { b.classList.remove('bg-brand-green', 'text-white'); b.classList.add('bg-brand-lightGreen', 'text-brand-dark'); }); e.target.classList.remove('bg-brand-lightGreen', 'text-brand-dark'); e.target.classList.add('bg-brand-green', 'text-white'); renderMenu(e.target.dataset.category); }); });
 
-        // ============ CART ============
         let cart = JSON.parse(localStorage.getItem('chiyaCart')) || [];
         function saveCart() { localStorage.setItem('chiyaCart', JSON.stringify(cart)); }
-        function addToCart(name, price) { 
-            const existing = cart.find(item => item.name === name); 
-            if (existing) { existing.qty += 1; } else { cart.push({ name, price, qty: 1 }); } 
-            saveCart(); updateCartUI(); 
-            const cartBtn = document.querySelector('button[onclick="toggleCart()"]'); 
-            cartBtn.classList.add('scale-110'); 
-            setTimeout(() => cartBtn.classList.remove('scale-110'), 200); 
-        }
+        function addToCart(name, price) { const existing = cart.find(item => item.name === name); if (existing) { existing.qty += 1; } else { cart.push({ name, price, qty: 1 }); } saveCart(); updateCartUI(); const cartBtn = document.querySelector('button[onclick="toggleCart()"]'); cartBtn.classList.add('scale-110'); setTimeout(() => cartBtn.classList.remove('scale-110'), 200); }
 
         function updateCartUI() {
-            const cartItemsDiv = document.getElementById('cart-items'); 
-            const cartCount = document.getElementById('cart-count'); 
-            const subtotalEl = document.getElementById('cart-subtotal'); 
-            const totalEl = document.getElementById('cart-total');
+            const cartItemsDiv = document.getElementById('cart-items'); const cartCount = document.getElementById('cart-count'); const subtotalEl = document.getElementById('cart-subtotal'); const totalEl = document.getElementById('cart-total');
             let totalItems = 0; let subtotal = 0;
-            if (cart.length === 0) { 
-                cartItemsDiv.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-center text-brand-dark/40 py-10 no-print"><i data-lucide="shopping-cart" class="w-16 h-16 mb-4 opacity-50"></i><p class="text-lg font-medium">Your cart is empty</p><p class="text-sm">Add something delicious from the menu</p></div>`; 
-            } 
-            else { 
-                cartItemsDiv.innerHTML = cart.map((item, index) => { 
-                    totalItems += item.qty; subtotal += item.price * item.qty; 
-                    return `<div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 last:border-0"><div class="pr-3"><div class="font-medium text-sm md:text-base text-brand-dark">${item.name}</div><div class="text-xs md:text-sm text-brand-terracotta font-semibold mt-1">Rs. ${item.price}</div></div><div class="flex items-center space-x-3 flex-shrink-0 no-print"><button onclick="updateQty(${index}, -1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">-</button><span class="w-4 text-center font-medium text-sm">${item.qty}</span><button onclick="updateQty(${index}, 1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">+</button></div></div>`; 
-                }).join(''); 
-            }
+            if (cart.length === 0) { cartItemsDiv.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-center text-brand-dark/40 py-10 no-print"><i data-lucide="shopping-cart" class="w-16 h-16 mb-4 opacity-50"></i><p class="text-lg font-medium">Your cart is empty</p><p class="text-sm">Add something delicious from the menu</p></div>`; } 
+            else { cartItemsDiv.innerHTML = cart.map((item, index) => { totalItems += item.qty; subtotal += item.price * item.qty; return `<div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 last:border-0"><div class="pr-3"><div class="font-medium text-sm md:text-base text-brand-dark">${item.name}</div><div class="text-xs md:text-sm text-brand-terracotta font-semibold mt-1">Rs. ${item.price}</div></div><div class="flex items-center space-x-3 flex-shrink-0 no-print"><button onclick="updateQty(${index}, -1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">-</button><span class="w-4 text-center font-medium text-sm">${item.qty}</span><button onclick="updateQty(${index}, 1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">+</button></div></div>`; }).join(''); }
             cartCount.innerText = totalItems; subtotalEl.innerText = `Rs. ${subtotal}`; totalEl.innerText = `Rs. ${subtotal}`; lucide.createIcons();
         }
 
@@ -444,7 +330,6 @@
         function toggleAddressField() { const type = document.getElementById('orderType').value; const label = document.getElementById('locationLabel'); const input = document.getElementById('locationDetails'); if (type === 'Dine-In') { label.innerText = 'Table Number / Spot:'; input.placeholder = 'e.g. Table 3 / Rooftop seating'; } else { label.innerText = 'Pickup Time:'; input.placeholder = 'e.g. Ready in 15 mins'; } }
         function generateOrderId() { const randomPart = Math.floor(100 + Math.random() * 900); return `CS-${randomPart}`; }
 
-        // ============ FEEDBACK ============
         async function sendFeedback() {
             const btn = document.getElementById('fbSubmitBtn'); btn.innerHTML = 'Submitting...'; btn.disabled = true;
             const feedbackData = { type: 'feedback', name: document.getElementById('fbName').value, rating: document.getElementById('fbRating').value, comment: document.getElementById('fbComment').value };
@@ -454,7 +339,6 @@
         function openFeedbackModal() { const modal = document.getElementById('feedback-thanks-modal'); const content = document.getElementById('feedback-modal-content'); modal.classList.remove('hidden'); setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100'); }, 10); }
         function closeFeedbackModal() { const modal = document.getElementById('feedback-thanks-modal'); const content = document.getElementById('feedback-modal-content'); content.classList.add('scale-95', 'opacity-0'); content.classList.remove('scale-100', 'opacity-100'); setTimeout(() => { modal.classList.add('hidden'); }, 300); }
 
-        // ============ TRACK ORDER ============
         async function trackOrder() {
             const orderId = document.getElementById('trackingInput').value.trim().toUpperCase(); const resultDiv = document.getElementById('trackingResult');
             if (!orderId) { alert("Please enter an Order ID."); return; }
@@ -467,7 +351,6 @@
             } catch (e) { resultDiv.innerHTML = '<div class="text-red-500">Error connecting to server.</div>'; }
         }
 
-        // ============ PROCESS ORDER ============
         async function processOrder() {
             if (cart.length === 0) { alert("Please add at least one item to your cart before sending your order."); return; }
             
@@ -475,14 +358,16 @@
             const phoneInput = document.getElementById('customerPhone');
             const locationInput = document.getElementById('locationDetails');
             
-            if (!nameInput.value || !locationInput.value) { alert("Please fill in your name and order details (Table or Pickup time)."); return; }
-            if (!phoneInput.value || phoneInput.value.replace(/[^0-9]/g, '').length < 10) { alert("Please enter a valid 10-digit WhatsApp number so we can send you order updates."); return; }
+            // VALIDATION
+            if (!nameInput.value.trim()) { alert("Please enter your name."); return; }
+            if (!phoneInput.value || phoneInput.value.replace(/[^0-9]/g, '').length < 10) { alert("Please enter a valid 10-digit WhatsApp number."); return; }
+            if (!locationInput.value.trim()) { alert("Please enter your table number or pickup details."); return; }
             
             const orderId = generateOrderId();
-            const name = nameInput.value;
-            const customerPhone = phoneInput.value;
+            const name = nameInput.value.trim();
+            const customerPhone = phoneInput.value.trim();
             const orderType = document.getElementById('orderType').value;
-            const location = locationInput.value;
+            const location = locationInput.value.trim();
             
             let itemsSummary = []; let total = 0;
             cart.forEach(item => { let itemSum = item.price * item.qty; total += itemSum; itemsSummary.push(`${item.name} x${item.qty} = Rs. ${itemSum}`); });
@@ -500,11 +385,29 @@
             saveButton.innerHTML = 'Saving...'; 
             saveButton.disabled = true;
             
-            const orderData = { orderId: orderId, customerName: name, customerPhone: customerPhone, orderType: orderType, location: location, items: itemsSummary.join('\n'), total: total };
+            // ORDER DATA WITH PHONE
+            const orderData = { 
+                orderId: orderId, 
+                customerName: name, 
+                customerPhone: customerPhone, 
+                orderType: orderType, 
+                location: location, 
+                items: itemsSummary.join('\n'), 
+                total: total 
+            };
             
-            try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }); } 
-            catch (error) { console.error(error); } 
-            finally { saveButton.innerHTML = originalButtonText; saveButton.disabled = false; }
+            console.log('Sending order with phone:', orderData);
+            
+            try { 
+                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }); 
+                console.log('Order sent successfully');
+            } catch (error) { 
+                console.error('Error:', error); 
+            } 
+            finally { 
+                saveButton.innerHTML = originalButtonText; 
+                saveButton.disabled = false; 
+            }
             
             cart = []; saveCart(); updateCartUI(); toggleCart();
         }
