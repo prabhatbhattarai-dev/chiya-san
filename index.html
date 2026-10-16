@@ -393,7 +393,6 @@
     <!-- Footer -->
     <footer class="bg-brand-dark text-white/60 py-10 md:py-12 text-center text-xs md:text-sm">
         <div class="max-w-7xl mx-auto px-4">
-            <!-- Removed the brightness-0 invert filter so the logo shows correctly -->
             <img src="images/logo.png" alt="Chiya San Logo" class="h-16 md:h-24 w-auto mx-auto mb-4 object-contain drop-shadow-md">
             <p class="mb-3 md:mb-4 text-white">Good Food · Good Vibes · Great Times</p>
             <p>© 2025 Chiya San · Chakupat, Lalitpur</p>
@@ -449,7 +448,7 @@
         }
 
         // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT URL BELOW
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyut1z8CVECUiycX_OwtKL1-luA0GfecChf2OUxqTarZhM52uFEA9Hq7STt0opl2Xaw/exec"; 
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
 
         const menuItems = [
             { name: "Chicken Steam Mo:Mo", category: "Mo:Mo", price: 200 },
@@ -598,26 +597,69 @@
         }
 
         async function processOrder() {
+            // Validation
             if (cart.length === 0) { alert("Please add at least one item to your cart before sending your order."); return; }
             const nameInput = document.getElementById('customerName');
             const locationInput = document.getElementById('locationDetails');
             if (!nameInput.value || !locationInput.value) { alert("Please fill in your name and order details (Table or Pickup time)."); return; }
+
             const orderId = generateOrderId(); const name = nameInput.value;
             const orderType = document.getElementById('orderType').value; const location = locationInput.value;
+            
+            // Prepare data
             let itemsSummary = []; let total = 0;
             cart.forEach(item => { let itemSum = item.price * item.qty; total += itemSum; itemsSummary.push(`${item.name} x${item.qty} = Rs. ${itemSum}`); });
-            const orderData = { orderId: orderId, customerName: name, orderType: orderType, location: location, items: itemsSummary.join('\n'), total: total };
-            const saveButton = document.querySelector('button[onclick="processOrder()"]');
-            const originalButtonText = saveButton.innerHTML;
-            saveButton.innerHTML = 'Saving...'; saveButton.disabled = true;
-            try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }); } catch (error) { console.error('Error saving to Google Sheet:', error); } finally { saveButton.innerHTML = originalButtonText; saveButton.disabled = false; }
+            
+            // Construct WhatsApp Message
             const phoneNumber = "9779765566682";
             let message = `*NEW ORDER - CHIYA SAN*\n\n*Order ID:* ${orderId}\n*Customer:* ${name}\n*Type:* ${orderType}\n*Details:* ${location}\n\n*Items Ordered:*\n`;
             itemsSummary.forEach(item => message += `- ${item}\n`);
             message += `\n*Total Amount:* Rs. ${total}`;
             const encodedMessage = encodeURIComponent(message);
-            window.open("https://api.whatsapp.com/send?phone=" + phoneNumber + "&text=" + encodedMessage, '_blank');
-            cart = []; updateCartUI(); toggleCart();
+            const whatsappURL = "https://api.whatsapp.com/send?phone=" + phoneNumber + "&text=" + encodedMessage;
+
+            // 1. Open WhatsApp FIRST to bypass popup blockers
+            const whatsappWindow = window.open(whatsappURL, '_blank');
+            
+            // If the window was blocked, provide a fallback
+            if (!whatsappWindow) {
+                alert("Popup blocked! Please allow popups for this site to open WhatsApp automatically. Your order has been saved, but you may need to send the message manually.");
+            }
+
+            // 2. Save to Google Sheets in the background
+            const saveButton = document.querySelector('button[onclick="processOrder()"]');
+            const originalButtonText = saveButton.innerHTML;
+            saveButton.innerHTML = 'Saving...'; 
+            saveButton.disabled = true;
+
+            const orderData = { 
+                orderId: orderId, 
+                customerName: name, 
+                orderType: orderType, 
+                location: location, 
+                items: itemsSummary.join('\n'), 
+                total: total 
+            };
+
+            try { 
+                await fetch(scriptURL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(orderData) 
+                }); 
+                console.log('Order saved to Google Sheet successfully!');
+            } catch (error) { 
+                console.error('Error saving to Google Sheet:', error); 
+            } finally { 
+                saveButton.innerHTML = originalButtonText; 
+                saveButton.disabled = false; 
+            }
+
+            // 3. Clear the cart and close the drawer
+            cart = []; 
+            updateCartUI(); 
+            toggleCart();
         }
 
         renderMenu(); updateCartUI();
