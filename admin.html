@@ -27,89 +27,46 @@
         .filter-tab[data-status="preparing"].active { background-color: #CA8A04; }
         .filter-tab[data-status="ready"].active { background-color: #16A34A; }
         .filter-tab[data-status="completed"].active { background-color: #6B7280; }
-        
-        /* Login Screen Animations */
-        .login-bg-pattern {
-            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.08) 1px, transparent 0);
-            background-size: 32px 32px;
-        }
-        @keyframes floatLogin {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-        }
-        .animate-float-login {
-            animation: floatLogin 4s ease-in-out infinite;
-        }
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.7; }
-        }
-        .animate-pulse-glow {
-            animation: pulseGlow 3s ease-in-out infinite;
-        }
+        .login-bg-pattern { background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.08) 1px, transparent 0); background-size: 32px 32px; }
+        @keyframes floatLogin { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        .animate-float-login { animation: floatLogin 4s ease-in-out infinite; }
+        @keyframes pulseGlow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.7; } }
+        .animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-brand-cream text-brand-dark antialiased min-h-screen">
 
-    <!-- ==================== LOGIN SCREEN (Mobile Optimized) ==================== -->
     <div id="login-screen" class="fixed inset-0 bg-brand-green z-[9999] overflow-hidden">
-        
-        <!-- Decorative Background -->
         <div class="absolute inset-0 login-bg-pattern"></div>
         <div class="absolute -top-32 -right-32 w-96 h-96 bg-brand-terracotta/20 rounded-full blur-3xl animate-pulse-glow"></div>
         <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-brand-lightGreen/10 rounded-full blur-3xl animate-pulse-glow"></div>
         
-        <!-- Login Content -->
         <div class="relative h-full flex flex-col items-center justify-center p-5 sm:p-6">
-            
-            <!-- Logo with floating animation -->
             <div class="mb-8 md:mb-10 animate-float-login">
                 <div class="bg-white/95 backdrop-blur-sm p-5 md:p-6 rounded-3xl shadow-2xl">
                     <img src="images/logo.png" alt="Chiya San Logo" class="h-20 md:h-28 w-auto object-contain">
                 </div>
             </div>
 
-            <!-- Welcome Text -->
             <div class="text-center mb-8 md:mb-10">
                 <h1 class="font-serif font-bold text-3xl md:text-4xl text-white mb-2">Staff Login</h1>
                 <p class="text-brand-lightGreen/70 text-sm md:text-base">Chiya San Order Management</p>
             </div>
 
-            <!-- Login Card -->
             <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
-                <!-- Top accent bar -->
                 <div class="h-1.5 bg-gradient-to-r from-brand-terracotta via-brand-green to-brand-terracotta"></div>
-                
                 <div class="p-6 md:p-8">
-                    <!-- Input Label -->
-                    <label class="block text-sm font-semibold text-brand-dark mb-2">
-                        Admin Password
-                    </label>
-                    
-                    <!-- Password Input with Show/Hide Toggle -->
+                    <label class="block text-sm font-semibold text-brand-dark mb-2">Admin Password</label>
                     <div class="relative mb-4">
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <i data-lucide="lock" class="w-5 h-5 text-brand-dark/40"></i>
                         </div>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            placeholder="Enter your password" 
-                            class="w-full pl-12 pr-12 py-4 rounded-2xl border-2 border-gray-200 focus:outline-none focus:border-brand-green focus:ring-4 focus:ring-brand-green/10 text-base font-medium transition-all"
-                            onkeypress="if(event.key === 'Enter') login()"
-                            autocomplete="current-password"
-                        >
-                        <button 
-                            type="button"
-                            onclick="togglePasswordVisibility()" 
-                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-brand-dark/40 hover:text-brand-green transition"
-                            id="togglePasswordBtn"
-                        >
+                        <input type="password" id="password" placeholder="Enter your password" class="w-full pl-12 pr-12 py-4 rounded-2xl border-2 border-gray-200 focus:outline-none focus:border-brand-green focus:ring-4 focus:ring-brand-green/10 text-base font-medium transition-all" onkeypress="if(event.key === 'Enter') login()" autocomplete="current-password">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-brand-dark/40 hover:text-brand-green transition" id="togglePasswordBtn">
                             <i data-lucide="eye" class="w-5 h-5" id="eyeIcon"></i>
                         </button>
                     </div>
 
-                    <!-- Error Message -->
                     <div id="login-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
                         <div class="flex items-start gap-2">
                             <i data-lucide="alert-circle" class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"></i>
@@ -117,17 +74,11 @@
                         </div>
                     </div>
 
-                    <!-- Login Button -->
-                    <button 
-                        id="loginBtn" 
-                        onclick="login()" 
-                        class="w-full bg-brand-green text-white py-4 rounded-2xl font-bold text-base hover:bg-brand-green/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-green/30 flex items-center justify-center gap-2"
-                    >
+                    <button id="loginBtn" onclick="login()" class="w-full bg-brand-green text-white py-4 rounded-2xl font-bold text-base hover:bg-brand-green/90 active:scale-[0.98] transition-all shadow-lg shadow-brand-green/30 flex items-center justify-center gap-2">
                         <i data-lucide="log-in" class="w-5 h-5" id="loginBtnIcon"></i>
                         <span id="loginBtnText">Login to Dashboard</span>
                     </button>
 
-                    <!-- Small Security Notice -->
                     <div class="mt-6 pt-5 border-t border-gray-100">
                         <div class="flex items-center justify-center gap-2 text-xs text-brand-dark/50">
                             <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
@@ -137,7 +88,6 @@
                 </div>
             </div>
 
-            <!-- Back to Website Link -->
             <a href="index.html" class="mt-6 md:mt-8 inline-flex items-center gap-2 text-brand-lightGreen/70 hover:text-white text-sm font-medium transition">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
                 <span>Back to Website</span>
@@ -145,7 +95,6 @@
         </div>
     </div>
 
-    <!-- ==================== DASHBOARD ==================== -->
     <div id="dashboard" class="hidden pb-12">
         <nav class="bg-white border-b border-brand-green/10 sticky top-0 z-40 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -170,7 +119,6 @@
         </nav>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-            <!-- Broadcast -->
             <div class="bg-white rounded-3xl shadow-sm border border-brand-green/10 mb-6 md:mb-8 overflow-hidden">
                 <button onclick="toggleBroadcast()" class="w-full flex items-center justify-between p-5 md:p-6 text-left hover:bg-brand-cream/50 transition">
                     <div class="flex items-center gap-3">
@@ -242,13 +190,12 @@
 
     <script>
         lucide.createIcons();
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyUsPj419DZ5dbciSDtvcx0eBmtFNAAnwtXX0nX7vUMIBf1FjNlSW_FPodyxrruDk13/exec"; 
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
         let adminPassword = "";
         let isFetching = false;
         let allOrders = [];
         let currentFilter = "all";
 
-        // ============ PASSWORD VISIBILITY TOGGLE ============
         function togglePasswordVisibility() {
             const input = document.getElementById('password');
             const icon = document.getElementById('eyeIcon');
@@ -262,7 +209,6 @@
             lucide.createIcons();
         }
 
-        // ============ PRESET MESSAGES ============
         const presetMessages = [
             { category: "greeting", text: "Namaste 🙏 Welcome to Chiya San! Your daily tea escape awaits. ☕" },
             { category: "greeting", text: "Good Morning! ☀️ Start your day the Chiya San way." },
@@ -335,17 +281,16 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank'); 
         }
 
-        // ============ GREET CUSTOMER ============
+        // ============ GREET CUSTOMER (Fixed: "Your order" instead of "Your chiya") ============
         function greetCustomer(customerName, customerPhone, orderId, total) {
             let cleanPhone = (customerPhone || '').toString().replace(/[^0-9]/g, '');
             if (!cleanPhone) { alert("This order doesn't have a phone number. Please contact the customer manually."); return; }
             if (cleanPhone.length === 10) { cleanPhone = '977' + cleanPhone; }
             
-            const greetingMsg = `Namaste ${customerName}! 🙏\n\nThank you for ordering from *Chiya San*! ☕\n\nWe've received your order *${orderId}* worth *Rs. ${total}* and our team is on it. Your chiya will be ready very soon!\n\nHave a great day! 💚\n— Team Chiya San`;
+            const greetingMsg = `Namaste ${customerName}! 🙏\n\nThank you for ordering from *Chiya San*! ☕\n\nWe've received your order *${orderId}* worth *Rs. ${total}* and our team is on it. Your order will be ready very soon!\n\nHave a great day! 💚\n— Team Chiya San`;
             window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(greetingMsg)}`, '_blank');
         }
 
-        // ============ LOGIN ============
         async function login() {
             const passwordInput = document.getElementById('password').value;
             const loginBtn = document.getElementById('loginBtn');
@@ -404,7 +349,6 @@
             document.getElementById('login-error').classList.add('hidden'); 
         }
 
-        // ============ ORDER FUNCTIONS ============
         async function updateOrderStatus(orderId, newStatus) {
             const updateData = { type: 'updateStatus', orderId: orderId, status: newStatus };
             try {
