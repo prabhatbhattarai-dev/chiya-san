@@ -89,9 +89,8 @@
         lucide.createIcons();
         
         // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-        const scriptURL = "https://script.google.com/macros/s/AKfycbwzKD3RhIqMp-_QIXKpdLFEfXwbGxRVstA-IM1SQ2G-r7wH3oUTCFDDbq2xm4ctIQCm/exec"; 
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
 
-        // We no longer store the password here. The password is only on Google's servers.
         let adminPassword = "";
 
         async function login() {
@@ -105,12 +104,11 @@
                 return;
             }
 
-            // Show loading state
             loginBtn.innerHTML = 'Connecting...';
             loginBtn.disabled = true;
             errorDiv.classList.add('hidden');
 
-            if (scriptURL === "https://script.google.com/macros/s/AKfycbwzKD3RhIqMp-_QIXKpdLFEfXwbGxRVstA-IM1SQ2G-r7wH3oUTCFDDbq2xm4ctIQCm/exec") {
+            if (scriptURL === "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE") {
                 errorDiv.innerText = "Error: You haven't pasted your Google Apps Script URL in the code yet!";
                 errorDiv.classList.remove('hidden');
                 loginBtn.innerHTML = 'Login';
@@ -119,7 +117,6 @@
             }
 
             try {
-                // Send the password to Google Apps Script to verify
                 const response = await fetch(`${scriptURL}?password=${encodeURIComponent(passwordInput)}`);
                 const data = await response.json();
 
@@ -130,15 +127,14 @@
                     errorDiv.innerText = "Server Error: " + data.error;
                     errorDiv.classList.remove('hidden');
                 } else {
-                    // Password is correct!
                     adminPassword = passwordInput;
                     document.getElementById('login-screen').classList.add('hidden');
                     document.getElementById('dashboard').classList.remove('hidden');
-                    renderOrders(data); // Render the orders we just fetched
+                    renderOrders(data);
                 }
             } catch (error) {
                 console.error("Login error:", error);
-                errorDiv.innerText = "Failed to connect to Google. Please check your internet connection or the script URL.";
+                errorDiv.innerText = "Failed to connect. Check your internet or the script URL.";
                 errorDiv.classList.remove('hidden');
             } finally {
                 loginBtn.innerHTML = 'Login';
@@ -163,18 +159,9 @@
         async function updateOrderStatus(orderId, newStatus) {
             const updateData = { type: 'updateStatus', orderId: orderId, status: newStatus };
             try {
-                await fetch(scriptURL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(updateData) 
-                });
-                alert(`Order ${orderId} marked as ${newStatus}. The customer can now see this update!`);
-                fetchOrders(); // Refresh the list to show the new status
-            } catch (error) { 
-                console.error('Error updating status:', error); 
-                alert("Failed to update status. Please check your internet connection.");
-            }
+                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updateData) });
+                fetchOrders();
+            } catch (error) { console.error('Error updating status:', error); alert("Failed to update status."); }
         }
 
         async function fetchOrders() {
@@ -198,8 +185,7 @@
                 renderOrders(data);
             } catch (error) {
                 loading.classList.add('hidden');
-                ordersGrid.innerHTML = `<div class="col-span-full text-center text-red-500 py-10">Failed to load orders. Check your internet connection.</div>`;
-                console.error('Error:', error);
+                ordersGrid.innerHTML = `<div class="col-span-full text-center text-red-500 py-10">Failed to load orders.</div>`;
             }
         }
 
@@ -266,7 +252,6 @@
             });
         }
 
-        // Auto-refresh every 60 seconds if logged in
         setInterval(() => { 
             if (adminPassword !== "" && !document.getElementById('dashboard').classList.contains('hidden')) { 
                 fetchOrders(); 
