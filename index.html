@@ -18,11 +18,15 @@
         input, select, textarea { font-size: 16px !important; }
         #main-header { transition: transform 0.35s ease-in-out; }
         #main-header.header-hidden { transform: translateY(-100%); }
+        
+        /* Hide the print receipt on screen */
+        #print-receipt { display: none; }
+        
+        /* Print Styles - Show ONLY the receipt */
         @media print {
-            body * { visibility: hidden; }
-            #cart-drawer, #cart-drawer * { visibility: visible; }
-            #cart-drawer { position: absolute; left: 0; top: 0; width: 100%; height: auto; box-shadow: none; }
-            .no-print { display: none !important; }
+            body > *:not(#print-receipt) { display: none !important; }
+            #print-receipt { display: block !important; }
+            @page { margin: 5mm; size: 80mm auto; }
         }
     </style>
 </head>
@@ -198,15 +202,10 @@
     </footer>
 
     <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300 no-print"></div>
-    <div id="cart-drawer" class="fixed top-0 -right-full w-full h-full bg-white z-50 shadow-2xl transition-all duration-300 flex flex-col print:static print:block print:shadow-none print:w-full print:h-auto">
+    <div id="cart-drawer" class="fixed top-0 -right-full w-full h-full bg-white z-50 shadow-2xl transition-all duration-300 flex flex-col">
         <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-brand-cream no-print">
             <h2 class="text-lg md:text-xl font-serif font-bold text-brand-green">Your Order</h2>
             <button onclick="toggleCart()" class="p-2 hover:bg-gray-100 rounded-full transition"><i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i></button>
-        </div>
-        <div class="p-6 text-center border-b border-gray-100 hidden print:block">
-            <img src="images/logo.png" alt="Logo" class="h-16 mx-auto mb-2 object-contain">
-            <h2 class="font-serif font-bold text-xl text-brand-green">Chiya San</h2>
-            <p class="text-xs text-brand-dark/60">Chakupat, Lalitpur | +977 970-9085103</p>
         </div>
         <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8">
             <div id="cart-items"></div>
@@ -214,7 +213,11 @@
                 <h3 class="font-serif font-bold text-brand-green mb-3 md:mb-4">Order Details</h3>
                 <div class="space-y-3 md:space-y-4">
                     <div><label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Your Name</label><input type="text" id="customerName" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. Ayush Shrestha" required></div>
-                    <div><label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">WhatsApp Number <span class="text-brand-terracotta">*</span></label><input type="tel" id="customerPhone" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. 9801234567" required><p class="text-[10px] text-brand-dark/50 mt-1">We'll send order updates here</p></div>
+                    <div>
+                        <label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">WhatsApp Number <span class="text-brand-terracotta">*</span></label>
+                        <input type="tel" id="customerPhone" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. 9801234567" required>
+                        <p class="text-[10px] text-brand-dark/50 mt-1">We'll send order updates here</p>
+                    </div>
                     <div><label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Order Type</label><select id="orderType" onchange="toggleAddressField()" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm"><option value="Dine-In">Dine-In</option><option value="Takeaway">Takeaway / Pick-up</option></select></div>
                     <div id="locationGroup"><label id="locationLabel" class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Table Number / Spot</label><input type="text" id="locationDetails" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. Table 3 / Rooftop seating" required></div>
                 </div>
@@ -224,8 +227,43 @@
             <div class="flex justify-between mb-2 text-xs md:text-sm text-brand-dark/70"><span>Subtotal</span><span id="cart-subtotal">Rs. 0</span></div>
             <div class="flex justify-between mb-4 md:mb-6 font-bold text-base md:text-lg text-brand-green"><span>Total</span><span id="cart-total">Rs. 0</span></div>
             <div class="flex gap-3">
-                <button onclick="window.print()" class="w-full bg-brand-lightGreen text-brand-green py-3.5 rounded-xl font-medium hover:bg-brand-green hover:text-white transition flex items-center justify-center gap-2 text-sm md:text-base"><i data-lucide="printer" class="w-4 h-4"></i><span>Print Bill</span></button>
+                <button onclick="printBill()" class="w-full bg-brand-lightGreen text-brand-green py-3.5 rounded-xl font-medium hover:bg-brand-green hover:text-white transition flex items-center justify-center gap-2 text-sm md:text-base"><i data-lucide="printer" class="w-4 h-4"></i><span>Print Bill</span></button>
                 <button onclick="processOrder()" class="w-full bg-[#25D366] text-white py-3.5 rounded-xl font-medium hover:bg-[#128C7E] transition shadow-lg shadow-green-500/30 flex items-center justify-center gap-2 text-sm md:text-base"><i data-lucide="message-circle" class="w-4 h-4"></i><span>Send WhatsApp</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRINT RECEIPT (Hidden on screen, visible when printing) -->
+    <div id="print-receipt">
+        <div style="font-family: 'Courier New', monospace; max-width: 320px; margin: 0 auto; padding: 20px; background: white; color: black;">
+            <div style="text-align: center; border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 15px;">
+                <img src="images/logo.png" style="height: 60px; margin-bottom: 8px;" alt="Chiya San">
+                <h1 style="font-size: 22px; font-weight: bold; margin: 5px 0;">CHIYA SAN</h1>
+                <p style="font-size: 11px; margin: 3px 0;">Chakupat, Lalitpur</p>
+                <p style="font-size: 11px; margin: 3px 0;">+977 970-9085103</p>
+            </div>
+            
+            <div style="font-size: 12px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Order ID:</span><strong id="print-orderid">-</strong></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Date:</span><span id="print-date">-</span></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Customer:</span><strong id="print-customer">-</strong></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Phone:</span><span id="print-phone">-</span></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Type:</span><span id="print-type">-</span></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;"><span>Table/Pickup:</span><span id="print-location">-</span></div>
+            </div>
+            
+            <div style="border-top: 2px dashed #000; border-bottom: 2px dashed #000; padding: 10px 0; margin-bottom: 12px;">
+                <p style="font-size: 12px; font-weight: bold; margin: 0 0 8px 0;">ITEMS ORDERED:</p>
+                <div id="print-items" style="font-size: 12px;"></div>
+            </div>
+            
+            <div style="text-align: right; font-size: 16px; font-weight: bold; margin-bottom: 15px;">
+                TOTAL: Rs. <span id="print-total">0</span>
+            </div>
+            
+            <div style="text-align: center; border-top: 2px dashed #000; padding-top: 12px; font-size: 11px;">
+                <p style="margin: 5px 0; font-style: italic;">Thank you for visiting Chiya San! 💚</p>
+                <p style="margin: 5px 0;">Good Food · Good Vibes · Great Times</p>
             </div>
         </div>
     </div>
@@ -242,10 +280,9 @@
     <script>
         lucide.createIcons();
         
-        // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT URL HERE
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyUsPj419DZ5dbciSDtvcx0eBmtFNAAnwtXX0nX7vUMIBf1FjNlSW_FPodyxrruDk13/exec"; 
+        // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
 
-        // ============ HIDE HEADER ON SCROLL ============
         let lastScrollTop = 0;
         const header = document.getElementById('main-header');
         const scrollThreshold = 80;
@@ -260,7 +297,6 @@
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         }, false);
 
-        // ============ ROTATING GREETINGS ============
         const greetings = ["Namaste! 🙏 Welcome to Chiya San.", "Where every cup tells a story. ☕", "Good Food · Good Vibes · Great Times 💚", "Sip, sip, hooray! Try our signature chiya today.", "Life is short. Drink good chiya. ✨", "Your chai break called — it misses you. 🍵", "Freshly brewed happiness, made with love.", "Come for the tea. Stay for the vibes."];
         let greetingIndex = 0;
         const greetingEl = document.getElementById('greetingText');
@@ -330,6 +366,49 @@
         function toggleAddressField() { const type = document.getElementById('orderType').value; const label = document.getElementById('locationLabel'); const input = document.getElementById('locationDetails'); if (type === 'Dine-In') { label.innerText = 'Table Number / Spot:'; input.placeholder = 'e.g. Table 3 / Rooftop seating'; } else { label.innerText = 'Pickup Time:'; input.placeholder = 'e.g. Ready in 15 mins'; } }
         function generateOrderId() { const randomPart = Math.floor(100 + Math.random() * 900); return `CS-${randomPart}`; }
 
+        // ============ PRINT BILL (Complete New Function) ============
+        function printBill() {
+            if (cart.length === 0) { 
+                alert("Your cart is empty. Add items first."); 
+                return; 
+            }
+            
+            const name = document.getElementById('customerName').value || 'Guest';
+            const phone = document.getElementById('customerPhone').value || '-';
+            const orderType = document.getElementById('orderType').value;
+            const location = document.getElementById('locationDetails').value || '-';
+            
+            const tempOrderId = generateOrderId();
+            
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            document.getElementById('print-orderid').innerText = tempOrderId;
+            document.getElementById('print-date').innerText = dateStr + ' ' + timeStr;
+            document.getElementById('print-customer').innerText = name;
+            document.getElementById('print-phone').innerText = phone;
+            document.getElementById('print-type').innerText = orderType;
+            document.getElementById('print-location').innerText = location;
+            
+            let itemsHtml = '';
+            let total = 0;
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                itemsHtml += `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>${item.name} x${item.qty}</span>
+                        <span>Rs. ${itemTotal}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('print-items').innerHTML = itemsHtml;
+            document.getElementById('print-total').innerText = total;
+            
+            window.print();
+        }
+
         async function sendFeedback() {
             const btn = document.getElementById('fbSubmitBtn'); btn.innerHTML = 'Submitting...'; btn.disabled = true;
             const feedbackData = { type: 'feedback', name: document.getElementById('fbName').value, rating: document.getElementById('fbRating').value, comment: document.getElementById('fbComment').value };
@@ -358,7 +437,6 @@
             const phoneInput = document.getElementById('customerPhone');
             const locationInput = document.getElementById('locationDetails');
             
-            // VALIDATION
             if (!nameInput.value.trim()) { alert("Please enter your name."); return; }
             if (!phoneInput.value || phoneInput.value.replace(/[^0-9]/g, '').length < 10) { alert("Please enter a valid 10-digit WhatsApp number."); return; }
             if (!locationInput.value.trim()) { alert("Please enter your table number or pickup details."); return; }
@@ -385,29 +463,11 @@
             saveButton.innerHTML = 'Saving...'; 
             saveButton.disabled = true;
             
-            // ORDER DATA WITH PHONE
-            const orderData = { 
-                orderId: orderId, 
-                customerName: name, 
-                customerPhone: customerPhone, 
-                orderType: orderType, 
-                location: location, 
-                items: itemsSummary.join('\n'), 
-                total: total 
-            };
+            const orderData = { orderId: orderId, customerName: name, customerPhone: customerPhone, orderType: orderType, location: location, items: itemsSummary.join('\n'), total: total };
             
-            console.log('Sending order with phone:', orderData);
-            
-            try { 
-                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }); 
-                console.log('Order sent successfully');
-            } catch (error) { 
-                console.error('Error:', error); 
-            } 
-            finally { 
-                saveButton.innerHTML = originalButtonText; 
-                saveButton.disabled = false; 
-            }
+            try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }); } 
+            catch (error) { console.error(error); } 
+            finally { saveButton.innerHTML = originalButtonText; saveButton.disabled = false; }
             
             cart = []; saveCart(); updateCartUI(); toggleCart();
         }
