@@ -16,6 +16,15 @@
         .cart-open { right: 0 !important; }
         .overlay-open { display: block !important; opacity: 1 !important; }
         input, select, textarea { font-size: 16px !important; }
+        
+        /* Hide on Scroll - Navbar transition */
+        #main-header {
+            transition: transform 0.35s ease-in-out;
+        }
+        #main-header.header-hidden {
+            transform: translateY(-100%);
+        }
+        
         @media print {
             body * { visibility: hidden; }
             #cart-drawer, #cart-drawer * { visibility: visible; }
@@ -26,32 +35,46 @@
 </head>
 <body class="bg-brand-cream text-brand-dark font-sans antialiased selection:bg-brand-terracotta selection:text-white overflow-x-hidden">
 
-    <!-- ROTATING GREETING BANNER -->
-    <div class="bg-brand-green text-white text-center py-3 px-4 text-sm md:text-base font-medium no-print">
-        <span id="greetingText" class="transition-opacity duration-500 ease-in-out">Namaste! 🙏 Welcome to Chiya San.</span>
-    </div>
+    <!-- FIXED HEADER: Greeting + Nav combined, hides on scroll down -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-40 no-print">
+        <!-- Rotating Greeting Banner -->
+        <div class="bg-brand-green text-white text-center py-2 px-4 text-xs md:text-sm font-medium">
+            <span id="greetingText" class="transition-opacity duration-500 ease-in-out inline-block">Namaste! 🙏 Welcome to Chiya San.</span>
+        </div>
 
-    <!-- Navigation -->
-    <nav class="fixed w-full bg-brand-cream/90 backdrop-blur-md z-40 border-b border-brand-green/10 no-print top-10 md:top-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16 md:h-20">
-                <div class="flex-shrink-0 flex items-center"><a href="#home"><img src="images/logo.png" alt="Logo" class="h-10 md:h-14 w-auto object-contain"></a></div>
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="#home" class="text-sm font-medium hover:text-brand-terracotta transition">Home</a>
-                    <a href="#about" class="text-sm font-medium hover:text-brand-terracotta transition">About</a>
-                    <a href="#gallery" class="text-sm font-medium hover:text-brand-terracotta transition">Gallery</a>
-                    <a href="#menu" class="text-sm font-medium hover:text-brand-terracotta transition">Menu</a>
-                    <a href="#reviews" class="text-sm font-medium hover:text-brand-terracotta transition">Reviews</a>
-                    <a href="#track" class="text-sm font-medium hover:text-brand-terracotta transition">Track Order</a>
-                    <a href="#visit" class="text-sm font-medium hover:text-brand-terracotta transition">Visit</a>
-                </div>
-                <div class="flex items-center space-x-2 md:space-x-4">
-                    <button onclick="toggleCart()" class="relative p-2 text-brand-green hover:bg-brand-lightGreen rounded-full transition"><i data-lucide="shopping-bag" class="w-6 h-6"></i><span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-brand-terracotta rounded-full">0</span></button>
-                    <div class="md:hidden flex items-center"><button onclick="toggleMobileMenu()" class="p-2 text-brand-green hover:text-brand-terracotta focus:outline-none"><i data-lucide="menu" class="w-7 h-7"></i></button></div>
+        <!-- Navigation -->
+        <nav class="bg-brand-cream/95 backdrop-blur-md border-b border-brand-green/10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16 md:h-20">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="#home"><img src="images/logo.png" alt="Logo" class="h-10 md:h-14 w-auto object-contain"></a>
+                    </div>
+                    <div class="hidden md:flex space-x-8 items-center">
+                        <a href="#home" class="text-sm font-medium hover:text-brand-terracotta transition">Home</a>
+                        <a href="#about" class="text-sm font-medium hover:text-brand-terracotta transition">About</a>
+                        <a href="#gallery" class="text-sm font-medium hover:text-brand-terracotta transition">Gallery</a>
+                        <a href="#menu" class="text-sm font-medium hover:text-brand-terracotta transition">Menu</a>
+                        <a href="#reviews" class="text-sm font-medium hover:text-brand-terracotta transition">Reviews</a>
+                        <a href="#track" class="text-sm font-medium hover:text-brand-terracotta transition">Track Order</a>
+                        <a href="#visit" class="text-sm font-medium hover:text-brand-terracotta transition">Visit</a>
+                    </div>
+                    <div class="flex items-center space-x-2 md:space-x-4">
+                        <button onclick="toggleCart()" class="relative p-2 text-brand-green hover:bg-brand-lightGreen rounded-full transition">
+                            <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                            <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-brand-terracotta rounded-full">0</span>
+                        </button>
+                        <div class="md:hidden flex items-center">
+                            <button onclick="toggleMobileMenu()" class="p-2 text-brand-green hover:text-brand-terracotta focus:outline-none">
+                                <i data-lucide="menu" class="w-7 h-7"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-brand-cream border-b border-brand-green/10 absolute top-16 left-0 w-full shadow-lg transition-all duration-300">
+        </nav>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-cream border-b border-brand-green/10 shadow-lg transition-all duration-300">
             <div class="px-4 pt-2 pb-6 space-y-1 flex flex-col">
                 <a href="#home" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">Home</a>
                 <a href="#about" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">About</a>
@@ -62,12 +85,14 @@
                 <a href="#visit" onclick="toggleMobileMenu()" class="block px-4 py-3 rounded-md text-base font-medium hover:bg-brand-lightGreen hover:text-brand-terracotta transition">Visit</a>
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Hero Section -->
-    <section id="home" class="pt-32 pb-16 md:pt-44 md:pb-20 lg:pt-56 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 scroll-mt-24">
+    <section id="home" class="pt-32 pb-16 md:pt-44 md:pb-20 lg:pt-52 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12 scroll-mt-32">
         <div class="flex-1 space-y-6 md:space-y-8 w-full">
-            <div class="inline-flex items-center space-x-2 bg-brand-lightTerracotta px-3 py-1 rounded-full text-brand-terracotta text-xs md:text-sm font-medium"><span>★ 4.8</span><span class="text-brand-dark/60">· 40 Google reviews</span></div>
+            <div class="inline-flex items-center space-x-2 bg-brand-lightTerracotta px-3 py-1 rounded-full text-brand-terracotta text-xs md:text-sm font-medium">
+                <span>★ 4.8</span><span class="text-brand-dark/60">· 40 Google reviews</span>
+            </div>
             <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-bold text-brand-green leading-tight">Where every cup tells a story.</h1>
             <p class="text-base md:text-lg text-brand-dark/80 max-w-lg leading-relaxed">A vibrant cultural hub celebrating Nepal's beloved tea tradition. Located in the historic Chakupat area of Lalitpur.</p>
             <div class="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2">
@@ -85,9 +110,12 @@
     </section>
 
     <!-- Our Story -->
-    <section id="about" class="py-16 md:py-20 bg-white scroll-mt-24">
+    <section id="about" class="py-16 md:py-20 bg-white scroll-mt-28">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16"><h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Our Story</h2><p class="text-base md:text-lg text-brand-dark/70">More than a café — a celebration of tea.</p></div>
+            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Our Story</h2>
+                <p class="text-base md:text-lg text-brand-dark/70">More than a café — a celebration of tea.</p>
+            </div>
             <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                 <div class="space-y-4 md:space-y-6 text-brand-dark/80 text-sm md:text-base leading-relaxed">
                     <p>Chiya SAN is a vibrant cultural hub in Lalitpur, dedicated to Nepal's beloved tea tradition. We celebrate "Chiya" not just as a beverage, but as a social ritual that binds communities together.</p>
@@ -103,8 +131,11 @@
     </section>
 
     <!-- Gallery -->
-    <section id="gallery" class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-24">
-        <div class="text-center mb-12 md:mb-16"><h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">A glimpse of the vibe</h2><p class="text-sm md:text-base text-brand-dark/70">Bamboo seating, lush greenery, rooftop hangs — and of course, tea.</p></div>
+    <section id="gallery" class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-28">
+        <div class="text-center mb-12 md:mb-16">
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">A glimpse of the vibe</h2>
+            <p class="text-sm md:text-base text-brand-dark/70">Bamboo seating, lush greenery, rooftop hangs — and of course, tea.</p>
+        </div>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
             <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery1.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery 1"></div>
             <div class="aspect-square rounded-2xl overflow-hidden relative group"><img src="images/gallery2.jpg" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Gallery 2"></div>
@@ -116,7 +147,7 @@
     </section>
 
     <!-- Menu -->
-    <section id="menu" class="py-16 md:py-20 bg-white scroll-mt-24">
+    <section id="menu" class="py-16 md:py-20 bg-white scroll-mt-28">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-10 md:mb-12">
                 <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Our Menu</h2>
@@ -135,13 +166,29 @@
     </section>
 
     <!-- Reviews -->
-    <section id="reviews" class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-24">
-        <div class="text-center mb-12 md:mb-16"><h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Loved by guests</h2><p class="text-sm md:text-base text-brand-dark/70">What people are saying</p></div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12">
-            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5"><div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div><p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"This cozy tea place is a hidden gem! The mix of open and semi-open spaces with bamboo seating and lush greenery creates such a relaxing vibe."</p><div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">AK</div><div><div class="font-medium text-xs">Avishek Kadel</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div></div>
-            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5"><div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div><p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"This new chiya spot was a pleasant surprise. As soon as the first sip of honey milk tea hit my tongue, I was taken — the flavours are so authentic and comforting."</p><div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">AJ</div><div><div class="font-medium text-xs">Ashutosh Jha</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div></div>
-            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5"><div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div><p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"Chiya San is a newly opened tea-focused spot in a quiet area, ideal for youngsters to hang out."</p><div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">MB</div><div><div class="font-medium text-xs">Madhusudhan Baral</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div></div>
+    <section id="reviews" class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-28">
+        <div class="text-center mb-12 md:mb-16">
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Loved by guests</h2>
+            <p class="text-sm md:text-base text-brand-dark/70">What people are saying</p>
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12">
+            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5">
+                <div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div>
+                <p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"This cozy tea place is a hidden gem! The mix of open and semi-open spaces with bamboo seating and lush greenery creates such a relaxing vibe."</p>
+                <div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">AK</div><div><div class="font-medium text-xs">Avishek Kadel</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div>
+            </div>
+            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5">
+                <div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div>
+                <p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"This new chiya spot was a pleasant surprise. As soon as the first sip of honey milk tea hit my tongue, I was taken — the flavours are so authentic and comforting."</p>
+                <div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">AJ</div><div><div class="font-medium text-xs">Ashutosh Jha</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div>
+            </div>
+            <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-brand-green/5">
+                <div class="flex items-center space-x-1 text-brand-terracotta mb-3 md:mb-4"><span>★★★★★</span></div>
+                <p class="text-brand-dark/80 text-xs md:text-sm leading-relaxed mb-4 md:mb-6">"Chiya San is a newly opened tea-focused spot in a quiet area, ideal for youngsters to hang out."</p>
+                <div class="flex items-center space-x-3"><div class="w-9 h-9 bg-brand-lightGreen rounded-full flex items-center justify-center text-brand-green font-bold text-xs">MB</div><div><div class="font-medium text-xs">Madhusudhan Baral</div><div class="text-[10px] text-brand-dark/50">Local Guide</div></div></div>
+            </div>
+        </div>
+        
         <div class="max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-brand-green/10">
             <h3 class="font-serif font-bold text-2xl text-brand-green mb-2 text-center">Leave us a Review</h3>
             <p class="text-brand-dark/60 text-sm mb-6 text-center">We'd love to hear about your experience!</p>
@@ -155,7 +202,7 @@
     </section>
 
     <!-- Track Order -->
-    <section id="track" class="py-16 md:py-20 bg-brand-lightGreen scroll-mt-24">
+    <section id="track" class="py-16 md:py-20 bg-brand-lightGreen scroll-mt-28">
         <div class="max-w-3xl mx-auto px-4 text-center">
             <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-green mb-4">Track Your Order</h2>
             <p class="text-brand-dark/70 mb-8">Enter your Order ID (e.g., CS-482) to check its status.</p>
@@ -168,7 +215,7 @@
     </section>
 
     <!-- Visit Us -->
-    <section id="visit" class="py-16 md:py-20 bg-brand-green text-white scroll-mt-24">
+    <section id="visit" class="py-16 md:py-20 bg-brand-green text-white scroll-mt-28">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
                 <div class="space-y-6 md:space-y-8">
@@ -226,7 +273,7 @@
                 <h3 class="font-serif font-bold text-brand-green mb-3 md:mb-4">Order Details</h3>
                 <div class="space-y-3 md:space-y-4">
                     <div><label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Your Name</label><input type="text" id="customerName" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. Ayush Shrestha" required></div>
-                    <div><label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">WhatsApp Number <span class="text-brand-terracotta">*</span></label><input type="tel" id="customerPhone" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. 9801234567" required><p class="text-[10px] text-brand-dark/50 mt-1">We'll send your order updates here</p></div>
+                    <div><label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">WhatsApp Number <span class="text-brand-terracotta">*</span></label><input type="tel" id="customerPhone" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. 9801234567" required><p class="text-[10px] text-brand-dark/50 mt-1">We'll send order updates here</p></div>
                     <div><label class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Order Type</label><select id="orderType" onchange="toggleAddressField()" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm"><option value="Dine-In">Dine-In</option><option value="Takeaway">Takeaway / Pick-up</option></select></div>
                     <div id="locationGroup"><label id="locationLabel" class="block text-xs md:text-sm font-medium text-brand-dark mb-1">Table Number / Spot</label><input type="text" id="locationDetails" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-green text-sm" placeholder="e.g. Table 3 / Rooftop seating" required></div>
                 </div>
@@ -254,9 +301,42 @@
 
     <script>
         lucide.createIcons();
-        const scriptURL = "https://script.google.com/macros/s/AKfycbyUsPj419DZ5dbciSDtvcx0eBmtFNAAnwtXX0nX7vUMIBf1FjNlSW_FPodyxrruDk13/exec"; 
+        
+        // ⚠️ IMPORTANT: PASTE YOUR GOOGLE APPS SCRIPT URL HERE
+        const scriptURL = "PASTE_YOUR_NEW_GOOGLE_APPS_SCRIPT_URL_HERE"; 
 
-        // Rotating Greetings
+        // ============ HIDE NAVBAR ON SCROLL ============
+        let lastScrollTop = 0;
+        const header = document.getElementById('main-header');
+        const scrollThreshold = 80; // Don't hide until we've scrolled a bit
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Always show header when near top
+            if (currentScroll <= scrollThreshold) {
+                header.classList.remove('header-hidden');
+                return;
+            }
+
+            // Scrolling down → hide
+            if (currentScroll > lastScrollTop) {
+                header.classList.add('header-hidden');
+                // Also close mobile menu if open
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            } 
+            // Scrolling up → show
+            else {
+                header.classList.remove('header-hidden');
+            }
+            
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        }, false);
+
+        // ============ ROTATING GREETINGS ============
         const greetings = [
             "Namaste! 🙏 Welcome to Chiya San.",
             "Where every cup tells a story. ☕",
@@ -278,8 +358,12 @@
             }, 500);
         }, 4000);
 
-        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
+        // ============ MOBILE MENU ============
+        function toggleMobileMenu() { 
+            document.getElementById('mobile-menu').classList.toggle('hidden'); 
+        }
 
+        // ============ MENU DATA ============
         const menuItems = [
             { name: "Chicken Steam Mo:Mo", category: "Mo:Mo", price: 200 }, { name: "Chicken Jhol Mo:Mo", category: "Mo:Mo", price: 230 },
             { name: "Chicken Kothey Mo:Mo", category: "Mo:Mo", price: 250 }, { name: "Veg & Paneer Steam Mo:Mo", category: "Mo:Mo", price: 180 },
@@ -325,15 +409,33 @@
         const filterBtns = document.querySelectorAll('.filter-btn');
         filterBtns.forEach(btn => { btn.addEventListener('click', (e) => { filterBtns.forEach(b => { b.classList.remove('bg-brand-green', 'text-white'); b.classList.add('bg-brand-lightGreen', 'text-brand-dark'); }); e.target.classList.remove('bg-brand-lightGreen', 'text-brand-dark'); e.target.classList.add('bg-brand-green', 'text-white'); renderMenu(e.target.dataset.category); }); });
 
+        // ============ CART ============
         let cart = JSON.parse(localStorage.getItem('chiyaCart')) || [];
         function saveCart() { localStorage.setItem('chiyaCart', JSON.stringify(cart)); }
-        function addToCart(name, price) { const existing = cart.find(item => item.name === name); if (existing) { existing.qty += 1; } else { cart.push({ name, price, qty: 1 }); } saveCart(); updateCartUI(); const cartBtn = document.querySelector('button[onclick="toggleCart()"]'); cartBtn.classList.add('scale-110'); setTimeout(() => cartBtn.classList.remove('scale-110'), 200); }
+        function addToCart(name, price) { 
+            const existing = cart.find(item => item.name === name); 
+            if (existing) { existing.qty += 1; } else { cart.push({ name, price, qty: 1 }); } 
+            saveCart(); updateCartUI(); 
+            const cartBtn = document.querySelector('button[onclick="toggleCart()"]'); 
+            cartBtn.classList.add('scale-110'); 
+            setTimeout(() => cartBtn.classList.remove('scale-110'), 200); 
+        }
 
         function updateCartUI() {
-            const cartItemsDiv = document.getElementById('cart-items'); const cartCount = document.getElementById('cart-count'); const subtotalEl = document.getElementById('cart-subtotal'); const totalEl = document.getElementById('cart-total');
+            const cartItemsDiv = document.getElementById('cart-items'); 
+            const cartCount = document.getElementById('cart-count'); 
+            const subtotalEl = document.getElementById('cart-subtotal'); 
+            const totalEl = document.getElementById('cart-total');
             let totalItems = 0; let subtotal = 0;
-            if (cart.length === 0) { cartItemsDiv.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-center text-brand-dark/40 py-10 no-print"><i data-lucide="shopping-cart" class="w-16 h-16 mb-4 opacity-50"></i><p class="text-lg font-medium">Your cart is empty</p><p class="text-sm">Add something delicious from the menu</p></div>`; } 
-            else { cartItemsDiv.innerHTML = cart.map((item, index) => { totalItems += item.qty; subtotal += item.price * item.qty; return `<div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 last:border-0"><div class="pr-3"><div class="font-medium text-sm md:text-base text-brand-dark">${item.name}</div><div class="text-xs md:text-sm text-brand-terracotta font-semibold mt-1">Rs. ${item.price}</div></div><div class="flex items-center space-x-3 flex-shrink-0 no-print"><button onclick="updateQty(${index}, -1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">-</button><span class="w-4 text-center font-medium text-sm">${item.qty}</span><button onclick="updateQty(${index}, 1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">+</button></div></div>`; }).join(''); }
+            if (cart.length === 0) { 
+                cartItemsDiv.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-center text-brand-dark/40 py-10 no-print"><i data-lucide="shopping-cart" class="w-16 h-16 mb-4 opacity-50"></i><p class="text-lg font-medium">Your cart is empty</p><p class="text-sm">Add something delicious from the menu</p></div>`; 
+            } 
+            else { 
+                cartItemsDiv.innerHTML = cart.map((item, index) => { 
+                    totalItems += item.qty; subtotal += item.price * item.qty; 
+                    return `<div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100 last:border-0"><div class="pr-3"><div class="font-medium text-sm md:text-base text-brand-dark">${item.name}</div><div class="text-xs md:text-sm text-brand-terracotta font-semibold mt-1">Rs. ${item.price}</div></div><div class="flex items-center space-x-3 flex-shrink-0 no-print"><button onclick="updateQty(${index}, -1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">-</button><span class="w-4 text-center font-medium text-sm">${item.qty}</span><button onclick="updateQty(${index}, 1)" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition text-lg font-medium">+</button></div></div>`; 
+                }).join(''); 
+            }
             cartCount.innerText = totalItems; subtotalEl.innerText = `Rs. ${subtotal}`; totalEl.innerText = `Rs. ${subtotal}`; lucide.createIcons();
         }
 
@@ -342,6 +444,7 @@
         function toggleAddressField() { const type = document.getElementById('orderType').value; const label = document.getElementById('locationLabel'); const input = document.getElementById('locationDetails'); if (type === 'Dine-In') { label.innerText = 'Table Number / Spot:'; input.placeholder = 'e.g. Table 3 / Rooftop seating'; } else { label.innerText = 'Pickup Time:'; input.placeholder = 'e.g. Ready in 15 mins'; } }
         function generateOrderId() { const randomPart = Math.floor(100 + Math.random() * 900); return `CS-${randomPart}`; }
 
+        // ============ FEEDBACK ============
         async function sendFeedback() {
             const btn = document.getElementById('fbSubmitBtn'); btn.innerHTML = 'Submitting...'; btn.disabled = true;
             const feedbackData = { type: 'feedback', name: document.getElementById('fbName').value, rating: document.getElementById('fbRating').value, comment: document.getElementById('fbComment').value };
@@ -351,6 +454,7 @@
         function openFeedbackModal() { const modal = document.getElementById('feedback-thanks-modal'); const content = document.getElementById('feedback-modal-content'); modal.classList.remove('hidden'); setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100'); }, 10); }
         function closeFeedbackModal() { const modal = document.getElementById('feedback-thanks-modal'); const content = document.getElementById('feedback-modal-content'); content.classList.add('scale-95', 'opacity-0'); content.classList.remove('scale-100', 'opacity-100'); setTimeout(() => { modal.classList.add('hidden'); }, 300); }
 
+        // ============ TRACK ORDER ============
         async function trackOrder() {
             const orderId = document.getElementById('trackingInput').value.trim().toUpperCase(); const resultDiv = document.getElementById('trackingResult');
             if (!orderId) { alert("Please enter an Order ID."); return; }
@@ -363,10 +467,13 @@
             } catch (e) { resultDiv.innerHTML = '<div class="text-red-500">Error connecting to server.</div>'; }
         }
 
+        // ============ PROCESS ORDER ============
         async function processOrder() {
             if (cart.length === 0) { alert("Please add at least one item to your cart before sending your order."); return; }
-            const nameInput = document.getElementById('customerName'); const locationInput = document.getElementById('locationDetails');
+            
+            const nameInput = document.getElementById('customerName');
             const phoneInput = document.getElementById('customerPhone');
+            const locationInput = document.getElementById('locationDetails');
             
             if (!nameInput.value || !locationInput.value) { alert("Please fill in your name and order details (Table or Pickup time)."); return; }
             if (!phoneInput.value || phoneInput.value.replace(/[^0-9]/g, '').length < 10) { alert("Please enter a valid 10-digit WhatsApp number so we can send you order updates."); return; }
@@ -388,9 +495,17 @@
             
             window.open("https://api.whatsapp.com/send?phone=" + phoneNumber + "&text=" + encodeURIComponent(message), '_blank');
 
-            const saveButton = document.querySelector('button[onclick="processOrder()"]'); const originalButtonText = saveButton.innerHTML; saveButton.innerHTML = 'Saving...'; saveButton.disabled = true;
-            const orderData = { orderId, customerName: name, customerPhone: customerPhone, orderType, location, items: itemsSummary.join('\n'), total };
-            try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }); } catch (error) { console.error(error); } finally { saveButton.innerHTML = originalButtonText; saveButton.disabled = false; }
+            const saveButton = document.querySelector('button[onclick="processOrder()"]'); 
+            const originalButtonText = saveButton.innerHTML; 
+            saveButton.innerHTML = 'Saving...'; 
+            saveButton.disabled = true;
+            
+            const orderData = { orderId: orderId, customerName: name, customerPhone: customerPhone, orderType: orderType, location: location, items: itemsSummary.join('\n'), total: total };
+            
+            try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) }); } 
+            catch (error) { console.error(error); } 
+            finally { saveButton.innerHTML = originalButtonText; saveButton.disabled = false; }
+            
             cart = []; saveCart(); updateCartUI(); toggleCart();
         }
 
